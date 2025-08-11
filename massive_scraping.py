@@ -30,12 +30,6 @@ def worker(url_list):
                 r_failed_and_passed.set(url, f'PASSED_{df.shape[0]}x{df.shape[1]}@{idx}')
         if not value.startswith('PASSED'):
             continue
-        # consistent_value = r_is_consistent.keys(url+'*')
-        # if consistent_value:
-        #     continue
-        # if idx is None:
-        #     idx = int(value.split('@')[-1])
-        #     url = value.split('@')[0]
         is_tbl_consistent, page_id, article_name = is_consistent(url, idx)
         r_is_consistent.set(f'{url}@{idx}', is_tbl_consistent)
         if is_tbl_consistent == 'match':

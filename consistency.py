@@ -1,8 +1,7 @@
-from datetime import datetime
-
 import requests
 from bs4 import BeautifulSoup
-from personal.utils import get_revid
+from utils import get_revid
+
 from datetime import datetime, timedelta
 from pandas import DataFrame, read_html
 from io import StringIO

@@ -2,7 +2,8 @@ import re
 import dateutil.parser as parser
 import requests
 from bs4 import BeautifulSoup
-from personal.utils import get_revid
+
+# from personal.utils import get_revid
 from datetime import datetime, timedelta
 from pandas import DataFrame, read_html
 from io import StringIO
@@ -10,10 +11,14 @@ import json
 import diskcache
 import openai
 import os
+
 openai.api_key = os.environ["openai_api_key"]
+
+
 def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1), cache=None):
     if cache is None:
         import pathlib
+
         file_path = pathlib.Path(__file__).absolute().parent.__str__()
         cache = diskcache.Cache(f'{file_path}/article_metadata.db')
     cached_result = cache.get(f'revid_{page_id}')
@@ -36,9 +41,7 @@ def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1), cache=
     page_id = next(iter(page_title_response['query']['pages']))
     if 'missing' in page_title_response['query']['pages'][page_id.__str__()]:
         return None
-    page_url: str = page_title_response['query']['pages'][page_id.__str__()][
-        'editurl'
-    ]
+    page_url: str = page_title_response['query']['pages'][page_id.__str__()]['editurl']
     page_title = re.search(r"title=(.+)&", page_url).group(1)
     page_history = page_url.replace("&action=edit", "")
     page_revs = f"https://en.wikipedia.org/w/api.php?format=json&action=query&titles={page_title}&prop=revisions&rvprop=ids|timestamp|size&rvlimit=500"
@@ -60,26 +63,30 @@ def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1), cache=
             break
         for edit_idx in range(len(revisions) - 1):
             if (
-                    parser.parse(revisions[edit_idx]['timestamp']).timestamp() >= starting.timestamp() >= parser.parse(
-                revisions[edit_idx + 1]['timestamp']).timestamp()
+                parser.parse(revisions[edit_idx]['timestamp']).timestamp()
+                >= starting.timestamp()
+                >= parser.parse(revisions[edit_idx + 1]['timestamp']).timestamp()
             ):
                 keep_search = False
                 rev_id = revisions[edit_idx + 1]['revid']
                 break
-        _continue_token = f"&rvcontinue={page_edits.get('continue', {}).get('rvcontinue')}"
+        _continue_token = (
+            f"&rvcontinue={page_edits.get('continue', {}).get('rvcontinue')}"
+        )
     if rev_id is None:
         return_value = {
             'url': None,
             'e_title': page_title,
             'title': page_title_response['query']['pages'][page_id.__str__()]['title'],
-            'page_id': page_id
+            'page_id': page_id,
         }
     else:
-        return_value = {'url': page_history + f"&oldid={rev_id}",
+        return_value = {
+            'url': page_history + f"&oldid={rev_id}",
             'e_title': page_title,
             'title': page_title_response['query']['pages'][page_id.__str__()]['title'],
-            'page_id': page_id
-            }
+            'page_id': page_id,
+        }
     if cache is not None:
         cache.set(f'revid_{page_id}', json.dumps(return_value))
     return return_value
@@ -89,38 +96,70 @@ def get_articles_to_parse():
     import string
     import requests
     import random
-    from scraped_tbls.wikiparser import WikiTableParser
+    import git
+    from collections import OrderedDict
+    from wikiparser import WikiTableParser
+    working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
     wiki_obj = WikiTableParser()
     basic_url = "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=insource:%22wikitable%22%20intitle:{TITLE}*&format=json&srlimit=500&sroffset={OFFSET}"
-    title = random.choice(string.ascii_uppercase) + random.choice(string.ascii_lowercase)
-    for i in range(1000):
-        title = random.choice(string.ascii_uppercase) + random.choice(string.ascii_lowercase)
-        response = requests.get(basic_url.format(TITLE=title, OFFSET=random.randint(0, 9500))).json()
-        for j in [k for k in response["query"]["search"] if k['title'].isascii() and k['size']> 30000]:
+    tbl_metadata_db = diskcache.Cache(f'{working_dir}/local_dbs/tbl_metadata.db')
+    for _ in range(1000):
+        title = random.choice(string.ascii_uppercase) + random.choice(
+            string.ascii_lowercase
+        )
+        response = requests.get(
+            basic_url.format(TITLE=title, OFFSET=random.randint(0, 9500))
+        ).json()
+        for j in [k for k in response["query"]["search"] if k['title'].isascii()]:
             try:
-                df, idx, msg, dates, paragraph = wiki_obj.run(f'https://en.wikipedia.org/?curid={j["pageid"]}', j['title'])
-
-
+                df, idx, msg, dates, paragraph = wiki_obj.run(
+                    f'https://en.wikipedia.org/?curid={j["pageid"]}', j['title']
+                )
                 if df is not None:
-                    # if df.shape[0] * df.shape[1] > 200:
-                    popularity = json.loads(page_details(f'https://en.wikipedia.org/wiki/{j["title"]}', str(j["pageid"])))['popularity']
-                    if popularity > 10000:
-                        is_tbl_consistent, page_id, article_name = is_consistent(f'https://en.wikipedia.org/wiki/{j["title"]}', idx)
-                        if is_tbl_consistent == 'match':
-                            cache.set(f'{page_id}', 'popularity')
-                            print(f'Saved {article_name} with page id {page_id} to cache. [{len([a for a in cache.iterkeys()])} items in cache]')
-                        else:
-                            print(f'No page id or article name for {j["title"]}')
-                    else:
-                        print(f'Skipped {j["title"]} due to low popularity: {popularity}')
+                    is_tbl_consistent, page_id, article_name = is_consistent(
+                        f'https://en.wikipedia.org/wiki/{j["title"]}', idx
+                    )
+                    if is_tbl_consistent == 'match':
+                        article_metadata = page_details(
+                            f'https://en.wikipedia.org/wiki/{j["title"]}',
+                            str(j["pageid"]),
+                        )
+                        article_title = get_revid(page_id)
+                        url = f'https://en.wikipedia.org/wiki/{article_title["e_title"]}'
+                        # Writing the DataFrame to CSV as it passed all checks - rules and consistency
+                        df.to_csv(f'tbls/{page_id}_{idx}.csv', index=False)
+                        tbl_details = {
+                            'url': url,
+                            'page_id': page_id,
+                            'article_name': article_name,
+                            'table_idx': idx,
+                            'dates': dates,
+                            'paragraph': paragraph,
+                            'columns': OrderedDict(
+                                **{col: str(df[col].dtype) for col in df.columns}
+                            ),
+                            'shape': df.shape,
+                            'article_metadata': article_metadata,
+                        }
+                        # Storing the table details in local DB
+
+                        tbl_metadata_db.set(
+                            url,
+                            json.dumps(tbl_details),
+                        )
+
             except:
                 continue
     b = 5
 
 
-def is_consistent(url, tbl_idx):
+def is_consistent(url, tbl_idx, years_ago=1):
     page_id = url.split('/')[-1]
-    previous_id = get_revid(page_id, by='titles', starting=datetime.today() - timedelta(days=365))
+    previous_id = get_revid(
+        page_id,
+        by='titles',
+        starting=datetime.today() - timedelta(days=years_ago * 365),
+    )
     if previous_id is None or previous_id['url'] is None:
         print('No old page for:', url)
         return 'noOldPage', None, None
@@ -146,9 +185,24 @@ def is_consistent(url, tbl_idx):
         if not (old.astype(str) == new.astype(str)).all():
             if False in list(old == new):
                 try:
-                    print(url, 'misMatchValues-' + old_df.columns[list(old == new).index(False)] + '-' + str(idx))
-                    print(f"Mismatch in {url} at {old_df.columns[list(old == new).index(False)]} {idx}")
-                    return 'misMatchValues-' + old_df.columns[list(old == new).index(False)] + '-' + str(idx), None, None
+                    print(
+                        url,
+                        'misMatchValues-'
+                        + old_df.columns[list(old == new).index(False)]
+                        + '-'
+                        + str(idx),
+                    )
+                    print(
+                        f"Mismatch in {url} at {old_df.columns[list(old == new).index(False)]} {idx}"
+                    )
+                    return (
+                        'misMatchValues-'
+                        + old_df.columns[list(old == new).index(False)]
+                        + '-'
+                        + str(idx),
+                        None,
+                        None,
+                    )
                 except Exception as e:
                     print(f"Error in mismatch values for {url}: {e}")
                     return 'Error_mismatch_values', None, None
@@ -156,16 +210,12 @@ def is_consistent(url, tbl_idx):
     print(f'Match in {url}')
     return 'match', previous_id['page_id'], previous_id['title']
 
-def page_details(url, page_id, cache=None):
+
+def page_details(url, page_id):
     import requests
     import statistics
     from datetime import datetime, timedelta
-    if cache is None:
-        import pathlib
-        file_path = pathlib.Path(__file__).absolute().parent.__str__()
-        cache = diskcache.Cache(f'{file_path}/article_metadata.db')
-    if f'tbl_details_{page_id}' in cache:
-        return cache[f'tbl_details_{page_id}']
+
     page_title = url.split('/')[-1]
     user_agent = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
@@ -193,12 +243,12 @@ def page_details(url, page_id, cache=None):
             'popularity': popularity,
         }
     )
-    cache[f'tbl_details_{page_id}'] = return_obj
     return return_obj
 
 
 def get_sample(_df, try_cast):
     from collections import Counter
+
     return_str = ""
     table_size = _df.shape[0]
     _sample_data = _df.sample(n=min(table_size // 3, 5), random_state=1)
@@ -225,17 +275,17 @@ def get_sample(_df, try_cast):
     return return_str
 
 
-
-
-def get_llm_response(prompt_string, use_cache=True, MODEL = 'gpt-4.1-2025-04-14', cache=None):
+def get_llm_response(
+    prompt_string, use_cache=True, MODEL='gpt-4.1-2025-04-14', cache=None
+):
     from openai import ChatCompletion
-    from openai.error import Timeout, APIConnectionError, RateLimitError
+    from openai._exceptions import APITimeoutError, APIConnectionError, RateLimitError
     from requests.exceptions import ChunkedEncodingError
 
     if cache is None:
-        import pathlib
-        file_path = pathlib.Path(__file__).absolute().parent.__str__()
-        cache = diskcache.Cache(f'{file_path}/../local_dbs/cache/llm_cache.db')
+        import git
+        working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
+        cache = diskcache.Cache(f'{working_dir}/local_dbs/cache/llm_cache.db')
     prompt_cache_key = f"{MODEL}_{prompt_string}"
     if use_cache and prompt_cache_key in cache:
         return cache[prompt_cache_key]
@@ -258,7 +308,7 @@ def get_llm_response(prompt_string, use_cache=True, MODEL = 'gpt-4.1-2025-04-14'
             if 'choices' in chunk and len(chunk['choices']) > 0:
                 chunk_content = chunk['choices'][0].get('delta', {}).get('content', '')
                 response_str += chunk_content
-    except (Timeout,RateLimitError,ChunkedEncodingError) as e:
+    except (APITimeoutError, RateLimitError, ChunkedEncodingError) as e:
         cache[prompt_cache_key] = None
         return None
     except APIConnectionError as e:

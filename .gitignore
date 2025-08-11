@@ -1,8 +1,4 @@
-/scraped_tbls/utils/bigger_tbls_cache/
-/scraped_tbls/utils/llm_cache.db/
-/scraped_tbls/utils/tbls/
-/scraped_tbls/llm_tbls/
-/scraped_tbls/local_dbs/
-/scraped_tbls/tbls/
-/scraped_tbls/llm_cache.db/
-/scraped_tbls/bigger_tbls_cache/
+/llm_tbls/
+/local_dbs/
+/tbls/
+/llm_cache.db/

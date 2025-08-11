@@ -233,15 +233,6 @@ class WikiTableParser:
                 list_of_strings = list(a_class.strings)
                 if len(list_of_strings) == 0:
                     continue
-                first_string = list_of_strings[0]
-                # if len(list_of_strings) == 1:
-                #     first_string.replace_with(
-                #         f'{self.link_char}{first_string.text}{self.link_char}'
-                #     )
-                #     continue
-                # last_string = list_of_strings[-1]
-                # first_string.replace_with(f'{self.link_char}{first_string.text}')
-                # last_string.replace_with(f'{last_string.text}{self.link_char}')
             for style in tbl.find_all('span', style=True):
                 if 'none' in style.attrs.get('style'):
                     style.replace_with("")
@@ -436,7 +427,7 @@ class WikiTableParser:
                         )
                     )
                     self.logger.debug(
-                        f"Removing data inside square_brackets {self.url} ({col} column)"
+                        f"Removing data inside square brackets {self.url} ({col} column)"
                     )
             self.df[col] = self.df[col].apply(self.clean_string)
             numbers_counter = Counter(
@@ -486,18 +477,6 @@ class WikiTableParser:
                 except:
                     pass
 
-        # df_without_first_row = read_csv(StringIO(self.df[1:].to_csv().strip(',')))
-        # for col in [self.df.columns[0], self.df.columns[-1]]:
-        #     if (
-        #             get_type(self.df[col].iloc[0]) in ['str','nan'] and  get_type(df_without_first_row[col].dtype, is_dtype=True)== 'num'
-        #     ):
-        #         try:
-        #             self.logger.debug(
-        #                 f'First row data type: {get_type(df_without_first_row[col].dtype,is_dtype=True)} - {get_type(self.df[col].iloc[0])}'
-        #             )
-        #             self.df = df_without_first_row.copy(deep=True)
-        #         except:
-        #             pass
 
 
 

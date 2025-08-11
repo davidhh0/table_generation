@@ -253,10 +253,11 @@ def run(chunk):
 if __name__ == "__main__":
     from numpy import array_split
     import multiprocessing
-    r_tbl_details = redis.Redis(
-        host='localhost', port=6379, db=4, decode_responses=True
-    )
-    tbls_to_generate = [{k:r_tbl_details[k]} for k in r_tbl_details.scan_iter()]
+    import diskcache
+    import git
+    working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
+    tbl_details = diskcache.Cache(f'{working_dir}/local_dbs/tbl_metadata.db')
+    tbls_to_generate = [{k:tbl_details[k]} for k in tbl_details.iterkeys()]
     jobs_num = 1  # number of workers
     jobs = []
 

@@ -1,10 +1,5 @@
 import json
-import pandas as pd
-from scraped_tbls.utils.utils import get_llm_response
-import diskcache
-import numpy as np
-import random
-random.seed(10)
+from utils.utils import get_llm_response
 import os
 
 
@@ -12,8 +7,14 @@ def cell_retrieval():
     def get_random_sample(_df,_key_column, n=3):
         """Get a random sample of n rows from the DataFrame."""
         return list(_df.sample(n=n, random_state=1)[_key_column].items())
-    from scraped_tbls.wikiparser import WikiTableParser
+    from wikiparser import WikiTableParser
+    import git
     import pandas as pd
+    import diskcache
+    import numpy as np
+    import random
+    random.seed(10)
+    working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
     parser_ins = WikiTableParser()
     PROMPT_SINGLE_VALUE = """Based on data regarding: 
 {TABLE_TITLE}.
@@ -64,7 +65,7 @@ Answer only with the rephrased question.
 """
     REPHRASED_SUFFIX = """{REPHRASE}
 Return only the value, with no additional words, punctuation, or explanation."""
-    generated_tbl_cache = diskcache.Cache('../local_dbs/tables/generated_tables.db')
+    generated_tbl_cache = diskcache.Cache(f'{working_dir}/local_dbs/tables/generated_tables.db')
     single_value_scores = {}
     comparison_scores = {}
     max_scores = {}
