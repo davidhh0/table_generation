@@ -72,8 +72,6 @@ Return only the value, with no additional words, punctuation, or explanation."""
     MAX_ITER = 110
     count = 0
     for tbl in generated_tbl_cache.iterkeys():
-        if 'http' not in tbl:
-            continue
         count += 1
         print(f'Retrieving {count}...')
         if count > MAX_ITER:

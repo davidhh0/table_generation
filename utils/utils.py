@@ -3,27 +3,16 @@ import dateutil.parser as parser
 import requests
 from bs4 import BeautifulSoup
 
-# from personal.utils import get_revid
 from datetime import datetime, timedelta
 from pandas import DataFrame, read_html
 from io import StringIO
 import json
 import diskcache
-import openai
 import os
 
-openai.api_key = os.environ["openai_api_key"]
 
 
-def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1), cache=None):
-    if cache is None:
-        import pathlib
-
-        file_path = pathlib.Path(__file__).absolute().parent.__str__()
-        cache = diskcache.Cache(f'{file_path}/article_metadata.db')
-    cached_result = cache.get(f'revid_{page_id}')
-    if cached_result is not None:
-        return json.loads(cached_result)
+def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
     user_agent = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
     }
@@ -32,12 +21,6 @@ def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1), cache=
         f"https://en.wikipedia.org/w/api.php?action=query&prop=info&{by}={page_id}&inprop=url&format=json",
         headers=user_agent,
     ).json()
-    # if page_title_response['batchcomplete'] == '':
-    #     return {
-    #         'url': None,
-    #         'e_title': None,
-    #         'title': None
-    #     }
     page_id = next(iter(page_title_response['query']['pages']))
     if 'missing' in page_title_response['query']['pages'][page_id.__str__()]:
         return None
@@ -87,8 +70,6 @@ def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1), cache=
             'title': page_title_response['query']['pages'][page_id.__str__()]['title'],
             'page_id': page_id,
         }
-    if cache is not None:
-        cache.set(f'revid_{page_id}', json.dumps(return_value))
     return return_value
 
 
@@ -278,7 +259,9 @@ def get_sample(_df, try_cast):
 def get_llm_response(
     prompt_string, use_cache=True, MODEL='gpt-4.1-2025-04-14', cache=None
 ):
-    from openai import ChatCompletion
+    from openai import OpenAI
+    
+    client = OpenAI(api_key=os.environ["openai_api_key"], timeout=30)
     from openai._exceptions import APITimeoutError, APIConnectionError, RateLimitError
     from requests.exceptions import ChunkedEncodingError
 
@@ -298,15 +281,16 @@ def get_llm_response(
             },
         ],
         "temperature": 0.0,
-        "request_timeout": 30,
         "stream": True,
     }
     try:
         response_str = ""
-        response = ChatCompletion.create(**params)
+        response = client.chat.completions.create(**params)
         for chunk in response:
-            if 'choices' in chunk and len(chunk['choices']) > 0:
-                chunk_content = chunk['choices'][0].get('delta', {}).get('content', '')
+            if chunk.choices[0].delta.content is None:
+                break
+            if hasattr(chunk,'choices') and len(chunk.choices) > 0:
+                chunk_content = chunk.choices[0].delta.content
                 response_str += chunk_content
     except (APITimeoutError, RateLimitError, ChunkedEncodingError) as e:
         cache[prompt_cache_key] = None

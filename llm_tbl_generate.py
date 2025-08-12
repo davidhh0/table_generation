@@ -84,12 +84,6 @@ def run(chunk):
     rel_nk_acc_scores = []
     for key,value in {k: v for d in chunk.tolist() for k, v in d.items()}.items():
         cfg = json.loads(value)
-        try:
-            info = get_revid(cfg['page_id'])
-            url = "https://en.wikipedia.org/wiki/" + info['e_title']
-            tbl_metadata = page_details(url, cfg['page_id'])
-        except:
-            continue
         if not os.path.isfile(f'tbls/{cfg["page_id"]}_{cfg["table_idx"]}.csv'):
             continue
         df = pd.read_csv(f'tbls/{cfg["page_id"]}_{cfg["table_idx"]}.csv')
@@ -182,7 +176,6 @@ def run(chunk):
                     'shape': llm_tbl.shape,
                 }
             },
-            **{'article_metadata': json.loads(tbl_metadata)},
             **{'scores': score_json},
         }
         r_generated_tbls.set(key, json.dumps(generated_tbl_data))
