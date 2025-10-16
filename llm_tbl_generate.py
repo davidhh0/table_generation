@@ -1,27 +1,15 @@
 import os.path
 from wikiparser import WikiTableParser
 import pandas as pd
-from io import StringIO, BufferedReader
+from io import StringIO
 import json
-import redis
 import re
-
-from compared_tbls import run_compare
-from utils.utils import get_revid, page_details, get_sample, get_llm_response
 import diskcache
+import git
+from compared_tbls import run_compare
+from utils.utils import get_sample, get_llm_response
 
-# cache = diskcache.Cache('llm_cache.db')
-# openai.api_key = os.environ["openai_api_key"]
-# MODEL = 'gpt-4.1-2025-04-14'
-r_generated_tbls = redis.Redis(
-        host='localhost', port=6379, db=4, decode_responses=True
-    )
-r_generated_tbls_with_example = redis.Redis(
-        host='localhost', port=6379, db=9, decode_responses=True
-    )
-
-
-
+model = 'gpt-4.1-2025-04-14'
 TITLE_PROMPT = """
 Given the following article name: '{ARTICLE_NAME}', and the following columns along with some metadata about each column:
 {DATA_SAMPLE}
@@ -69,6 +57,8 @@ RESPONSE FORMAT:
 """
 
 def run(chunk):
+    working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
+    tbl_generated_db = diskcache.Cache(f'{working_dir}/local_dbs/tables/generated_tables.db')
     counter = 0
     parser_ins = WikiTableParser()
     tables = []
@@ -97,7 +87,7 @@ def run(chunk):
             .strip()
             .strip('"')
         )
-        title_response = get_llm_response(title_prompt)
+        title_response = get_llm_response(title_prompt, MODEL=model)
 
         uniqueness = ", ".join(
             [f"{k} ({'unique' if df[k].is_unique else 'not-unique'})" for k in df]
@@ -111,7 +101,7 @@ def run(chunk):
             DATA_SAMPLE=df.sample(n=3, random_state=1).to_dict('list').__str__(),
             TABLE_COLUMNS=uniqueness,
         )
-        key_response = get_llm_response(key_prompt,)
+        key_response = get_llm_response(key_prompt,MODEL=model)
         try:
             tbl_key = re.search(r"'(.+)'", key_response).group(1)
         except TypeError as e:
@@ -125,7 +115,7 @@ def run(chunk):
             RESPONSE_FORMAT=response_format,
             EXAMPLE_ROW=df.iloc[0].to_dict(),
         )
-        response = get_llm_response(prompt)
+        response = get_llm_response(prompt, MODEL=model)
         if response is None:
             print(f"LLM response is None for {cfg['page_id']}. Skipping.")
             continue
@@ -178,7 +168,7 @@ def run(chunk):
             },
             **{'scores': score_json},
         }
-        r_generated_tbls.set(key, json.dumps(generated_tbl_data))
+        tbl_generated_db.set(key, json.dumps(generated_tbl_data))
         counter += 1
         print(f'Processed {counter} tables out of {chunk.__len__()} chunks.')
         tables.append(cfg['page_id'])
@@ -246,10 +236,13 @@ def run(chunk):
 if __name__ == "__main__":
     from numpy import array_split
     import multiprocessing
-    import diskcache
-    import git
+    import redis
     working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
     tbl_details = diskcache.Cache(f'{working_dir}/local_dbs/tbl_metadata.db')
+    r_tbl_details = redis.Redis(
+        host='localhost', port=6379, db=4, decode_responses=True
+    )
+    tbls_to_generate = [{k: r_tbl_details[k]} for k in r_tbl_details.scan_iter()]
     tbls_to_generate = [{k:tbl_details[k]} for k in tbl_details.iterkeys()]
     jobs_num = 1  # number of workers
     jobs = []

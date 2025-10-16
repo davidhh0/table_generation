@@ -1,0 +1,40 @@
+wrapper: |
+  Based on data regarding: 
+  {TABLE_TITLE}.
+  {QUESTION}
+  Return only the value, with no additional words, punctuation, or explanation.
+  If you are unsure, return the most likely value from your knowledge; do not guess or make something up.
+
+rephrase_wrapper: |
+    Given the following template-based question: 
+    Based on data regarding: 
+    ```
+    {TABLE_TITLE}.
+    {QUESTION}
+    ```
+    Regarding the table from wiki page {URL}, rephrase the question to be more natural and human-like, while keeping the same meaning.
+    For you guidance, the answer to the question is '{ANSWER}'.
+    Answer only with the rephrased question.
+
+context_wrapper: |
+    Based on data regarding: 
+    {TABLE_TITLE}.
+    {QUESTION}
+    From the table presented in the wiki page {URL} ,
+    Return only the value, with no additional words, punctuation, or explanation.
+    If you are unsure, return the most likely value from your knowledge; do not guess or make something up.
+
+single_value: |
+  What is the value of '{DESIRED_COLUMN_NAME}' where '{KEY_COLUMN}' is '{KEY_VALUE}'?
+
+comparison_max: |
+  Which '{Primary_key}' has higher '{Comparison_Column}', '{Value_1}', '{Value_2}' or '{Value_3}'?
+
+comparison_min: |
+  Which '{Primary_key}' has lower '{Comparison_Column}', '{Value_1}', '{Value_2}' or '{Value_3}'?
+
+max_value: |
+  Which '{Primary_key}' has the maximum value in the '{Comparison_Column}' column {PROVIDED_KEYS}?
+
+min_value: |
+  Which '{Primary_key}' has the minimum value in the '{Comparison_Column}' column {PROVIDED_KEYS}?

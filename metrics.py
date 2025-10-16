@@ -1,6 +1,5 @@
 import statistics
 
-import redis
 import numpy as np
 from collections import defaultdict
 import pandas as pd
@@ -8,10 +7,10 @@ import pandas as pd
 def get_metrics():
     import json
     import matplotlib.pyplot as plt
-
-    r_generated_tbls = redis.Redis(
-        host='localhost', port=6379, db=4, decode_responses=True
-    )
+    import diskcache
+    import git
+    working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
+    tbl_generated_db = diskcache.Cache(f'{working_dir}/local_dbs/tables/generated_tables.db')
     graph_cells = [(20, 100), (101, 250), (251, 500), (501, 1000), (1001, float('inf'))]
     cells_f1_scores_per_range = [[] for _ in graph_cells]
     graph_numeric_ratio = [(0.0, 0.0), (0.0, 0.67), (0.67, 1.0), (1.0, 1.0)]
@@ -25,8 +24,8 @@ def get_metrics():
     dtype_scores = dict()
     histogram_dict = defaultdict(list)
     raw_csv = []
-    for key in r_generated_tbls.scan_iter():
-        record = json.loads(r_generated_tbls.get(key))
+    for key in tbl_generated_db.iterkeys():
+        record = json.loads(tbl_generated_db.get(key))
         if 'scores' not in record or 'dtype_scores' not in record['scores']:
             continue
         f1_score = record['scores']['f1_score']

@@ -1,3 +1,5 @@
+# WikiTableParser - A Python module to parse and clean tables from Wikipedia pages.
+# -*- coding: utf-8 -*-
 import requests
 import yaml
 from bs4 import BeautifulSoup
@@ -51,6 +53,7 @@ class CustomFormatter:
 class WikiTableParser:
     def __init__(self):
         import os
+
         dir_path = os.path.dirname(os.path.realpath(__file__))
         # with open(os.path.join(dir_path, 'config.yaml'), 'r') as f:
         with open(os.path.join(dir_path, 'config.yaml'), 'r') as f:
@@ -59,7 +62,7 @@ class WikiTableParser:
             self.style_char = self.cfg['special_chars']['style_char']
             self.nulls_char = self.cfg['null_chars']
             self.url = None
-            self.df:DataFrame = DataFrame()
+            self.df: DataFrame = DataFrame()
             self.logger = CustomFormatter()
             self.date_cols = {}
             self.error_msg = 'SUCCESS'
@@ -76,7 +79,6 @@ class WikiTableParser:
         if s in [self.style_char, self.link_char]:
             return True
         return all(ord(c) < 128 or c in [self.style_char, self.nulls_char] for c in s)
-
 
     def is_null(self, obj):
         if isinstance(obj, (float, int)):
@@ -127,6 +129,10 @@ class WikiTableParser:
 
     def try_cast(self, obj, col=None):
         import dateutil.parser as parser
+
+        if obj is None:
+            return None
+
         if isinstance(obj, float) and isna(obj):
             return None
 
@@ -141,7 +147,13 @@ class WikiTableParser:
         if isinstance(obj, np.float64):
             return float(obj)
 
-        obj = obj.replace('−','-').replace('–','-').replace('—','-').replace('"','').strip()
+        obj = (
+            obj.replace('−', '-')
+            .replace('–', '-')
+            .replace('—', '-')
+            .replace('"', '')
+            .strip()
+        )
         try:
             return int(obj.__str__().replace(',', '').replace(' ', ''))
         except ValueError:
@@ -205,7 +217,6 @@ class WikiTableParser:
                     )
                 )
 
-
     def run(self, url, tbl_id=None, tbl_idx=None):
         def get_previous_paragraph(tbl):
             if tbl.find_previous(name='p'):
@@ -215,7 +226,9 @@ class WikiTableParser:
                         break
                     if prev.name == 'p':
                         p_tags.append(prev)
-                previous_string = "\n".join([k.get_text(strip=True) for k in p_tags[::-1] ]) # tbl.find_previous(name='p').get_text(strip=True)
+                previous_string = "\n".join(
+                    [k.get_text(strip=True) for k in p_tags[::-1]]
+                )  # tbl.find_previous(name='p').get_text(strip=True)
                 return previous_string
             return None
 
@@ -274,13 +287,25 @@ class WikiTableParser:
                 )
                 self.error_msg = f"less than {min_rows} rows or {min_cols} columns"
                 if tbl_idx is not None:
-                    return None, None, f"less than {min_rows} rows or {min_cols} columns", self.date_cols, fetched_tbl['paragraph']
+                    return (
+                        None,
+                        None,
+                        f"less than {min_rows} rows or {min_cols} columns",
+                        self.date_cols,
+                        fetched_tbl['paragraph'],
+                    )
                 continue
             if isinstance(fetched_tbl['df'].columns, MultiIndex):
                 self.logger.error(f"Dropping {url} as it has MultiIndex columns")
                 self.error_msg = f"MultiIndex columns"
                 if tbl_idx is not None:
-                    return None, None, f"MultiIndex columns", self.date_cols, fetched_tbl['paragraph']
+                    return (
+                        None,
+                        None,
+                        f"MultiIndex columns",
+                        self.date_cols,
+                        fetched_tbl['paragraph'],
+                    )
                 continue
             if fetched_tbl['df'].columns.tolist() == list(
                 range(len(fetched_tbl['df'].columns))
@@ -288,7 +313,13 @@ class WikiTableParser:
                 self.logger.error(f"Dropping {url} as it has empty header column names")
                 self.error_msg = f"empty header column names"
                 if tbl_idx is not None:
-                    return None, None, f"empty header column names", self.date_cols, fetched_tbl['paragraph']
+                    return (
+                        None,
+                        None,
+                        f"empty header column names",
+                        self.date_cols,
+                        fetched_tbl['paragraph'],
+                    )
                 continue
 
             if any(
@@ -297,24 +328,46 @@ class WikiTableParser:
                 self.logger.error(f"Dropping {url} as it has column names with numbers")
                 self.error_msg = f"column names with numbers"
                 if tbl_idx is not None:
-                    return None, None, f"column names with numbers", self.date_cols, fetched_tbl['paragraph']
+                    return (
+                        None,
+                        None,
+                        f"column names with numbers",
+                        self.date_cols,
+                        fetched_tbl['paragraph'],
+                    )
                 continue
             if self.cfg['only_ascii_chars']:
-                if not all(self.is_ascii(k) for k in fetched_tbl['df'].columns.tolist()):
+                if not all(
+                    self.is_ascii(k) for k in fetched_tbl['df'].columns.tolist()
+                ):
                     self.error_msg = f"non-ascii characters in column names"
                     self.logger.error(
                         f"Dropping {url} as it has non-ascii characters in column names"
                     )
                     if tbl_idx is not None:
-                        return None, None, f"non-ascii characters in column names", self.date_cols, fetched_tbl['paragraph']
+                        return (
+                            None,
+                            None,
+                            f"non-ascii characters in column names",
+                            self.date_cols,
+                            fetched_tbl['paragraph'],
+                        )
                     continue
-                if not all(self.is_ascii(k) for k in fetched_tbl['df'].to_numpy().flatten() ):
+                if not all(
+                    self.is_ascii(k) for k in fetched_tbl['df'].to_numpy().flatten()
+                ):
                     self.error_msg = f"non-ascii characters in data"
                     self.logger.error(
                         f"Dropping {url} as it has non-ascii characters in data"
                     )
                     if tbl_idx is not None:
-                        return None, None, f"non-ascii characters in data", self.date_cols, fetched_tbl['paragraph']
+                        return (
+                            None,
+                            None,
+                            f"non-ascii characters in data",
+                            self.date_cols,
+                            fetched_tbl['paragraph'],
+                        )
                     continue
             self.df = fetched_tbl['df']
             self.url = url
@@ -331,14 +384,23 @@ class WikiTableParser:
                 self.logger.error(
                     f"Failed {url} ({fetched_tbl['df'].columns}) [{fetched_tbl['df'].shape}]"
                 )
-            return self.df, idx, self.error_msg, self.date_cols, fetched_tbl['paragraph']
+            return (
+                self.df,
+                idx,
+                self.error_msg,
+                self.date_cols,
+                fetched_tbl['paragraph'],
+            )
         return None, None, self.error_msg, self.date_cols, None
 
     def apply_rules_columns(self):
         if self.df is None:
             return None
         for col in self.df.columns:
-            if self.style_char in col and self.cfg['remove_data_different_style_from_headers']:
+            if (
+                self.style_char in col
+                and self.cfg['remove_data_different_style_from_headers']
+            ):
                 self.logger.debug(
                     f"Removing text with different style from {col} column [{self.url}]"
                 )
@@ -421,9 +483,7 @@ class WikiTableParser:
                 ):
                     self.df[col] = self.df[col].apply(
                         lambda x: (
-                            re.sub("\[.+\]", '', x).strip()
-                            if isinstance(x, str)
-                            else x
+                            re.sub("\[.+\]", '', x).strip() if isinstance(x, str) else x
                         )
                     )
                     self.logger.debug(
@@ -431,14 +491,15 @@ class WikiTableParser:
                     )
             self.df[col] = self.df[col].apply(self.clean_string)
             numbers_counter = Counter(
-                [
-                    get_type(k)
-                    for k in self.df[col].apply(self.clean_string).tolist()
-                ]
+                [get_type(k) for k in self.df[col].apply(self.clean_string).tolist()]
             )
             if self.cfg['maximum_mixed_types']['type'] == 'percent':
                 value = self.cfg['maximum_mixed_types']['value']
-                if  max(min(numbers_counter['num'], numbers_counter['str']), 1) / max(numbers_counter['num'], numbers_counter['str']) >= value:
+                if (
+                    max(min(numbers_counter['num'], numbers_counter['str']), 1)
+                    / max(numbers_counter['num'], numbers_counter['str'])
+                    >= value
+                ):
                     self.logger.error(
                         f"Dropping {self.url} as it has mixed data types with higher ratio than: {value} ({col} column)"
                     )
@@ -467,7 +528,8 @@ class WikiTableParser:
         df_without_last_row = read_csv(StringIO(self.df[:-1].to_csv().strip(',')))
         for col in [self.df.columns[0], self.df.columns[-1]]:
             if (
-                    get_type(self.df[col].iloc[-1]) in ['str','nan'] and  get_type(df_without_last_row[col].dtype, is_dtype=True)=='num'
+                get_type(self.df[col].iloc[-1]) in ['str', 'nan']
+                and get_type(df_without_last_row[col].dtype, is_dtype=True) == 'num'
             ):
                 try:
                     self.logger.debug(
@@ -477,9 +539,6 @@ class WikiTableParser:
                 except:
                     pass
 
-
-
-
     def nulls_check(self):
         if self.df is None:
             return None
@@ -488,7 +547,10 @@ class WikiTableParser:
 
         for col in self.df.columns:
             if self.cfg['maximum_column_null_values']['type'] == 'percent':
-                if  self.df[col].isna().sum() / self.df.shape[0]  > maximum_column_null_values:
+                if (
+                    self.df[col].isna().sum() / self.df.shape[0]
+                    > maximum_column_null_values
+                ):
                     self.logger.error(
                         f"Dropping {self.url} as it has more than {maximum_column_null_values} percent null values in column {col}"
                     )
@@ -506,7 +568,10 @@ class WikiTableParser:
                     self.df.drop(col, axis=1, inplace=True)
         for row in self.df.index:
             if self.cfg['maximum_row_null_values']['type'] == 'percent':
-                if  self.df.loc[row].isna().sum() / self.df.shape[1]  > maximum_row_null_values:
+                if (
+                    self.df.loc[row].isna().sum() / self.df.shape[1]
+                    > maximum_row_null_values
+                ):
                     self.logger.error(
                         f"Dropping {self.url} as it has more than {maximum_row_null_values} percent null values in row {row}"
                     )
@@ -519,17 +584,27 @@ class WikiTableParser:
                     self.df.drop(row, inplace=True)
 
         pass
+
     def clean_df(self):
         # Check if the DataFrame has empty column headers
         if self.df.columns[0] == 'Unnamed: 0':
-            np_array = np.array([re.sub("[\[].*?[\]]", '',k).strip() if type(k) == str else k for k in self.df['Unnamed: 0'].tolist()])
+            np_array = np.array(
+                [
+                    re.sub("[\[].*?[\]]", '', k).strip() if type(k) == str else k
+                    for k in self.df['Unnamed: 0'].tolist()
+                ]
+            )
             try:
                 np_array = to_numeric(np_array, errors='coerce')
             except ValueError:
-                self.logger.error(f"Error converting column 'Unnamed: 0' to numeric for {self.url}")
+                self.logger.error(
+                    f"Error converting column 'Unnamed: 0' to numeric for {self.url}"
+                )
                 return None
             if np.all(np.logical_and(np_array >= 1000, np_array <= 3000)):
-                self.logger.debug(f'Setting first empty column as Year column for {self.url}')
+                self.logger.debug(
+                    f'Setting first empty column as Year column for {self.url}'
+                )
                 self.df.rename(columns={'Unnamed: 0': 'Year'}, inplace=True)
             pass
         if any(
@@ -552,6 +627,7 @@ class WikiTableParser:
         self.nulls_check()
 
         return self.df
+
 
 # #
 # obj = WikiTableParser()

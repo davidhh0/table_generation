@@ -1,15 +1,22 @@
+# Utilities/Help
 import re
 import dateutil.parser as parser
 import requests
 from bs4 import BeautifulSoup
 
 from datetime import datetime, timedelta
-from pandas import DataFrame, read_html
+from pandas import read_html
 from io import StringIO
 import json
 import diskcache
 import os
-
+# from google import genai
+# from google.genai.types import Tool, GenerateContentConfig
+from google.genai import types
+from google import genai
+from google.genai.types import Tool, GenerateContentConfig
+# genai.configure(api_key=os.environ["gemini_api_key"])
+client = genai.Client(api_key=os.environ["gemini_api_key"],http_options=types.HttpOptions(timeout=1000_000,))
 
 
 def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
@@ -255,23 +262,11 @@ def get_sample(_df, try_cast):
         return_str += f"`{col}` - max value: {max_value}, min value: {min_value}, number of distinct values: {nunique}, random sample data: {data}. \n"
     return return_str
 
-
-def get_llm_response(
-    prompt_string, use_cache=True, MODEL='gpt-4.1-2025-04-14', cache=None
-):
+def chatgpt(MODEL, prompt_string):
+    from requests.exceptions import ChunkedEncodingError
     from openai import OpenAI
-    
     client = OpenAI(api_key=os.environ["openai_api_key"], timeout=30)
     from openai._exceptions import APITimeoutError, APIConnectionError, RateLimitError
-    from requests.exceptions import ChunkedEncodingError
-
-    if cache is None:
-        import git
-        working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
-        cache = diskcache.Cache(f'{working_dir}/local_dbs/cache/llm_cache.db')
-    prompt_cache_key = f"{MODEL}_{prompt_string}"
-    if use_cache and prompt_cache_key in cache:
-        return cache[prompt_cache_key]
     params = {
         'model': MODEL,
         'messages': [
@@ -289,13 +284,57 @@ def get_llm_response(
         for chunk in response:
             if chunk.choices[0].delta.content is None:
                 break
-            if hasattr(chunk,'choices') and len(chunk.choices) > 0:
+            if hasattr(chunk, 'choices') and len(chunk.choices) > 0:
                 chunk_content = chunk.choices[0].delta.content
                 response_str += chunk_content
     except (APITimeoutError, RateLimitError, ChunkedEncodingError) as e:
-        cache[prompt_cache_key] = None
         return None
     except APIConnectionError as e:
+        return None
+    return response_str
+
+def gemini(MODEL, prompt_string, context=False):
+
+    tools = []
+    if context:
+        tools = [
+            {"url_context": {}},
+        ]
+    response_str = ""
+    import time
+
+
+    for chunk in client.models.generate_content_stream(
+            model=MODEL,
+            contents=prompt_string,
+            config=GenerateContentConfig(temperature=0.0, tools=tools),
+
+    ):
+        if chunk.text is None:
+            break
+        response_str += chunk.text
+    print('Received response from Gemini')
+    return response_str
+
+
+def get_llm_response(
+    prompt_string, MODEL, use_cache=True,  cache=None, context=False
+):
+
+    prompt_string = prompt_string.strip()
+    if cache is None:
+        import git
+        working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
+        cache = diskcache.Cache(f'{working_dir}/local_dbs/cache/llm_cache.db')
+    context_key = "Context" if context else "NoContext"
+    prompt_cache_key = f"{context_key}_{MODEL}_{prompt_string}"
+    if use_cache and prompt_cache_key in cache and cache[prompt_cache_key] != '':
+        return cache[prompt_cache_key]
+    if 'gpt' in MODEL:
+        response_str = chatgpt(MODEL, prompt_string)
+    if 'gemini' in MODEL:
+        response_str = gemini(MODEL, prompt_string, context)
+    if response_str is None:
         return None
     prompt_response = response_str.strip()
     if use_cache:
