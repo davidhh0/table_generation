@@ -10,13 +10,10 @@ from io import StringIO
 import json
 import diskcache
 import os
-# from google import genai
-# from google.genai.types import Tool, GenerateContentConfig
 from google.genai import types
 from google import genai
 from google.genai.types import Tool, GenerateContentConfig
-# genai.configure(api_key=os.environ["gemini_api_key"])
-client = genai.Client(api_key=os.environ["gemini_api_key"],http_options=types.HttpOptions(timeout=1000_000,))
+client = genai.Client(api_key=os.environ["gemini_api_key"],http_options=types.HttpOptions(timeout=1_000_000,))
 
 
 def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):

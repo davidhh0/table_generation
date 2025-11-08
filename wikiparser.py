@@ -1,5 +1,3 @@
-# WikiTableParser - A Python module to parse and clean tables from Wikipedia pages.
-# -*- coding: utf-8 -*-
 import requests
 import yaml
 from bs4 import BeautifulSoup
@@ -628,10 +626,3 @@ class WikiTableParser:
 
         return self.df
 
-
-# #
-# obj = WikiTableParser()
-# r = obj.run(
-#     'https://en.wikipedia.org/wiki/1979_PGA_Tour'
-# )
-# b=5

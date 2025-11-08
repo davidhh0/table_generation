@@ -297,7 +297,3 @@ def get_metrics():
 
 if __name__ == "__main__":
     get_metrics()
-    # This function will be called to get the metrics from the Redis database.
-    # It will return the metrics in a structured format.
-    # The metrics will include the number of generated tables, the number of cells in each table,
-    # the numeric ratio of each table, and the popularity of each table.

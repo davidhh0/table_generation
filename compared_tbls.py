@@ -1,9 +1,6 @@
-import os
 from collections import defaultdict
 
 import pandas as pd
-import numpy as np
-import json
 from unidecode import unidecode
 from dateutil import parser as date_parser
 from wikiparser import WikiTableParser
@@ -209,7 +206,6 @@ def run_compare(fetched_table, gt_table, key_column, key_column_type, epsilons, 
     except Exception as e:
         kr, kp, kf1, nkr, nkp, nkf1, r, p, f1, rnka, score_by_col_type = 11 * [None]
     return kr, kp, kf1, nkr, nkp, nkf1, r, p, f1, rnka, score_by_col_type
-    tables.append(md['name'])
 
 
 
