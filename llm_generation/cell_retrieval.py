@@ -15,9 +15,11 @@ def cell_retrieval():
     import numpy as np
     import random
     import yaml
-    # model = 'gpt-4.1-2025-04-14'
+    with open('../config.yaml', 'r') as f:
+        conf = yaml.load(f, Loader=yaml.FullLoader)
+    key_model = 'gpt-4.1-2025-04-14' # conf['llm_model']
     model = 'gemini-2.5-pro'
-    context = True
+    context = conf['context']
     random.seed(10)
     working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
     parser_ins = WikiTableParser()
@@ -34,7 +36,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
     comparison_scores = {}
     max_scores = {}
     min_scores = {}
-    MAX_ITER = 350
+    MAX_ITER = 250
     count = 0
     rephrased_response = 'NA'
     for tbl in generated_tbl_cache.iterkeys():
@@ -47,10 +49,12 @@ Return only the value, with no additional words, punctuation, or explanation."""
             generated_tbl_cache.delete(tbl)
             continue
         df = pd.read_csv(f'../tbls/{cfg["page_id"]}_{cfg["table_idx"]}.csv')
-        key = cfg['llm_generated']['key']
+        if key_model not in cfg['llm_generated']:
+            continue
+        key = cfg['llm_generated'][key_model]['key']
         if len(str(key)) == 1 or key.isnumeric():
             continue
-        table_description = cfg['llm_generated']['table_title']
+        table_description = cfg['llm_generated'][key_model]['table_title']
         columns_without_key = [c for c in df.columns if c != key and c not in ['Total']]
         comparable_columns = [
             c

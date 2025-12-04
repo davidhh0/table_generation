@@ -1,3 +1,16 @@
+llm_model: gemini-2.5-pro
+context: false
+run_tables_to_fetch: 1
+
+# Minimum table size for a table to be considered valid.
+minimum_table_size:
+  rows: 8
+  columns: 2
+
+minimum_popularity:
+
+
+
 special_chars:
   link_char: '∟'
   style_char: '∫'
@@ -73,10 +86,6 @@ known_dates_format:
   - "%d %B %Y"  # 7 May 2025
 
 
-# Minimum table size for a table to be considered valid.
-minimum_table_size:
-  rows: 8
-  columns: 2
 
 
 header_manipulations:

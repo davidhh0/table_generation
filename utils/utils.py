@@ -9,11 +9,17 @@ from pandas import read_html
 from io import StringIO
 import json
 import diskcache
+import anthropic
 import os
 from google.genai import types
-from google import genai
+from google.genai import Client
+from google.genai.errors import ServerError
 from google.genai.types import Tool, GenerateContentConfig
-client = genai.Client(api_key=os.environ["gemini_api_key"],http_options=types.HttpOptions(timeout=1_000_000,))
+
+client = Client(api_key=os.environ["gemini_api_key"], http_options=types.HttpOptions(timeout=1_000_000, ))
+claude_client = anthropic.Anthropic(
+    api_key=os.environ.get("claude_api_key")
+)
 
 
 def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
@@ -45,14 +51,13 @@ def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
         ).json()
         revisions = page_edits['query']['pages'][page_id.__str__()]['revisions']
         if parser.parse(revisions[0]['timestamp']).timestamp() < starting.timestamp():
-            keep_search = False
             rev_id = revisions[0]['revid']
             break
         for edit_idx in range(len(revisions) - 1):
             if (
-                parser.parse(revisions[edit_idx]['timestamp']).timestamp()
-                >= starting.timestamp()
-                >= parser.parse(revisions[edit_idx + 1]['timestamp']).timestamp()
+                    parser.parse(revisions[edit_idx]['timestamp']).timestamp()
+                    >= starting.timestamp()
+                    >= parser.parse(revisions[edit_idx + 1]['timestamp']).timestamp()
             ):
                 keep_search = False
                 rev_id = revisions[edit_idx + 1]['revid']
@@ -77,13 +82,14 @@ def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
     return return_value
 
 
-def get_articles_to_parse():
+def get_articles_to_parse(conf, ts):
     import string
     import requests
     import random
     import git
     from collections import OrderedDict
     from wikiparser import WikiTableParser
+    fetched_tbls = 0
     working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
     wiki_obj = WikiTableParser()
     basic_url = "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=insource:%22wikitable%22%20intitle:{TITLE}*&format=json&srlimit=500&sroffset={OFFSET}"
@@ -93,7 +99,10 @@ def get_articles_to_parse():
             string.ascii_lowercase
         )
         response = requests.get(
-            basic_url.format(TITLE=title, OFFSET=random.randint(0, 9500))
+            basic_url.format(TITLE=title, OFFSET=random.randint(0, 9500)),
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+            }
         ).json()
         for j in [k for k in response["query"]["search"] if k['title'].isascii()]:
             try:
@@ -109,6 +118,9 @@ def get_articles_to_parse():
                             f'https://en.wikipedia.org/wiki/{j["title"]}',
                             str(j["pageid"]),
                         )
+                        if 'minimum_popularity' in conf and conf.get('minimum_popularity'):
+                            if conf.get('minimum_popularity') > article_metadata['popularity']:
+                                print(f"Dropping article: {j['title']} as it doesn't have enough popularity")
                         article_title = get_revid(page_id)
                         url = f'https://en.wikipedia.org/wiki/{article_title["e_title"]}'
                         # Writing the DataFrame to CSV as it passed all checks - rules and consistency
@@ -125,6 +137,7 @@ def get_articles_to_parse():
                             ),
                             'shape': df.shape,
                             'article_metadata': article_metadata,
+                            'insert_ts': ts.__str__()
                         }
                         # Storing the table details in local DB
 
@@ -132,10 +145,13 @@ def get_articles_to_parse():
                             url,
                             json.dumps(tbl_details),
                         )
+                        fetched_tbls += 1
+                        print(f"Fetched {fetched_tbls}/{conf['run_tables_to_fetch']}")
+                        if fetched_tbls == conf['run_tables_to_fetch']:
+                            return
 
             except:
                 continue
-    b = 5
 
 
 def is_consistent(url, tbl_idx, years_ago=1):
@@ -149,12 +165,16 @@ def is_consistent(url, tbl_idx, years_ago=1):
         print('No old page for:', url)
         return 'noOldPage', None, None
     try:
-        html_current = requests.get(url)
+        html_current = requests.get(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+        })
         page_content = BeautifulSoup(html_current.text, 'html.parser')
         current_tbls = page_content.select('table[class*=wikitable]')[tbl_idx]
         current_df = read_html(StringIO(current_tbls.__str__()))[0]
 
-        html_old = requests.get(previous_id['url'])
+        html_old = requests.get(previous_id['url'], headers={
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+        })
         page_content = BeautifulSoup(html_old.text, 'html.parser')
         old_tbls = page_content.select('table[class*=wikitable]')[tbl_idx]
         old_df = read_html(StringIO(old_tbls.__str__()))[0]
@@ -259,6 +279,7 @@ def get_sample(_df, try_cast):
         return_str += f"`{col}` - max value: {max_value}, min value: {min_value}, number of distinct values: {nunique}, random sample data: {data}. \n"
     return return_str
 
+
 def chatgpt(MODEL, prompt_string):
     from requests.exceptions import ChunkedEncodingError
     from openai import OpenAI
@@ -290,6 +311,7 @@ def chatgpt(MODEL, prompt_string):
         return None
     return response_str
 
+
 def gemini(MODEL, prompt_string, context=False):
 
     tools = []
@@ -298,8 +320,6 @@ def gemini(MODEL, prompt_string, context=False):
             {"url_context": {}},
         ]
     response_str = ""
-    import time
-
 
     for chunk in client.models.generate_content_stream(
             model=MODEL,
@@ -310,14 +330,27 @@ def gemini(MODEL, prompt_string, context=False):
         if chunk.text is None:
             break
         response_str += chunk.text
+
     print('Received response from Gemini')
     return response_str
 
 
-def get_llm_response(
-    prompt_string, MODEL, use_cache=True,  cache=None, context=False
-):
+def claude(MODEL, prompt_string, context=False):
+    prompt_string = prompt_string.strip()
+    with claude_client.messages.stream(
+            max_tokens=1024,
+            messages=[
+                {"role": "user", "content": prompt_string}
+            ],
+            model="claude-sonnet-4-20250514",
+    ) as stream:
+        for text in stream.text_stream:
+            print(text, end="", flush=True)
 
+
+def get_llm_response(
+        prompt_string, MODEL, use_cache=True, cache=None, context=False
+):
     prompt_string = prompt_string.strip()
     if cache is None:
         import git
@@ -325,6 +358,10 @@ def get_llm_response(
         cache = diskcache.Cache(f'{working_dir}/local_dbs/cache/llm_cache.db')
     context_key = "Context" if context else "NoContext"
     prompt_cache_key = f"{context_key}_{MODEL}_{prompt_string}"
+    if f"{context_key}_{MODEL}_\n{prompt_string}" in cache:
+        cache[prompt_cache_key] = cache[f"{context_key}_{MODEL}_\n{prompt_string}"]
+        cache.delete(f"{context_key}_{MODEL}_\n{prompt_string}")
+
     if use_cache and prompt_cache_key in cache and cache[prompt_cache_key] != '':
         return cache[prompt_cache_key]
     if 'gpt' in MODEL:
@@ -337,3 +374,5 @@ def get_llm_response(
     if use_cache:
         cache[prompt_cache_key] = prompt_response
     return prompt_response
+
+

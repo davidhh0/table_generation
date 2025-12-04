@@ -4,7 +4,7 @@ import numpy as np
 from collections import defaultdict
 import pandas as pd
 
-def get_metrics():
+def get_metrics(model):
     import json
     import matplotlib.pyplot as plt
     import diskcache
@@ -26,13 +26,18 @@ def get_metrics():
     raw_csv = []
     for key in tbl_generated_db.iterkeys():
         record = json.loads(tbl_generated_db.get(key))
-        if 'scores' not in record or 'dtype_scores' not in record['scores']:
+
+        if 'scores' not in record or model not in record.get('scores', dict()):
             continue
-        f1_score = record['scores']['f1_score']
+        f1_score = record['scores'][model]['f1_score']
+
+
         numeric_ratio = len(
             [k for k in record['columns'].values() if k in ['int64', 'float64']]
         ) / len(record['columns'])
+
         popularity = record['article_metadata']['popularity']
+
         num_of_cells = record['shape'][0] * record['shape'][1]
         histogram_dict['numeric_ratio'].append(numeric_ratio)
         histogram_dict['popularity'].append(popularity)
@@ -50,7 +55,7 @@ def get_metrics():
             'popularity': popularity,
             'f1_score': f1_score,
         })
-        for dtype, _dict in record['scores']['dtype_scores'].items():
+        for dtype, _dict in record['scores'][model]['dtype_scores'].items():
             if dtype not in dtype_scores:
                 dtype_scores[dtype] = {'recall': [], 'precision': [], 'f1_score': []}
             dtype_scores[dtype]['f1_score'].extend(_dict['f1_score'])
@@ -296,4 +301,7 @@ def get_metrics():
     pd.DataFrame(raw_csv).to_csv('raw_metrics.csv', index=False)
 
 if __name__ == "__main__":
-    get_metrics()
+    import yaml
+    with open('config.yaml', 'r') as f:
+        conf = yaml.load(f, Loader=yaml.FullLoader)
+    get_metrics(conf['llm_model'])

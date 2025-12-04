@@ -1,3 +1,4 @@
+anthropic
 annotated-types==0.7.0
 anyio==4.11.0
 beautifulsoup4==4.14.2
@@ -44,6 +45,7 @@ tqdm==4.67.1
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 tzdata==2025.2
+lxml==6.0.2
 Unidecode==1.4.0
 urllib3==2.5.0
 websockets==15.0.1

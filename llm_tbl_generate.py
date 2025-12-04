@@ -1,4 +1,6 @@
 import os.path
+
+
 from wikiparser import WikiTableParser
 import pandas as pd
 from io import StringIO
@@ -9,7 +11,6 @@ import git
 from compared_tbls import run_compare
 from utils.utils import get_sample, get_llm_response
 
-model = 'gpt-4.1-2025-04-14'
 TITLE_PROMPT = """
 Given the following article name: '{ARTICLE_NAME}', and the following columns along with some metadata about each column:
 {DATA_SAMPLE}
@@ -56,7 +57,7 @@ RESPONSE FORMAT:
 {RESPONSE_FORMAT} \\n
 """
 
-def run(chunk):
+def run(chunk, conf, ts):
     working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
     tbl_generated_db = diskcache.Cache(f'{working_dir}/local_dbs/tables/generated_tables.db')
     counter = 0
@@ -73,6 +74,8 @@ def run(chunk):
     f1_scores = []
     rel_nk_acc_scores = []
     for key,value in {k: v for d in chunk.tolist() for k, v in d.items()}.items():
+        if counter >= 350:
+            break
         cfg = json.loads(value)
         if not os.path.isfile(f'tbls/{cfg["page_id"]}_{cfg["table_idx"]}.csv'):
             continue
@@ -87,7 +90,7 @@ def run(chunk):
             .strip()
             .strip('"')
         )
-        title_response = get_llm_response(title_prompt, MODEL=model)
+        title_response = get_llm_response(title_prompt, MODEL=conf['llm_model'], context=conf['context'])
 
         uniqueness = ", ".join(
             [f"{k} ({'unique' if df[k].is_unique else 'not-unique'})" for k in df]
@@ -101,7 +104,7 @@ def run(chunk):
             DATA_SAMPLE=df.sample(n=3, random_state=1).to_dict('list').__str__(),
             TABLE_COLUMNS=uniqueness,
         )
-        key_response = get_llm_response(key_prompt,MODEL=model)
+        key_response = get_llm_response(key_prompt,MODEL=conf['llm_model'], context=conf['context'])
         try:
             tbl_key = re.search(r"'(.+)'", key_response).group(1)
         except TypeError as e:
@@ -115,7 +118,7 @@ def run(chunk):
             RESPONSE_FORMAT=response_format,
             EXAMPLE_ROW=df.iloc[0].to_dict(),
         )
-        response = get_llm_response(prompt, MODEL=model)
+        response = get_llm_response(prompt, MODEL=conf['llm_model'], context=conf['context'])
         if response is None:
             print(f"LLM response is None for {cfg['page_id']}. Skipping.")
             continue
@@ -157,16 +160,18 @@ def run(chunk):
             'relative_non_key_accuracy': rnka,
             'dtype_scores': dtype_scores,
         }
-        generated_tbl_data = {
-            **cfg,
-            **{
-                'llm_generated': {
+        previous_llm_generated =  cfg.get('llm_generated', dict())
+        previous_llm_generated[conf['llm_model']] =  {
                     'key': tbl_key,
                     'table_title': title_response,
                     'shape': llm_tbl.shape,
-                }
-            },
-            **{'scores': score_json},
+                    }
+        previous_scores =  cfg.get('scores', dict())
+        previous_scores[conf['llm_model']] = score_json
+        generated_tbl_data = {
+            **cfg,
+            **{'llm_generated':previous_llm_generated},
+            **{'scores':previous_scores},
         }
         tbl_generated_db.set(key, json.dumps(generated_tbl_data))
         counter += 1
@@ -182,6 +187,7 @@ def run(chunk):
         precision_scores.append(p)
         f1_scores.append(f1)
         rel_nk_acc_scores.append(rnka)
+
     res_df = pd.DataFrame(
         [
             tables,
@@ -230,23 +236,13 @@ def run(chunk):
     print(res_df.iloc[-1])
 
 
-    pass
 
 
-if __name__ == "__main__":
+def llm_table_generation(conf, ts):
     from numpy import array_split
-    import multiprocessing
     working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
-    tbl_details = diskcache.Cache(f'{working_dir}/local_dbs/tbl_metadata.db')
-    tbls_to_generate = [{k:tbl_details[k]} for k in tbl_details.iterkeys()]
-    jobs_num = 1  # number of workers
-    jobs = []
-
-    list_divided = array_split(tbls_to_generate, jobs_num)
+    tbl_details = diskcache.Cache(f'{working_dir}/local_dbs/tables/generated_tables.db')
+    tbls_to_generate = [{k: tbl_details[k]} for k in tbl_details.iterkeys()]
+    list_divided = array_split(tbls_to_generate, 1)
     for _chunk in list_divided:
-        # Declare a new process and pass arguments to it
-        p1 = multiprocessing.Process(target=run, args=(_chunk,))
-        jobs.append(p1)
-        p1.start()  # starting workers
-    for job in jobs:
-        job.join()
+        run(_chunk, conf, ts)

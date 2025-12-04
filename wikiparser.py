@@ -53,7 +53,6 @@ class WikiTableParser:
         import os
 
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        # with open(os.path.join(dir_path, 'config.yaml'), 'r') as f:
         with open(os.path.join(dir_path, 'config.yaml'), 'r') as f:
             self.cfg = yaml.load(f, Loader=yaml.FullLoader)
             self.link_char = self.cfg['special_chars']['link_char']
@@ -235,7 +234,10 @@ class WikiTableParser:
                 tbls, key=lambda tbl: tbl['df'].count(axis=1).sum(), reverse=True
             )
 
-        page = requests.get(url)
+        page = requests.get(
+            url, headers={
+               'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+            })
         page_content = BeautifulSoup(page.text, 'html.parser')
         tbls = page_content.select('table[class*=wikitable]')
         self.date_cols.clear()
@@ -321,7 +323,7 @@ class WikiTableParser:
                 continue
 
             if any(
-                [re.search('\w+\.\d', k) for k in fetched_tbl['df'].columns.tolist()]
+                [re.search(r'\w+\.\d', k) for k in fetched_tbl['df'].columns.tolist()]
             ):
                 self.logger.error(f"Dropping {url} as it has column names with numbers")
                 self.error_msg = f"column names with numbers"
@@ -406,14 +408,14 @@ class WikiTableParser:
                     columns={col: self.clean_style_string(col).__str__().strip()},
                     inplace=True,
                 )
-            if re.search("[\[].*?[\]]", self.clean_string(col).__str__()):
+            if re.search(r"[\[].*?[\]]", self.clean_string(col).__str__()):
                 self.logger.debug(
                     f"Removing data inside brackets for {col} column [{self.url}]"
                 )
                 self.df.rename(
                     columns={
                         col: re.sub(
-                            "[\[].*?[\]]", '', self.clean_string(col).__str__()
+                            r"[\[].*?[\]]", '', self.clean_string(col).__str__()
                         ).strip()
                     },
                     inplace=True,
@@ -456,14 +458,14 @@ class WikiTableParser:
 
                 if any(
                     [
-                        re.search("\(.+\)", k)  # removes text in brackets
+                        re.search(r"\(.+\)", k)  # removes text in brackets
                         for k in self.df[col].tolist()
                         if k and not isinstance(k, (float, int))
                     ]
                 ):
                     self.df[col] = self.df[col].apply(
                         lambda x: (
-                            re.sub("\(.+?\)", '', x).strip()
+                            re.sub(r"\(.+?\)", '', x).strip()
                             if isinstance(x, str)
                             else x
                         )
@@ -474,14 +476,14 @@ class WikiTableParser:
             if self.cfg['cell_manipulations']['remove_data_inside_square_brackets']:
                 if any(
                     [
-                        re.search("\[.+?\]", k)  # removes text in brackets
+                        re.search(r"\[.+?\]", k)  # removes text in brackets
                         for k in self.df[col].tolist()
                         if k and not isinstance(k, (float, int))
                     ]
                 ):
                     self.df[col] = self.df[col].apply(
                         lambda x: (
-                            re.sub("\[.+\]", '', x).strip() if isinstance(x, str) else x
+                            re.sub(r"\[.+\]", '', x).strip() if isinstance(x, str) else x
                         )
                     )
                     self.logger.debug(
@@ -588,7 +590,7 @@ class WikiTableParser:
         if self.df.columns[0] == 'Unnamed: 0':
             np_array = np.array(
                 [
-                    re.sub("[\[].*?[\]]", '', k).strip() if type(k) == str else k
+                    re.sub(r"[\[].*?[\]]", '', k).strip() if type(k) == str else k
                     for k in self.df['Unnamed: 0'].tolist()
                 ]
             )
