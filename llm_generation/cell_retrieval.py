@@ -7,8 +7,9 @@ def cell_retrieval():
     def get_random_sample(_df, _key_column, n=3):
         """Get a random sample of n rows from the DataFrame."""
         return list(_df.sample(n=n, random_state=1)[_key_column].items())
-
+    import matplotlib.pyplot as plt
     from wikiparser import WikiTableParser
+    import seaborn as sns
     import git
     import pandas as pd
     import diskcache
@@ -36,7 +37,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
     comparison_scores = {}
     max_scores = {}
     min_scores = {}
-    MAX_ITER = 250
+    MAX_ITER = 150
     count = 0
     rephrased_response = 'NA'
     for tbl in generated_tbl_cache.iterkeys():
@@ -524,7 +525,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
     )
     print(f"Rephrased matched: {max_rephrased_matched} out of {max_count}")
     print(f"Context: {max_context_matched} out of {max_count}")
-    pd.DataFrame(
+    df_max = pd.DataFrame(
         max_values_values,
         columns=[
             'URL',
@@ -540,7 +541,36 @@ Return only the value, with no additional words, punctuation, or explanation."""
             'Context Response',
             'Context Correct',
         ],
-    ).to_csv('max_values.csv', index=False)
+    )
+    plt.figure()
+    plot_df = df_max[['correct','Rephrased correct', 'With keys']]
+    if context:
+        plot_df = df_max[['correct', 'Rephrased correct', 'With keys', 'Context Correct']]
+
+    mapping = {-1: "mistake", 0: "neutral", 1: "correct"}
+
+    # Long-format DataFrame
+    long_df = plot_df.melt(var_name="column", value_name="value")
+
+    # Map numeric codes to labels
+    long_df["value"] = long_df["value"].map(mapping)
+
+    # Count occurrences per (column, value)
+    counts = long_df.groupby(["column", "value"]).size().reset_index(name="count")
+
+    # Plot
+    plt.figure(figsize=(6, 3))
+    sns.barplot(data=counts, x="column", y="count", hue="value")
+    plt.title("Correct distribution per column [Max]")
+    plt.ylabel("Count")
+    plt.tight_layout()
+    plt.show()
+
+    df_max.to_csv('max_values.csv', index=False)
+
+
+    # ======= Min =======
+
 
     min_total_match = 0
     min_total_non_match = 0
@@ -588,7 +618,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
     )
     print(f"Rephrased matched: {min_rephrased_matched} out of {min_count}")
     print(f"Context matched: {min_context_matched} out of {min_count}")
-    pd.DataFrame(
+    df_min = pd.DataFrame(
         min_values_values,
         columns=[
             'URL',
@@ -604,7 +634,36 @@ Return only the value, with no additional words, punctuation, or explanation."""
             'Context Response',
             'Context Correct',
         ],
-    ).to_csv('min_values.csv', index=False)
+    )
+    plt.figure()
+    plot_df = df_min[['correct', 'Rephrased correct', 'With keys']]
+    if context:
+        plot_df = df_min[['correct', 'Rephrased correct', 'With keys', 'Context Correct']]
+
+    mapping = {-1: "mistake", 0: "neutral", 1: "correct"}
+
+    # Long-format DataFrame
+    long_df = plot_df.melt(var_name="column", value_name="value")
+
+    # Map numeric codes to labels
+    long_df["value"] = long_df["value"].map(mapping)
+
+    # Count occurrences per (column, value)
+    counts = long_df.groupby(["column", "value"]).size().reset_index(name="count")
+
+    # Plot
+    plt.figure(figsize=(6, 3))
+    sns.barplot(data=counts, x="column", y="count", hue="value")
+    plt.title("Correct distribution per column [Min]")
+    plt.ylabel("Count")
+    plt.tight_layout()
+    plt.show()
+
+    df_min.to_csv('min_values.csv', index=False)
+
+
+    # ====== Single values ======
+
 
     single_value_list = []
     single_value_count = 0
@@ -640,7 +699,8 @@ Return only the value, with no additional words, punctuation, or explanation."""
     print(f"Single value match: {single_value_match} out of {single_value_count}")
     print(f"Single value rephrased match: {single_value_rephrased_match} out of {single_value_count}")
     print(f"Context matched: {single_value_context_match} out of {single_value_count}")
-    pd.DataFrame(
+
+    df_single_value = pd.DataFrame(
         single_value_list,
         columns=[
             'URL',
@@ -655,7 +715,37 @@ Return only the value, with no additional words, punctuation, or explanation."""
             'Context Response',
             'Context Correct',
         ],
-    ).to_csv('single_value_results.csv', index=False)
+    )
+    plt.figure()
+    plot_df = df_single_value[['correct', 'Rephrased correct']]
+    if context:
+        plot_df = df_single_value[['correct', 'Rephrased correct', 'Context Correct']]
+
+    mapping = {-1: "mistake", 0: "neutral", 1: "correct"}
+
+    # Long-format DataFrame
+    long_df = plot_df.melt(var_name="column", value_name="value")
+
+    # Map numeric codes to labels
+    long_df["value"] = long_df["value"].map(mapping)
+
+    # Count occurrences per (column, value)
+    counts = long_df.groupby(["column", "value"]).size().reset_index(name="count")
+
+    # Plot
+    plt.figure(figsize=(6, 3))
+    sns.barplot(data=counts, x="column", y="count", hue="value")
+    plt.title("Correct distribution per column [Single value]")
+    plt.ylabel("Count")
+    plt.tight_layout()
+    plt.show()
+
+    df_single_value.to_csv('single_value_results.csv', index=False)
+
+
+
+
+
     # Now we will create a comparison list
     # The comparison list will contain the URL, key, column, response, actual result,
     max_comparison_list = []
@@ -689,7 +779,13 @@ Return only the value, with no additional words, punctuation, or explanation."""
                 max_comparison_match += result['max_correct']
                 if 'max_context_correct' in result and result['max_context_correct'] != 'NA':
                     max_comparison_context_match += result['max_context_correct']
-    pd.DataFrame(
+
+    print(
+        f"Comparison match: {max_comparison_match} out of {max_comparison_count} for MAX comparison"
+    )
+    print(f"Rephrased matched: {max_comparison_rephrased_match} out of {max_comparison_count} for MAX comparison")
+    print(f"Context matched: {max_comparison_context_match} out of {max_comparison_count} for MAX comparison")
+    df_max_comparison = pd.DataFrame(
         max_comparison_list,
         columns=[
             'URL',
@@ -705,12 +801,37 @@ Return only the value, with no additional words, punctuation, or explanation."""
             'Context Response',
             'Context Correct',
         ],
-    ).to_csv('max_comparison_results.csv', index=False)
-    print(
-        f"Comparison match: {max_comparison_match} out of {max_comparison_count} for MAX comparison"
     )
-    print(f"Rephrased matched: {max_comparison_rephrased_match} out of {max_comparison_count} for MAX comparison")
-    print(f"Context matched: {max_comparison_context_match} out of {max_comparison_count} for MAX comparison")
+    plt.figure()
+    plot_df = df_max_comparison[['Correct', 'Rephrased Correct']]
+    if context:
+        plot_df = df_max_comparison[['correct', 'Rephrased correct', 'Context Correct']]
+
+    mapping = {-1: "mistake", 0: "neutral", 1: "correct"}
+
+    # Long-format DataFrame
+    long_df = plot_df.melt(var_name="column", value_name="value")
+
+    # Map numeric codes to labels
+    long_df["value"] = long_df["value"].map(mapping)
+
+    # Count occurrences per (column, value)
+    counts = long_df.groupby(["column", "value"]).size().reset_index(name="count")
+
+    # Plot
+    plt.figure(figsize=(6, 3))
+    sns.barplot(data=counts, x="column", y="count", hue="value")
+    plt.title("Correct distribution per column [Max comparison]")
+    plt.ylabel("Count")
+    plt.tight_layout()
+    plt.show()
+
+    df_max_comparison.to_csv('max_comparison_results.csv', index=False)
+
+
+
+
+
     min_comparison_list = []
     min_comparison_match = 0
     min_comparison_count = 0
@@ -742,7 +863,13 @@ Return only the value, with no additional words, punctuation, or explanation."""
                 min_comparison_match += result['min_correct']
                 if 'min_context_correct' in result and result['min_context_correct'] != 'NA':
                     min_comparison_context_match += result['min_context_correct']
-    pd.DataFrame(
+
+    print(
+        f"Comparison match: {min_comparison_match} out of {min_comparison_count} for MIN comparison"
+    )
+    print(f"Rephrased matched: {min_comparison_rephrased_match} out of {min_comparison_count} for MIN comparison")
+    print(f"Context matched: {min_comparison_context_match} out of {min_comparison_count} for MIN comparison")
+    df_min_comparison = pd.DataFrame(
         min_comparison_list,
         columns=[
             'URL',
@@ -758,12 +885,34 @@ Return only the value, with no additional words, punctuation, or explanation."""
             'Context Response',
             'Context Correct',
         ],
-    ).to_csv('min_comparison_results.csv', index=False)
-    print(
-        f"Comparison match: {min_comparison_match} out of {min_comparison_count} for MIN comparison"
     )
-    print(f"Rephrased matched: {min_comparison_rephrased_match} out of {min_comparison_count} for MIN comparison")
-    print(f"Context matched: {min_comparison_context_match} out of {min_comparison_count} for MIN comparison")
+    plt.figure()
+    plot_df = df_min_comparison[['correct', 'Rephrased לֹorrect']]
+    if context:
+        plot_df = df_min_comparison[['correct', 'Rephrased correct', 'Context Correct']]
+
+    mapping = {-1: "mistake", 0: "neutral", 1: "correct"}
+
+    # Long-format DataFrame
+    long_df = plot_df.melt(var_name="column", value_name="value")
+
+    # Map numeric codes to labels
+    long_df["value"] = long_df["value"].map(mapping)
+
+    # Count occurrences per (column, value)
+    counts = long_df.groupby(["column", "value"]).size().reset_index(name="count")
+
+    # Plot
+    plt.figure(figsize=(6, 3))
+    sns.barplot(data=counts, x="column", y="count", hue="value")
+    plt.title("Correct distribution per column [Min comparison]")
+    plt.ylabel("Count")
+    plt.tight_layout()
+    plt.show()
+
+    df_min_comparison.to_csv('max_comparison_results.csv', index=False)
+
+
 
 if __name__ == '__main__':
     import time
