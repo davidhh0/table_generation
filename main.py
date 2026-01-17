@@ -6,13 +6,13 @@ import yaml
 with open('config.yaml', 'r') as f:
     conf = yaml.load(f, Loader=yaml.FullLoader)
 ts = datetime.now()
-# get_articles_to_parse(conf, ts)
-idx = 0
-while True:
-    try:
-        llm_table_generation(conf, ts)
-    except Exception as e:
-        print(f'Error occurred: {e}, restarting...')
-    time.sleep(30)
-    idx += 1
-    print(f'Iteration {idx} completed, restarting...')
+get_articles_to_parse(conf, ts)
+# idx = 0
+# while True:
+#     try:
+#         llm_table_generation(conf, ts)
+#     except Exception as e:
+#         print(f'Error occurred: {e}, restarting...')
+#     time.sleep(30)
+#     idx += 1
+#     print(f'Iteration {idx} completed, restarting...')

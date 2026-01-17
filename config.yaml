@@ -1,4 +1,4 @@
-llm_model: gemini-2.5-pro
+llm_model: gpt-4.1-2025-04-14
 context: false
 run_tables_to_fetch: 1
 
@@ -10,6 +10,7 @@ minimum_table_size:
 minimum_popularity:
 
 
+maximum_cell_length: 108
 
 special_chars:
   link_char: '∟'
@@ -43,7 +44,7 @@ null_chars:
   - "–"
 
 # Whether to drop the table if the program finds a column to be removed. (Not including the columns in the `drop_columns_blacklist` list)
-drop_table_on_column_removal: true
+drop_table_on_column_removal: false
 
 # Maximum number of NULL values allowed in a single row.
 # If a row has more than this number of NULL values, it will be considered invalid and will be dropped.
@@ -64,7 +65,7 @@ maximum_column_null_values:
 last_row_agg_mechanism: true
 
 # Whether to allow non-ASCII characters in the table.
-only_ascii_chars: true
+only_ascii_chars: false
   
 
 # Known date formats for parsing and storing the original date values.

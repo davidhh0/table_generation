@@ -57,9 +57,12 @@ RESPONSE FORMAT:
 {RESPONSE_FORMAT} \\n
 """
 
+
 def run(chunk, conf, ts):
-    working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
-    tbl_generated_db = diskcache.Cache(f'{working_dir}/local_dbs/tables/generated_tables.db')
+    working_dir = git.Repo(".", search_parent_directories=True).working_tree_dir
+    tbl_generated_db = diskcache.Cache(
+        f"{working_dir}/local_dbs/tables/generated_tables.db"
+    )
     counter = 0
     parser_ins = WikiTableParser()
     tables = []
@@ -73,7 +76,7 @@ def run(chunk, conf, ts):
     precision_scores = []
     f1_scores = []
     rel_nk_acc_scores = []
-    for key,value in {k: v for d in chunk.tolist() for k, v in d.items()}.items():
+    for key, value in {k: v for d in chunk.tolist() for k, v in d.items()}.items():
         if counter >= 350:
             break
         cfg = json.loads(value)
@@ -83,14 +86,16 @@ def run(chunk, conf, ts):
         article_name = cfg["article_name"]
         title_prompt = (
             TITLE_PROMPT.format(
-                ARTICLE_NAME=cfg['article_name'],
+                ARTICLE_NAME=cfg["article_name"],
                 DATA_SAMPLE=get_sample(df, parser_ins.try_cast),
-                TABLE_COLUMNS=cfg['columns'],
+                TABLE_COLUMNS=cfg["columns"],
             )
             .strip()
             .strip('"')
         )
-        title_response = get_llm_response(title_prompt, MODEL=conf['llm_model'], context=conf['context'])
+        title_response = get_llm_response(
+            title_prompt, MODEL=conf["llm_model"], context=conf["context"]
+        )
 
         uniqueness = ", ".join(
             [f"{k} ({'unique' if df[k].is_unique else 'not-unique'})" for k in df]
@@ -101,46 +106,51 @@ def run(chunk, conf, ts):
         key_prompt = KEY_PROMPT.format(
             ARTICLE_NAME=article_name,
             TABLE_TITLE=title_response,
-            DATA_SAMPLE=df.sample(n=3, random_state=1).to_dict('list').__str__(),
+            DATA_SAMPLE=df.sample(n=3, random_state=1).to_dict("list").__str__(),
             TABLE_COLUMNS=uniqueness,
         )
-        key_response = get_llm_response(key_prompt,MODEL=conf['llm_model'], context=conf['context'])
+        key_response = get_llm_response(
+            key_prompt, MODEL=conf["llm_model"], context=conf["context"]
+        )
         try:
             tbl_key = re.search(r"'(.+)'", key_response).group(1)
         except TypeError as e:
             continue
-        cfg['table_key'] = key
+        cfg["table_key"] = key
 
         prompt = TEMPLATE.format(
-            NUM_FIELDS=cfg['shape'][1],
-            COLUMNS=cfg['columns'],
+            NUM_FIELDS=cfg["shape"][1],
+            COLUMNS=cfg["columns"],
             TABLE_TITLE=title_response,
             RESPONSE_FORMAT=response_format,
             EXAMPLE_ROW=df.iloc[0].to_dict(),
         )
-        response = get_llm_response(prompt, MODEL=conf['llm_model'], context=conf['context'])
+        response = get_llm_response(
+            prompt, MODEL=conf["llm_model"], context=conf["context"]
+        )
         if response is None:
             print(f"LLM response is None for {cfg['page_id']}. Skipping.")
             continue
         try:
             llm_tbl = pd.read_csv(
-                StringIO(response), sep='|', names=df.columns.tolist()
+                StringIO(response), sep="|", names=df.columns.tolist()
             )
         except pd.errors.ParserError as e:
             print(f"Error parsing table for {cfg['page_id']}: {e}")
             continue
-        llm_tbl.to_csv(
-            f'llm_tbls/{cfg["page_id"]}_{cfg["table_idx"]}.csv', index=False
-        )
+        llm_tbl.to_csv(f'llm_tbls/{cfg["page_id"]}_{cfg["table_idx"]}.csv', index=False)
         kr, kp, kf1, nkr, nkp, nkf1, r, p, f1, rnka, dtype_scores = run_compare(
             fetched_table=llm_tbl,
             gt_table=df.copy(),
             key_column=[tbl_key],
-            key_column_type=['text'],
+            key_column_type=["text"],
             epsilons=[
-                k for k, v in cfg['columns'].items() if v in ['float64', 'int64']
+                k for k, v in cfg["columns"].items() if v in ["float64", "int64"]
             ],
-            columns_dtypes={**cfg['columns'], **{k:'date' for k in cfg['dates'].keys()}}
+            columns_dtypes={
+                **cfg["columns"],
+                **{k: "date" for k in cfg["dates"].keys()},
+            },
         )
         print(kr, kp, kf1, nkr, nkp, nkf1, r, p, f1, rnka)
 
@@ -148,35 +158,35 @@ def run(chunk, conf, ts):
             print(f'Skipping table {cfg["page_id"]} due to None values in scores.')
             continue
         score_json = {
-            'key_recall': kr,
-            'key_precision': kp,
-            'key_f1_score': kf1,
-            'non_key_recall': nkr,
-            'non_key_precision': nkp,
-            'non_key_f1_score': nkf1,
-            'recall': r,
-            'precision': p,
-            'f1_score': f1,
-            'relative_non_key_accuracy': rnka,
-            'dtype_scores': dtype_scores,
+            "key_recall": kr,
+            "key_precision": kp,
+            "key_f1_score": kf1,
+            "non_key_recall": nkr,
+            "non_key_precision": nkp,
+            "non_key_f1_score": nkf1,
+            "recall": r,
+            "precision": p,
+            "f1_score": f1,
+            "relative_non_key_accuracy": rnka,
+            "dtype_scores": dtype_scores,
         }
-        previous_llm_generated =  cfg.get('llm_generated', dict())
-        previous_llm_generated[conf['llm_model']] =  {
-                    'key': tbl_key,
-                    'table_title': title_response,
-                    'shape': llm_tbl.shape,
-                    }
-        previous_scores =  cfg.get('scores', dict())
-        previous_scores[conf['llm_model']] = score_json
+        previous_llm_generated = cfg.get("llm_generated", dict())
+        previous_llm_generated[conf["llm_model"]] = {
+            "key": tbl_key,
+            "table_title": title_response,
+            "shape": llm_tbl.shape,
+        }
+        previous_scores = cfg.get("scores", dict())
+        previous_scores[conf["llm_model"]] = score_json
         generated_tbl_data = {
             **cfg,
-            **{'llm_generated':previous_llm_generated},
-            **{'scores':previous_scores},
+            **{"llm_generated": previous_llm_generated},
+            **{"scores": previous_scores},
         }
         tbl_generated_db.set(key, json.dumps(generated_tbl_data))
         counter += 1
-        print(f'Processed {counter} tables out of {chunk.__len__()} chunks.')
-        tables.append(cfg['page_id'])
+        print(f"Processed {counter} tables out of {chunk.__len__()} chunks.")
+        tables.append(cfg["page_id"])
         keys_recall_scores.append(kr)
         keys_precision_scores.append(kp)
         keys_f1_scores.append(kf1)
@@ -204,44 +214,43 @@ def run(chunk, conf, ts):
         ]
     ).T
     res_df.columns = [
-        'Table',
-        'Keys_Recall',
-        'Keys_Precision',
-        'Keys_F1_Score',
-        'Non_Keys_Recall',
-        'Non_Keys_Precision',
-        'Non_Keys_F1_Score',
-        'Rel_Non_Keys_Accuracy',
-        'Recall',
-        'Precision',
-        'F1_Score',
+        "Table",
+        "Keys_Recall",
+        "Keys_Precision",
+        "Keys_F1_Score",
+        "Non_Keys_Recall",
+        "Non_Keys_Precision",
+        "Non_Keys_F1_Score",
+        "Rel_Non_Keys_Accuracy",
+        "Recall",
+        "Precision",
+        "F1_Score",
     ]
 
-    res_df['Keys_Recall'] = res_df['Keys_Recall'].astype(float).round(4)
-    res_df['Keys_Precision'] = res_df['Keys_Precision'].astype(float).round(4)
-    res_df['Keys_F1_Score'] = res_df['Keys_F1_Score'].astype(float).round(4)
-    res_df['Non_Keys_Recall'] = res_df['Non_Keys_Recall'].astype(float).round(4)
-    res_df['Non_Keys_Precision'] = res_df['Non_Keys_Precision'].astype(float).round(4)
-    res_df['Non_Keys_F1_Score'] = res_df['Non_Keys_F1_Score'].astype(float).round(4)
-    res_df['Rel_Non_Keys_Accuracy'] = (
-        res_df['Rel_Non_Keys_Accuracy'].astype(float).round(4)
+    res_df["Keys_Recall"] = res_df["Keys_Recall"].astype(float).round(4)
+    res_df["Keys_Precision"] = res_df["Keys_Precision"].astype(float).round(4)
+    res_df["Keys_F1_Score"] = res_df["Keys_F1_Score"].astype(float).round(4)
+    res_df["Non_Keys_Recall"] = res_df["Non_Keys_Recall"].astype(float).round(4)
+    res_df["Non_Keys_Precision"] = res_df["Non_Keys_Precision"].astype(float).round(4)
+    res_df["Non_Keys_F1_Score"] = res_df["Non_Keys_F1_Score"].astype(float).round(4)
+    res_df["Rel_Non_Keys_Accuracy"] = (
+        res_df["Rel_Non_Keys_Accuracy"].astype(float).round(4)
     )
-    res_df['Recall'] = res_df['Recall'].astype(float).round(4)
-    res_df['Precision'] = res_df['Precision'].astype(float).round(4)
-    res_df['F1_Score'] = res_df['F1_Score'].astype(float).round(4)
+    res_df["Recall"] = res_df["Recall"].astype(float).round(4)
+    res_df["Precision"] = res_df["Precision"].astype(float).round(4)
+    res_df["F1_Score"] = res_df["F1_Score"].astype(float).round(4)
 
-    means = pd.DataFrame(['All'] + res_df.mean(axis=0, numeric_only=True).tolist()).T
+    means = pd.DataFrame(["All"] + res_df.mean(axis=0, numeric_only=True).tolist()).T
     means.columns = res_df.columns
     res_df = pd.concat([res_df, means], axis=0)
     print(res_df.iloc[-1])
 
 
-
-
 def llm_table_generation(conf, ts):
     from numpy import array_split
-    working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
-    tbl_details = diskcache.Cache(f'{working_dir}/local_dbs/tables/generated_tables.db')
+
+    working_dir = git.Repo(".", search_parent_directories=True).working_tree_dir
+    tbl_details = diskcache.Cache(f"{working_dir}/local_dbs/tables/generated_tables.db")
     tbls_to_generate = [{k: tbl_details[k]} for k in tbl_details.iterkeys()]
     list_divided = array_split(tbls_to_generate, 1)
     for _chunk in list_divided:

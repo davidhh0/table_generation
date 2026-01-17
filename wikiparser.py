@@ -1,4 +1,5 @@
-import requests
+import stealth_requests as requests
+from stealth_requests import StealthResponse
 import yaml
 from bs4 import BeautifulSoup
 from io import StringIO
@@ -234,11 +235,8 @@ class WikiTableParser:
                 tbls, key=lambda tbl: tbl['df'].count(axis=1).sum(), reverse=True
             )
 
-        page = requests.get(
-            url, headers={
-               'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
-            })
-        page_content = BeautifulSoup(page.text, 'html.parser')
+        page: StealthResponse = requests.get(url)
+        page_content = page.soup()
         tbls = page_content.select('table[class*=wikitable]')
         self.date_cols.clear()
         for tbl in tbls:
@@ -336,6 +334,21 @@ class WikiTableParser:
                         fetched_tbl['paragraph'],
                     )
                 continue
+            if self.cfg.get('maximum_cell_length'):
+                maximum_cell_length = self.cfg['maximum_cell_length']
+                if any([any([len(str(j)) > maximum_cell_length for j in fetched_tbl['df'][k].tolist()]) for k in fetched_tbl['df'].columns.tolist()]):
+                    self.logger.error(f"Dropping {url} as it exceeds maximum cell length")
+                    self.error_msg = f"maximum cell length"
+                    if tbl_idx is not None:
+                        return (
+                            None,
+                            None,
+                            f"maximum cell length",
+                            self.date_cols,
+                            fetched_tbl['paragraph'],
+                        )
+                    continue
+
             if self.cfg['only_ascii_chars']:
                 if not all(
                     self.is_ascii(k) for k in fetched_tbl['df'].columns.tolist()

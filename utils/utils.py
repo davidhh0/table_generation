@@ -1,7 +1,7 @@
 # Utilities/Help
 import re
 import dateutil.parser as parser
-import requests
+# import requests
 from bs4 import BeautifulSoup
 
 from datetime import datetime, timedelta
@@ -84,7 +84,7 @@ def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
 
 def get_articles_to_parse(conf, ts):
     import string
-    import requests
+    import  stealth_requests as  requests
     import random
     import git
     from collections import OrderedDict
@@ -98,11 +98,9 @@ def get_articles_to_parse(conf, ts):
         title = random.choice(string.ascii_uppercase) + random.choice(
             string.ascii_lowercase
         )
+        offset_rand = random.randint(0, 9500)
         response = requests.get(
-            basic_url.format(TITLE=title, OFFSET=random.randint(0, 9500)),
-            headers={
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
-            }
+            basic_url.format(TITLE=title, OFFSET=offset_rand)
         ).json()
         for j in [k for k in response["query"]["search"] if k['title'].isascii()]:
             try:
