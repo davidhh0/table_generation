@@ -6,8 +6,10 @@ import yaml
 with open('config.yaml', 'r') as f:
     conf = yaml.load(f, Loader=yaml.FullLoader)
 ts = datetime.now()
-get_articles_to_parse(conf, ts)
-# idx = 0
+
+# llm_table_generation(conf, ts)
+# get_articles_to_parse(conf, ts)
+idx = 0
 # while True:
 #     try:
 #         llm_table_generation(conf, ts)

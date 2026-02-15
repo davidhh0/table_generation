@@ -1,0 +1,109 @@
+Road,From,To
+B3200,"B3199  Babbacombe Road, Torquay","A379 Union Street, Torquay"
+B3201,"A3022 Torquay Road, Paignton","A379 Dartmouth Road, Paignton"
+B3202,A379 in Paignton,B3201 on the Paignton sea front
+B3202,"B3199 Babbacombe Road, Torquay","A379 Lymington Road, Torquay"
+B3203,"A385 at Collaton St Mary, west of Paignton",A3022 south of the end of the A380 at Paignton
+B3204,A381 at Salcombe,"Tourist Information Centre, Salcombe"
+B3205,"A379 at Hillhead, Brixham",A379 at Stoke Fleming
+B3206,"A323 at Greyhound Roundabout, Ash","B3411 Vale Road, Ash"
+B3206,"A382 at Easton, Dartmoor",Chagford
+B3207,A379 at Modbury,A381 / A3122 at Halwell
+B3208,"A323 Ash Road, Aldershot",A31 near Farnham
+B3209,A379 west of Churchstow,B3197 southwest of West Alvington
+B3209,,
+B3210,A379 near Flete,A381 near Totnes
+B3211,"B3210 at Ermington, Devon",A38 at Ivybridge
+B3212,B3181 at Whipton,A386 at Yelverton
+B3213,A38 / A3121 at Wrangaton,A38 at Ivybridge
+B3214,A374 east of Laira,B3238 / B3250 in Mutley
+B3215,A3072 southwest of North Tawton,B3260 at Okehampton
+B3216,A386 south of Hatherleigh,"A3072 at Jacobstowe, north of Okehampton"
+B3217,unclassified road in Dolton,B3227 in Atherington
+B3218,A3072 at Dunsland Cross,A30  near Okehampton
+B3219,A386 near Folly Gate,A30 in Sourton Down
+B3219,B3320 near Winkleigh,"A30  at Whiddon Down, near Okehampton"
+B3220,"A377 at Down St Mary, near Crediton",A3124 at Winkleigh
+B3221,A373 in Tiverton,A361 in South Molton
+B3222,"A396 east of Jury, near Dulverton",A396 south of Exebridge
+B3223,"A39 at Hillsford, near Lynton",B3222 at Dulverton
+B3224,A358 at East Combe,"B3223 west of Exford, Somerset"
+B3225,A39 at Porlock,Porlock Weir
+B3226,A361 / A399 north of South Molton,A377 at King's Nympton railway station
+B3227,"A388 at Stibb Cross, near Torrington","A358 at Staplegrove, near Taunton"
+B3228,"A31/A325 at Moor Park, Farnham","A31/A325 at Cox Bridge, Farnham"
+B3229,A39 in Kentisbury Ford,A399 in Easter Close Cross
+B3230,"A39 at West Pilton, Barnstaple",A361 at Ilfracombe
+B3231,A361 at Braunton,Croyde
+B3232,"B3233 east of Bickington, Barnstaple",B3227 at Torrington
+B3233,A39 at Barnstaple,Interchange with A386 and A39 east of Bideford
+B3234,"A39 at Barbrook, Lynton","A39 at Lynmouth Hill, Lynton"
+B3235,"B3234  north of the Long Bridge, Bideford","A39 at The Quay, Bideford"
+B3236,A386 at Northam,"A39 Bideford Bypass, Northam"
+B3237,A39 at Clovelly Cross,Clovelly Visitor Centre Car Park
+B3238,"A374 / A379 at Cattedown, Plymouth","B3214 / B3250 at Chester Place, Plymouth"
+B3239,A38  in Plymouth,"wharves in Coxside, Plymouth"
+B3240,"A374 at Exeter Street Service Station, Plymouth","Martin Street, Plymouth"
+B3241,"A3041 in Devonport, Plymouth",A38 in Laira
+B3242,A387 in Plymouth,A386 in Plymouth
+B3243,B3244 in Plymouth,A38 in Plymouth
+B3244,B3241 in Plymouth,A389  in Plymouth
+B3245,A389  in Plymouth,Royal William Victualling Yard
+B3246,A38 in Crabtree,A387 in St Budeaux
+B3247,A387 at Hessenford,Cremyll Ferry at Cremyll
+B3248,A39 west of Clovelly,Hartland
+B3249,A38 at Tideford,A374 at Polbathic
+B3250,"A38 / A386 at Manadon Junction, Plymouth","A374 at Drake Circus, Plymouth"
+B3251,"A38 south of Menheniot, Liskeard","B3252 at Bylane End, Morval, Cornwall"
+B3252,"A38 at Trethawle, Liskeard","A387 north-east of Morval, Cornwall"
+B3253,A387 at Looe,A387 west of Widegates
+B3254,"A39 at Kilkhampton, Bude","A387 at Morval, Cornwall"
+B3255,"A390 at Moss Side, east of Callington","A390 at Pencrebar, south of Callington"
+B3256,"A388 at Kelly Bray, north of Callington","A390 at Hingston Down, north-east of Callington"
+B3257,"A30 east of Five Lanes, Launceston","Bere Alston, Devon"
+B3258,"A30 / A388 / B3254 at Launceston, Cornwall",A388  east of Launceston
+B3259,"A39 at Kilkhampton, Bude","A388 at Launceston, Cornwall"
+B3260,"A30 at Stockley, east of Okehampton","A30 at Tavistock Road, south-west of Okehampton"
+B3261,"A35 at Kilmington, west of Axminster","A35 west of Raymonds Hill, Devon"
+B3262,"A39 south of St Juliot, Cornwall","A395 at Hallworthy, Camelford"
+B3263,"A39 south of Jacobstow, Cornwall","B3314 at Camelford Station, Cornwall"
+B3264,A39 south of Camelford,B3263 in Boscastle
+B3264,"A379 / A381 west of Churchstow, north of Kingsbridge",A381 / A379 in centre of Kingsbridge
+B3265,"A39 at Fore Street / High Street, Camelford",B3264 at Camelford
+B3266,"A389 south of Washaway, Cornwall",B3263 at Boscastle
+B3267,"A39 at Knights Mill, St Teath",Port Isaac
+B3268,A389 at Bodmin,A390 at Lostwithiel
+B3269,"B3288 at Sweetshouse, north of Lostwithiel","A3082 at Cobbs Well, Fowey"
+B3270,A33 at M4 J11,"A3290 at A329 roundabout by Showcase Cinema, Winnersh"
+B3271,A38 at Tamar Bridge,A38 / A388 and A38: north and west of Saltash
+B3272,"A325 at Bradfords Roundabout, Farnborough",A327 west of Eversley
+B3273,A390 at double roundabout in St Austell,Mevagissey
+B3274,A390 / A3058 at St Austell,"A389 at Little Petherick, south of Padstow"
+B3275,"A30 at Penhale, east of St Enoder","A390 at Denas Water, west of Probus, Cornwall"
+B3276,"A3058 at Porth Four Turns, Newquay",A389 at Padstow
+B3277,"A30 / A390 / A3075 at Chiverton Cross, Blackwater","B3285 at St Agnes, Cornwall"
+B3278,A390 in St Austwell,B3282 in Newquay
+B3278,A30 at Bridestowe,A386 at Shortacombe
+B3279,"A30 at Highgate Hill Roundabout, Indian Queens","A3058 at High Street, west of St Austell"
+B3280,"A394 west of Goldsithney, near Marazion","B3297 south-west of Four Lanes, Redruth"
+B3281,B3278 near St Columb Minor,A39 in St Columb Major
+B3281,A376 near Lympstone,B3179 in Woodbury
+B3282,B3283 in Newquay,B3278 in Newquay
+B3283,"A30 west of Buryas Bridge, Penzance",B3315 north of Treen
+B3284,A39 / A390 at Truro,B3285 at Perranporth
+B3285,"A30 at Carland Cross, Cornwall","B3277 at St Agnes, Cornwall"
+B3286,A39 west of Truro,A392  west of Truro
+B3287,"A390 at Hewas Water, St Austell","A3078 at Tregony, Cornwall"
+B3288,A39 east of Tresilian,B3287 in Tregony
+B3288,A30 at Chybucca Junction,B3285 at Boxheater Junction
+B3289,"A39 at Playing Place, Truro",A3078 at St Just in Roseland
+B3290,A39 in Falmouth,A39 in Falmouth
+B3291,A39 in Penryn,B3296  in Dodson's Gap
+B3292,"A39 / A393 at Four Cross, Penryn","A39 at Ponsharden Ferry Landing, Falmouth"
+B3293,A3083 at RNAS Culdrose,St Keverne
+B3294,"B3293 at St Keverne Beacon on Crousa Common, east of St Keverne",Harbour at Coverack
+B3295,Helston,Lizard
+B3296,"A3083 at Penhale, Mullion",Harbour at Mullion Cove
+B3297,A394  at Helston,B3300  at Redruth
+B3298,"A393 at Fox and Hounds, Comford, Redruth","A3047 south of Scorrier, Redruth"
+B3299,B3300,A30 near Mount Ambrose

@@ -1,9 +1,28 @@
+ignore_comparable_cols:
+  - "Rank"
+  - "No."
+  - "No"
+  - "Position"
+  - "Pos."
+  - "Total"
+
 wrapper: |
   Based on data regarding: 
   {TABLE_TITLE}.
   {QUESTION}
   Return only the value, with no additional words, punctuation, or explanation.
   If you are unsure, return the most likely value from your knowledge; do not guess or make something up.
+
+table_wrapper: |
+    Based on the following table: 
+    {TABLE_TITLE}
+    ```
+    {TABLE}
+    ```
+    {QUESTION}
+    
+    Return only the value, with no additional words, punctuation, or explanation.
+    If you are unsure, return the most likely value from your knowledge; do not guess or make something up.
 
 rephrase_wrapper: |
     Given the following template-based question: 
@@ -38,3 +57,6 @@ max_value: |
 
 min_value: |
   Which '{Primary_key}' has the minimum value in the '{Comparison_Column}' column {PROVIDED_KEYS}?
+
+thinking: |
+  Which '{Primary_key}' has the second from the bottom value in the '{Comparison_Column}' column {PROVIDED_KEYS}?

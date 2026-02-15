@@ -433,6 +433,32 @@ class WikiTableParser:
                     },
                     inplace=True,
                 )
+            if self.cfg['header_manipulations']['remove_data_inside_parentheses']:
+                if re.search(r"\(.+?\)", self.clean_string(col).__str__()):
+                    self.logger.debug(
+                        f"Removing data inside parentheses for {col} column [{self.url}]"
+                    )
+                    self.df.rename(
+                        columns={
+                            col: re.sub(
+                                r"\(.+?\)", '', self.clean_string(col).__str__()
+                            ).strip()
+                        },
+                        inplace=True,
+                    )
+            if self.cfg['header_manipulations']['remove_data_inside_square_brackets']:
+                if re.search(r"\[.+?\]", self.clean_string(col).__str__()):
+                    self.logger.debug(
+                        f"Removing data inside square brackets for {col} column [{self.url}]"
+                    )
+                    self.df.rename(
+                        columns={
+                            col: re.sub(
+                                r"\[.+?\]", '', self.clean_string(col).__str__()
+                            ).strip()
+                        },
+                        inplace=True,
+                    )
         return
 
     def apply_rules_rows(self):
@@ -632,6 +658,7 @@ class WikiTableParser:
             self.df = None
             return None
         self.drop_irrelevant_columns()
+
         self.apply_rules_rows()
         self.apply_cell_rules()
         self.apply_rules_columns()

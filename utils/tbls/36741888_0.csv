@@ -1,0 +1,239 @@
+#,Mission,SCA,Orbiter,Leg count,Date,Leg
+1,Delivery to KSC,905,Columbia,4,20/03/1979,Edwards AFB - Biggs Army Airfield
+1,Delivery to KSC,905,Columbia,4,22/03/1979,Biggs Army Airfield - Kelly Field
+1,Delivery to KSC,905,Columbia,4,23/03/1979,Kelly Field - Eglin AFB
+1,Delivery to KSC,905,Columbia,4,24/03/1979,"Eglin AFB - Shuttle Landing Facility, KSC"
+2,STS-1,905,Columbia,2,27/04/1981,Edwards AFB - Tinker AFB
+2,STS-1,905,Columbia,2,28/04/1981,"Tinker AFB - Shuttle Landing Facility, KSC"
+3,STS-2,905,Columbia,2,24/11/1981,Edwards AFB - Bergstrom AFB
+3,STS-2,905,Columbia,2,25/11/1981,"Bergstrom AFB - Shuttle Landing Facility, KSC"
+4,STS-3,905,Columbia,2,06/04/1982,White Sands Space Harbor - Barskdale AFB
+4,STS-3,905,Columbia,2,06/04/1982,"Barskdale AFB - Shuttle Landing Facility, KSC"
+5,Delivery to KSC,905,Challenger,2,04/07/1982,Edwards AFB - Ellington Field
+5,Delivery to KSC,905,Challenger,2,05/07/1982,"Ellington Field - Shuttle Landing Facility, KSC"
+6,STS-4,905,Columbia,2,14/07/1982,Edwards AFB - Dyess AFB
+6,STS-4,905,Columbia,2,15/07/1982,"Dyess AFB - Shuttle Landing Facility, KSC"
+7,STS-5,905,Columbia,2,21/11/1982,Edwards AFB - Kelly Field
+7,STS-5,905,Columbia,2,22/11/1982,"Kelly Field - Shuttle Landing Facility, KSC"
+8,STS-6,905,Challenger,2,14/04/1983,Edwards AFB - Kelly Field
+8,STS-6,905,Challenger,2,14/04/1983,"Kelly Field - Shuttle Landing Facility, KSC"
+9,STS-7,905,Challenger,2,28/06/1983,Edwards AFB - Kelly Field
+9,STS-7,905,Challenger,2,29/06/1983,"Kelly Field - Shuttle Landing Facility, KSC"
+10,STS-8,905,Challenger,2,09/09/1983,Edwards AFB - Sheppard AFB
+10,STS-8,905,Challenger,2,09/09/1983,"Sheppard AFB - Shuttle Landing Facility, KSC"
+11,Delivery to KSC,905,Discovery,3,06/11/1983,Edwards AFB - Vandenberg AFB
+11,Delivery to KSC,905,Discovery,3,08/11/1983,Vandenberg AFB - Carswell AFB
+11,Delivery to KSC,905,Discovery,3,09/11/1983,"Carswell AFB - Shuttle Landing Facility, KSC"
+12,STS-9,905,Columbia,4,14/12/1983,Edwards AFB - Biggs Army Airfield
+12,STS-9,905,Columbia,4,14/12/1983,Biggs Army Airfield - Kelly Field
+12,STS-9,905,Columbia,4,15/12/1983,Kelly Field - Eglin AFB
+12,STS-9,905,Columbia,4,15/12/1983,"Eglin AFB - Shuttle Landing Facility, KSC"
+13,Mods,905,Columbia,2,26/01/1984,"Shuttle Landing Facility, KSC - Kelly Field"
+13,Mods,905,Columbia,2,27/01/1984,Kelly Field - Edwards AFB
+14,STS-41C,905,Challenger,2,17/04/1984,Edwards AFB - Kelly Field
+14,STS-41C,905,Challenger,2,18/04/1984,"Kelly Field - Shuttle Landing Facility, KSC"
+15,STS-41D,905,Discovery,2,09/09/1984,Edwards AFB - Altus AFB
+15,STS-41D,905,Discovery,2,10/09/1984,"Altus AFB - Shuttle Landing Facility, KSC"
+16,Delivery to KSC,905,Atlantis,2,12/04/1985,Edwards AFB - Ellington Field
+16,Delivery to KSC,905,Atlantis,2,13/04/1985,"Ellington Field - Shuttle Landing Facility, KSC"
+17,STS-51-B,905,Challenger,2,10/05/1985,Edwards AFB - Kelly Field
+17,STS-51-B,905,Challenger,2,11/05/1985,"Kelly Field - Shuttle Landing Facility, KSC"
+18,STS-51-G,905,Discovery,2,28/06/1985,Edwards AFB - Bergstrom AFB
+18,STS-51-G,905,Discovery,2,28/06/1985,"Bergstrom AFB - Shuttle Landing Facility, KSC"
+19,Mods,905,Columbia,2,14/07/1985,Edwards AFB - Offut AFB
+19,Mods,905,Columbia,2,14/07/1985,"Offut AFB - Shuttle Landing Facility, KSC"
+20,STS-51-F,905,Challenger,4,10/08/1985,Edwards AFB - Davis-Monthan AFB
+20,STS-51-F,905,Challenger,4,10/08/1985,Davis-Monthan AFB - Kelly Field
+20,STS-51-F,905,Challenger,4,11/08/1985,Kelly Field - Eglin AFB
+20,STS-51-F,905,Challenger,4,11/08/1985,"Eglin AFB - Shuttle Landing Facility, KSC"
+21,STS-51-I,905,Discovery,2,07/09/1985,Edwards AFB - Kelly Field
+21,STS-51-I,905,Discovery,2,08/09/1985,"Kelly Field - Shuttle Landing Facility, KSC"
+22,STS-51-J,905,Atlantis,2,11/10/1985,Edwards AFB - Kelly Field
+22,STS-51-J,905,Atlantis,2,11/10/1985,"Kelly Field - Shuttle Landing Facility, KSC"
+23,STS-61-A,905,Challenger,4,10/11/1985,Edwards AFB - Davis-Monthan AFB
+23,STS-61-A,905,Challenger,4,10/11/1985,Davis-Monthan AFB - Kelly Field
+23,STS-61-A,905,Challenger,4,11/11/1985,Kelly Field - Eglin AFB
+23,STS-61-A,905,Challenger,4,11/11/1985,"Eglin AFB - Shuttle Landing Facility, KSC"
+24,STS-61-B,905,Atlantis,2,07/12/1985,Edwards AFB - Kelly Field
+24,STS-61-B,905,Atlantis,2,07/12/1985,"Kelly Field - Shuttle Landing Facility, KSC"
+25,STS-61-C,905,Columbia,4,22/01/1986,Edwards AFB - Davis-Monthan AFB
+25,STS-61-C,905,Columbia,4,22/01/1986,Davis-Monthan AFB - Kelly Field
+25,STS-61-C,905,Columbia,4,23/01/1986,Kelly Field - Eglin AFB
+25,STS-61-C,905,Columbia,4,23/01/1986,"Eglin AFB - Shuttle Landing Facility, KSC"
+26,STS-26,905,Discovery,2,08/10/1988,Edwards AFB - Kelly Field
+26,STS-26,905,Discovery,2,08/10/1988,"Kelly Field - Shuttle Landing Facility, KSC"
+27,STS-27,905,Atlantis,3,11/12/1988,Edwards AFB - Davis-Monthan AFB
+27,STS-27,905,Atlantis,3,12/12/1988,Davis-Monthan AFB - Kelly Field
+27,STS-27,905,Atlantis,3,13/12/1988,"Kelly Field - Shuttle Landing Facility, KSC"
+28,STS-29,905,Discovery,2,23/03/1989,Edwards AFB - Kelly Field
+28,STS-29,905,Discovery,2,24/03/1989,"Kelly Field - Shuttle Landing Facility, KSC"
+29,STS-30,905,Atlantis,4,13/05/1989,Edwards AFB - Biggs Army Airfield
+29,STS-30,905,Atlantis,4,15/05/1989,Biggs Army Airfield - Dallas Fort Worth
+29,STS-30,905,Atlantis,4,15/05/1989,Dallas Fort Worth - Robins AFB
+29,STS-30,905,Atlantis,4,15/05/1989,"Robins AFB - Shuttle Landing Facility, KSC"
+30,STS-28,905,Columbia,4,18/08/1989,Edwards AFB - Edwards AFB
+30,STS-28,905,Columbia,4,20/08/1989,Edwards AFB - Sheppard AFB
+30,STS-28,905,Columbia,4,20/08/1989,Sheppard AFB - Robins AFB
+30,STS-28,905,Columbia,4,21/08/1989,"Robins AFB - Shuttle Landing Facility, KSC"
+31,STS-34,905,Atlantis,3,28/10/1989,Edwards AFB - Biggs Army Airfield
+31,STS-34,905,Atlantis,3,28/10/1989,Biggs Army Airfield - Columbus AFB
+31,STS-34,905,Atlantis,3,29/10/1989,"Columbus AFB - Shuttle Landing Facility, KSC"
+32,STS-33,905,Discovery,4,02/12/1989,Edwards AFB - Edwards AFB
+32,STS-33,905,Discovery,4,03/12/1989,Edwards AFB - Kelly Field
+32,STS-33,905,Discovery,4,03/12/1989,Kelly Field - Eglin AFB
+32,STS-33,905,Discovery,4,04/12/1989,"Eglin AFB - Shuttle Landing Facility, KSC"
+33,STS-32,905,Columbia,3,25/01/1990,Edwards AFB - Davis-Monthan AFB
+33,STS-32,905,Columbia,3,25/01/1990,Davis-Monthan AFB - Kelly Field
+33,STS-32,905,Columbia,3,26/01/1990,"Kelly Field - Shuttle Landing Facility, KSC"
+34,STS-36,905,Atlantis,4,10/03/1990,Edwards AFB - Edwards AFB
+34,STS-36,905,Atlantis,4,11/03/1990,Edwards AFB - Biggs Army Airfield
+34,STS-36,905,Atlantis,4,13/03/1990,Biggs Army Airfield - Columbus AFB
+34,STS-36,905,Atlantis,4,13/03/1990,"Columbus AFB - Shuttle Landing Facility, KSC"
+35,STS-31,905,Discovery,3,05/05/1990,Edwards AFB - Sheppard AFB
+35,STS-31,905,Discovery,3,06/05/1990,Sheppard AFB - Robins AFB
+35,STS-31,905,Discovery,3,07/05/1990,"Robins AFB - Shuttle Landing Facility, KSC"
+36,STS-41,905,Discovery,3,15/10/1990,Edwards AFB - Sheppard AFB
+36,STS-41,905,Discovery,3,15/10/1990,Sheppard AFB - Eglin AFB
+36,STS-41,905,Discovery,3,16/10/1990,"Eglin AFB - Shuttle Landing Facility, KSC"
+37,STS-35,905,Columbia,5,16/12/1990,Edwards AFB - Edwards AFB
+37,STS-35,905,Columbia,5,18/12/1990,Edwards AFB - Biggs Army Airfield
+37,STS-35,905,Columbia,5,18/12/1990,Biggs Army Airfield - Kelly Field
+37,STS-35,905,Columbia,5,19/12/1990,Kelly Field - Barskdale AFB
+37,STS-35,905,Columbia,5,21/12/1990,"Barskdale AFB - Shuttle Landing Facility, KSC"
+38,STS-37,905,Atlantis,4,16/04/1991,Edwards AFB - Kelly Field
+38,STS-37,905,Atlantis,4,16/04/1991,Kelly Field - Columbus AFB
+38,STS-37,905,Atlantis,4,17/04/1991,Columbus AFB - McDill AFB
+38,STS-37,905,Atlantis,4,18/04/1991,"McDill AFB - Shuttle Landing Facility, KSC"
+39,Delivery to KSC,911,Endeavour,6,02/05/1991,"Plant 42, Palmdale - Plant 42, Palmdale"
+39,Delivery to KSC,911,Endeavour,6,03/05/1991,"Plant 42, Palmdale - Biggs Army Airfield"
+39,Delivery to KSC,911,Endeavour,6,05/05/1991,Biggs Army Airfield - Kelly Field
+39,Delivery to KSC,911,Endeavour,6,06/05/1991,Kelly Field - Ellington Field
+39,Delivery to KSC,911,Endeavour,6,06/05/1991,Ellington Field - Columbus AFB
+39,Delivery to KSC,911,Endeavour,6,07/05/1991,"Columbus AFB - Shuttle Landing Facility, KSC"
+40,STS-40,905,Columbia,4,19/06/1991,Edwards AFB - Biggs Army Airfield
+40,STS-40,905,Columbia,4,20/06/1991,Biggs Army Airfield - Kelly Field
+40,STS-40,905,Columbia,4,20/06/1991,Kelly Field - Columbus AFB
+40,STS-40,905,Columbia,4,21/06/1991,"Columbus AFB - Shuttle Landing Facility, KSC"
+41,OMDP,911,Columbia,4,09/08/1991,"Shuttle Landing Facility, KSC - Shuttle Landing Facility, KSC"
+41,OMDP,911,Columbia,4,10/08/1991,"Shuttle Landing Facility, KSC - McDill AFB"
+41,OMDP,911,Columbia,4,12/08/1991,McDill AFB - Kelly Field
+41,OMDP,911,Columbia,4,13/08/1991,"Kelly Field - Plant 42, Palmdale"
+42,STS-48,911,Discovery,4,24/09/1991,Edwards AFB - Biggs Army Airfield
+42,STS-48,911,Discovery,4,24/09/1991,Biggs Army Airfield - Tinker AFB
+42,STS-48,911,Discovery,4,25/09/1991,Tinker AFB - Columbus AFB
+42,STS-48,911,Discovery,4,26/09/1991,"Columbus AFB - Shuttle Landing Facility, KSC"
+43,STS-44,911,Atlantis,2,07/12/1991,Edwards AFB - Sheppard AFB
+43,STS-44,911,Atlantis,2,08/12/1991,"Sheppard AFB - Shuttle Landing Facility, KSC"
+44,OMDP,905,Columbia,3,07/02/1992,"Plant 42, Palmdale - Plant 42, Palmdale"
+44,OMDP,905,Columbia,3,09/02/1992,"Plant 42, Palmdale - Kelly Field"
+44,OMDP,905,Columbia,3,09/02/1992,"Kelly Field - Shuttle Landing Facility, KSC"
+45,STS-42,905,Discovery,5,11/02/1992,Edwards AFB - Edwards AFB
+45,STS-42,905,Discovery,5,14/02/1992,Edwards AFB - Biggs Army Airfield
+45,STS-42,905,Discovery,5,15/02/1992,Biggs Army Airfield - Columbus AFB
+45,STS-42,905,Discovery,5,16/02/1992,Kelly Field - Columbus AFB
+45,STS-42,905,Discovery,5,16/02/1992,"Columbus AFB - Shuttle Landing Facility, KSC"
+46,STS-49,911,Endeavour,4,21/05/1992,Edwards AFB - Edwards AFB
+46,STS-49,911,Endeavour,4,27/05/1992,Edwards AFB - Biggs Army Airfield
+46,STS-49,911,Endeavour,4,29/05/1992,Biggs Army Airfield - Kelly Field
+46,STS-49,911,Endeavour,4,30/05/1992,"Kelly Field - Shuttle Landing Facility, KSC"
+47,OMDP,911,Atlantis,3,18/10/1992,"Shuttle Landing Facility, KSC - Gregg County"
+47,OMDP,911,Atlantis,3,18/10/1992,Gregg County - Biggs Army Airfield
+47,OMDP,911,Atlantis,3,18/10/1992,"Biggs Army Airfield - Plant 42, Palmdale"
+48,STS-53,911,Discovery,3,15/12/1992,Edwards AFB - Kelly Field
+48,STS-53,911,Discovery,3,18/12/1992,Kelly Field - Eglin AFB
+48,STS-53,911,Discovery,3,18/12/1992,"Eglin AFB - Shuttle Landing Facility, KSC"
+49,STS-55,905,Columbia,4,11/05/1993,Edwards AFB - Biggs Army Airfield
+49,STS-55,905,Columbia,4,12/05/1993,Biggs Army Airfield - Kelly Field
+49,STS-55,905,Columbia,4,12/05/1993,Kelly Field - Columbus AFB
+49,STS-55,905,Columbia,4,14/05/1993,"Columbus AFB - Shuttle Landing Facility, KSC"
+50,STS-58,911,Columbia,4,07/11/1993,Edwards AFB - Biggs Army Airfield
+50,STS-58,911,Columbia,4,07/11/1993,Biggs Army Airfield - Kelly Field
+50,STS-58,911,Columbia,4,07/11/1993,Kelly Field - Columbus AFB
+50,STS-58,911,Columbia,4,08/11/1993,"Columbus AFB - Shuttle Landing Facility, KSC"
+51,STS-59,911,Endeavour,4,26/04/1994,Edwards AFB - Edwards AFB
+51,STS-59,911,Endeavour,4,30/04/1994,Edwards AFB - El Paso
+51,STS-59,911,Endeavour,4,01/05/1994,El Paso - Little Rock AFB
+51,STS-59,911,Endeavour,4,03/05/1994,"Little Rock AFB - Shuttle Landing Facility, KSC"
+52,OMDP,911,Atlantis,4,27/05/1994,"Plant 42, Palmdale - Biggs Army Airfield"
+52,OMDP,911,Atlantis,4,28/05/1994,Biggs Army Airfield - Columbus AFB
+52,OMDP,911,Atlantis,4,28/05/1994,Columbus AFB - Robins AFB
+52,OMDP,911,Atlantis,4,29/05/1994,"Robins AFB - Shuttle Landing Facility, KSC"
+53,STS-64,905,Discovery,2,26/09/1994,Edwards AFB - Kelly Field
+53,STS-64,905,Discovery,2,27/09/1994,"Kelly Field - Shuttle Landing Facility, KSC"
+54,OMDP,905,Columbia,4,08/10/1994,"Shuttle Landing Facility, KSC - Huntsville"
+54,OMDP,905,Columbia,4,10/10/1994,Huntsville - Ellington Field
+54,OMDP,905,Columbia,4,11/10/1994,Ellington Field - Biggs Army Airfield
+54,OMDP,905,Columbia,4,11/10/1994,"Biggs Army Airfield - Plant 42, Palmdale"
+55,STS-68,911,Endeavour,4,19/10/1994,Edwards AFB - Biggs Army Airfield
+55,STS-68,911,Endeavour,4,19/10/1994,Biggs Army Airfield - Dyess AFB
+55,STS-68,911,Endeavour,4,20/10/1994,Dyess AFB - Eglin AFB
+55,STS-68,911,Endeavour,4,20/10/1994,"Eglin AFB - Shuttle Landing Facility, KSC"
+56,STS-66,911,Atlantis,3,21/11/1994,Edwards AFB - Kelly Field
+56,STS-66,911,Atlantis,3,21/11/1994,Kelly Field - Eglin AFB
+56,STS-66,911,Atlantis,3,22/11/1994,"Eglin AFB - Shuttle Landing Facility, KSC"
+57,STS-67,905,Endeavour,3,26/03/1995,Edwards AFB - Dyess AFB
+57,STS-67,905,Endeavour,3,27/03/1995,Dyess AFB - Columbus AFB
+57,STS-67,905,Endeavour,3,27/03/1995,"Columbus AFB - Shuttle Landing Facility, KSC"
+58,OMDP,905,Columbia,2,11/04/1995,"Plant 42, Palmdale - Ellington Field"
+58,OMDP,905,Columbia,2,14/04/1995,"Ellington Field - Shuttle Landing Facility, KSC"
+59,OMDP,905,Discovery,3,27/09/1995,"Shuttle Landing Facility, KSC - NASJRB Fort Worth"
+59,OMDP,905,Discovery,3,27/09/1995,NASJRB Fort Worth - Salt Lake City
+59,OMDP,905,Discovery,3,28/09/1995,"Salt Lake City - Plant 42, Palmdale"
+60,STS-76,905,Atlantis,5,06/04/1996,Edwards AFB - Edwards AFB
+60,STS-76,905,Atlantis,5,11/04/1996,Edwards AFB - Davis-Monthan AFB
+60,STS-76,905,Atlantis,5,11/04/1996,Davis-Monthan AFB - Dyess AFB
+60,STS-76,905,Atlantis,5,12/04/1996,Dyess AFB - Eglin AFB
+60,STS-76,905,Atlantis,5,12/04/1996,"Eglin AFB - Shuttle Landing Facility, KSC"
+61,OMDP,911,Discovery,4,25/06/1996,"Plant 42, Palmdale - Plant 42, Palmdale"
+61,OMDP,911,Discovery,4,28/06/1996,"Plant 42, Palmdale - Altus AFB"
+61,OMDP,911,Discovery,4,28/06/1996,Altus AFB - Robins AFB
+61,OMDP,911,Discovery,4,29/06/1996,"Robins AFB - Shuttle Landing Facility, KSC"
+62,OMDP,911,Endeavour,2,30/07/1996,"Shuttle Landing Facility, KSC - Kelly Field"
+62,OMDP,911,Endeavour,2,30/07/1996,"Kelly Field - Plant 42, Palmdale"
+63,OMDP,905,Endeavour,4,25/03/1997,"Plant 42, Palmdale - Plant 42, Palmdale"
+63,OMDP,905,Endeavour,4,26/03/1997,"Plant 42, Palmdale - NASJRB Fort Worth"
+63,OMDP,905,Endeavour,4,26/03/1997,NASJRB Fort Worth - Robins AFB
+63,OMDP,905,Endeavour,4,27/03/1997,"Robins AFB - Shuttle Landing Facility, KSC"
+64,OMDP,911,Atlantis,2,11/11/1997,"Shuttle Landing Facility, KSC - Tinker AFB"
+64,OMDP,911,Atlantis,2,14/11/1997,"Tinker AFB - Plant 42, Palmdale"
+65,OMDP,905,Atlantis,4,22/09/1998,"Plant 42, Palmdale - Plant 42, Palmdale"
+65,OMDP,905,Atlantis,4,23/09/1998,"Plant 42, Palmdale - Robert Gray Army Airfield"
+65,OMDP,905,Atlantis,4,23/09/1998,Robert Gray Army Airfield - Campbell Army Airfield
+65,OMDP,905,Atlantis,4,27/09/1998,"Campbell Army Airfield - Shuttle Landing Facility, KSC"
+66,OMM,905,Columbia,2,24/09/1999,"Shuttle Landing Facility, KSC - Whiteman AFB"
+66,OMM,905,Columbia,2,25/09/1999,"Whiteman AFB - Plant 42, Palmdale"
+67,STS-92,905,Discovery,3,02/11/2000,Edwards AFB - Altus AFB
+67,STS-92,905,Discovery,3,02/11/2000,Altus AFB - Whiteman AFB
+67,STS-92,905,Discovery,3,03/11/2000,"Whiteman AFB - Shuttle Landing Facility, KSC"
+68,OMM,905,Columbia,3,01/03/2001,"Plant 42, Palmdale - Dyess AFB"
+68,OMM,905,Columbia,3,04/03/2001,Dyess AFB - Cape Canaveral AFS
+68,OMM,905,Columbia,3,05/03/2001,"Cape Canaveral AFS - Shuttle Landing Facility, KSC"
+69,STS-98,911,Atlantis,4,01/03/2001,Edwards AFB - Altus AFB
+69,STS-98,911,Atlantis,4,03/03/2001,Altus AFB - Barskdale AFB
+69,STS-98,911,Atlantis,4,03/03/2001,Barskdale AFB - Eglin AFB
+69,STS-98,911,Atlantis,4,04/03/2001,"Eglin AFB - Shuttle Landing Facility, KSC"
+70,STS-100,905,Endeavour,3,08/05/2001,Edwards AFB - Altus AFB
+70,STS-100,905,Endeavour,3,08/05/2001,Altus AFB - Little Rock AFB
+70,STS-100,905,Endeavour,3,09/05/2001,"Little Rock AFB - Shuttle Landing Facility, KSC"
+71,STS-111,911,Endeavour,3,28/06/2002,Edwards AFB - Altus AFB
+71,STS-111,911,Endeavour,3,28/06/2002,Altus AFB - Whiteman AFB
+71,STS-111,911,Endeavour,3,29/06/2002,"Whiteman AFB - Shuttle Landing Facility, KSC"
+72,STS-114,905,Discovery,3,19/08/2005,Edwards AFB - Altus AFB
+72,STS-114,905,Discovery,3,19/08/2005,Altus AFB - Barskdale AFB
+72,STS-114,905,Discovery,3,21/08/2005,"Barskdale AFB - Shuttle Landing Facility, KSC"
+73,STS-117,905,Atlantis,4,01/07/2007,Edwards AFB - Amarillo
+73,STS-117,905,Atlantis,4,01/07/2007,Amarillo - Offut AFB
+73,STS-117,905,Atlantis,4,02/07/2007,Offut AFB - Campbell Army Airfield
+73,STS-117,905,Atlantis,4,03/07/2007,"Campbell Army Airfield - Shuttle Landing Facility, KSC"
+74,STS-126,911,Endeavour,4,10/12/2008,Edwards AFB - Biggs Army Airfield
+74,STS-126,911,Endeavour,4,10/12/2008,Biggs Army Airfield - NASJRB Fort Worth
+74,STS-126,911,Endeavour,4,11/12/2008,NASJRB Fort Worth - Barskdale AFB
+74,STS-126,911,Endeavour,4,12/12/2008,"Barskdale AFB - Shuttle Landing Facility, KSC"
+75,STS-125,911,Atlantis,4,01/06/2009,Edwards AFB - Biggs Army Airfield
+75,STS-125,911,Atlantis,4,02/06/2009,Biggs Army Airfield - Kelly Field
+75,STS-125,911,Atlantis,4,02/06/2009,Kelly Field - Columbus AFB
+75,STS-125,911,Atlantis,4,02/06/2009,"Columbus AFB - Shuttle Landing Facility, KSC"
+76,STS-128,911,Discovery,4,20/09/2009,Edwards AFB - Amarillo
+76,STS-128,911,Discovery,4,20/09/2009,Amarillo - NASJRB Fort Worth
+76,STS-128,911,Discovery,4,20/09/2009,NASJRB Fort Worth - Barskdale AFB
+76,STS-128,911,Discovery,4,21/09/2009,"Barskdale AFB - Shuttle Landing Facility, KSC"

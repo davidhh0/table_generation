@@ -2,6 +2,7 @@
 import re
 import dateutil.parser as parser
 # import requests
+import  stealth_requests as  requests
 from bs4 import BeautifulSoup
 
 from datetime import datetime, timedelta
@@ -84,7 +85,6 @@ def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
 
 def get_articles_to_parse(conf, ts):
     import string
-    import  stealth_requests as  requests
     import random
     import git
     from collections import OrderedDict
@@ -105,16 +105,19 @@ def get_articles_to_parse(conf, ts):
         for j in [k for k in response["query"]["search"] if k['title'].isascii()]:
             try:
                 df, idx, msg, dates, paragraph = wiki_obj.run(
-                    f'https://en.wikipedia.org/?curid={j["pageid"]}', j['title']
+                    # f'https://en.wikipedia.org/?curid={j["pageid"]}', j['title']
+                    "https://en.wikipedia.org/wiki/2018_Korean_Tour", "2018_Korean_Tour"
                 )
                 if df is not None:
                     is_tbl_consistent, page_id, article_name = is_consistent(
-                        f'https://en.wikipedia.org/wiki/{j["title"]}', idx
+                        # f'https://en.wikipedia.org/wiki/{j["title"]}', idx
+                        "https://en.wikipedia.org/wiki/2018_Korean_Tour", idx
                     )
                     if is_tbl_consistent == 'match':
                         article_metadata = page_details(
-                            f'https://en.wikipedia.org/wiki/{j["title"]}',
-                            str(j["pageid"]),
+                            # f'https://en.wikipedia.org/wiki/{j["title"]}',
+                            f'https://en.wikipedia.org/wiki/2018_Korean_Tour',
+                            page_id,
                         )
                         if 'minimum_popularity' in conf and conf.get('minimum_popularity'):
                             if conf.get('minimum_popularity') > article_metadata['popularity']:
@@ -215,7 +218,6 @@ def is_consistent(url, tbl_idx, years_ago=1):
 
 
 def page_details(url, page_id):
-    import requests
     import statistics
     from datetime import datetime, timedelta
 
@@ -332,7 +334,25 @@ def gemini(MODEL, prompt_string, context=False):
     print('Received response from Gemini')
     return response_str
 
+def llama(MODEL, prompt_string):
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    import torch
 
+    MODEL = "meta-llama/Llama-3.3-70B-Instruct"
+    model_path = '/Users/david.harroch/.llama/checkpoints/Llama3.3-70B-Instruct'
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+
+    model = AutoModelForCausalLM.from_pretrained(
+        model_path,
+        # device_map="auto",  # automatically spreads layers across GPUs if available
+        torch_dtype=torch.float16,
+    )
+
+    # Generate text
+    prompt = "Explain quantum entanglement in simple terms:"
+    inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
+    outputs = model.generate(**inputs, max_new_tokens=200)
+    print(tokenizer.decode(outputs[0], skip_special_tokens=True))
 def claude(MODEL, prompt_string, context=False):
     prompt_string = prompt_string.strip()
     with claude_client.messages.stream(
@@ -366,11 +386,12 @@ def get_llm_response(
         response_str = chatgpt(MODEL, prompt_string)
     if 'gemini' in MODEL:
         response_str = gemini(MODEL, prompt_string, context)
+    if 'llama' in MODEL.lower():
+        response_str = llama(MODEL, prompt_string)
     if response_str is None:
         return None
     prompt_response = response_str.strip()
     if use_cache:
         cache[prompt_cache_key] = prompt_response
     return prompt_response
-
 

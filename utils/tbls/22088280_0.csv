@@ -1,0 +1,42 @@
+Office,Head,Municipality,City,Province
+Office of the Secretary to the Sanggunian,Secretary to the Sanggunian,Yes,Yes,Yes
+Treasury Office,Treasurer,Yes,Yes,Yes
+Assessment Office,Assessor,Yes,Yes,Yes
+Accounting Office,Accountant,Yes,Yes,Yes
+Budget Office,Budget Officer,Yes,Yes,Yes
+Planning and Development Office,Planning and Development Coordinator,Yes,Yes,Yes
+Engineering Office,Engineer,Yes,Yes,Yes
+Health Office,Health Officer,Yes,Yes,Yes
+Office of the Local Civil Registry,Local Civil Registrar,Yes,Yes,No
+Office of the Administrator,Administrator,Yes,Yes,Yes
+Office of the Legal Services,Legal Officer,Optional,Yes,Yes
+Agriculture Office,Agriculturist,Yes,Yes,Yes
+Social Welfare and Development Office,Social Welfare and Development Officer,Yes,Yes,Yes
+Environment and Natural Resources Office,Environment and Natural Resources Officer,Yes,Yes,Yes
+Office of Architectural Planning and Design,Architect,Optional,Optional,Optional
+Public Information Office,Public Information Officer,Optional,Optional,Optional
+Office for the Development of Cooperatives/Cooperatives Development Office,Cooperative Development Specialist,No,Optional,Optional
+Population Office,Population Officer,Optional,Optional,Optional
+Veterinary Office,Veterinarian,Yes,Yes,Yes
+Public Order and Safety Office,Public Order and Safety Officer,Optional,Optional,Optional
+General Services Office,General Services Officer,Yes,Yes,Yes
+Tourism Office,Tourism Officer,Yes,Yes,Yes
+Public Employment Services Office,PESO Manager,Yes,Yes,Yes
+Human Resources Management and Development,HRMD Officer,Yes,Yes,Yes
+Disaster Risk Reduction and Management Office,DRRM Officer,Yes,Yes,Yes
+Economic Enterprise and Development Office,EED Officer,Yes,Yes,No
+Office of the Mayor,Mayor,Yes,Yes,No
+Office of the Vice Mayor,Vice Mayor,Yes,Yes,No
+Office of the Provincial Governor,Provincial Governor,No,No,Yes
+Office of the Provincial Vice Governor,Provincial Vice Governor,No,No,Yes
+Office of the Sangguniang Panlalawigan,Presiding Officer,No,No,Yes
+Office of the Sangguniang Panlungsod,Presiding Officer,No,Yes,No
+Office of the Sangguniang Bayan,Presiding Officer,Yes,No,No
+Office of the Senior Citizens' Affairs,OSCA Head,Yes,Yes,No
+Persons With Disability Affairs Office,PWDAO Head,Yes,Yes,Yes
+Nutrition Action Office,Nutrition Action Officer,Yes,Yes,Yes
+Prosecution Office,Prosecutor,Yes,Yes,Yes
+Solid Waste and Environment Management Office,SWEMO Head,Yes,Yes,No
+Gender And Development  Office,GAD Officer,Yes,Yes,Yes
+Information Technology  Office,IT Officer,Yes,Yes,Yes
+Local Government Operations Office,Local Government Operations Officer,Yes,Yes,Yes

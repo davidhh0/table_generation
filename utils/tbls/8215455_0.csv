@@ -1,0 +1,101 @@
+Road,From,To
+A100,"A2 at Bricklayers Arms, South London","A3211 at Byward Street, City of London"
+A101,A13 at Limehouse,A200 in Rotherhithe
+A102,A2 in Charlton,A107 in Clapton
+A103,A1 in Highbury,A504 in Hornsey
+A104,A1 at Islington Green,"A121 in Epping, Essex"
+A105,A104 in Canonbury,A110 Enfield Town
+A106,A107 in Hackney,A12 in Wanstead
+A107,A11 in Whitechapel,A503 at Manor House
+A108,Unused,
+A109,A1000 in Whetstone,A1010 in Tottenham
+A110,A104 in Woodford Green,A1000 at Barnet
+A111,A406/A10 at Palmers Green,A1000 in Potters Bar
+A112,"A121, south of Waltham Abbey",A117 at Woolwich Ferry
+A113,A12 at Leytonstone,A128 near Chipping Ongar
+A114,A112 at Plaistow,A104 at Whipps Cross
+A115,Unused,
+A116,A118 at Manor Park,A114 at Wanstead
+A117,A116 at Aldersbrook,Woolwich Ferry
+A118,A12 at Bow,A12 near Romford
+A119,A1170 at Ware,A602 at Watton-at-Stone
+A120,A10 at Puckeridge,B1352 at Harwich
+A121,A10 at Waltham Cross,A104 at Woodford Green
+A122,Unused,
+A123,A113 at Chigwell,"A13 at Lodge Avenue, Barking"
+A124,A13 at Canning Town,B187/B1421 in Upminster
+A125,A12 North of Romford,A1306  at Rainham
+A126,A13 at West Thurrock,A1089 in Tilbury
+A127,A12 at Romford,A13 at Southend
+A128,A13 at Orsett,A414 in Chipping Ongar
+A129,A1023 near Shenfield railway station,A13 at Hadleigh
+A130,"A12 at Howe Green, near Chelmsford",B1014 at Canvey Island
+A131,"A12 at Boreham Interchange, near Chelmsford",A134 at Sudbury
+A132,"A13 in Pitsea, Basildon",B1012 near South Woodham Ferrers
+A133,A1124  near Colchester,"Clacton-on-Sea, sea front"
+A134,"A10, south of King's Lynn",A133 in Colchester
+A135,A1130/A1305 Ring Road in Stockton-on-Tees,A67 at Egglescliffe
+A136,A120 in Harwich,Harwich International Port
+A137,A1214  in Ipswich,A133 in Colchester
+A138,A12 east of Chelmsford,A1114 near Chelmsford city centre
+A139,A1305 Ring Road at Stockton-on-Tees,A19 south of Billingham
+A140,A14 east of Needham Market,A149 near Cromer
+A141,A47 at Guyhirn,A1 & A14 Brampton Hut
+A142,A141 at Chatteris,A1304  at Newmarket
+A143,"B1370 at Gorleston on Sea, south of Great Yarmouth",A1017 at Haverhill
+A144,A12 at Darsham,A143 at Bungay
+A145,A12 at Blythburgh,A146 on Beccles bypass
+A146,"A140, Outer Ring Road in Norwich",A1117 in Lowestoft
+A147,Norwich,Norwich
+A148,"A47, southern bypass at King's Lynn",A149 Cromer
+A149,A47 at Great Yarmouth,A148 at Kings Lynn
+A150,Unused,
+A151,A1 interchange at Colsterworth,A17 at Holbeach
+A152,A52 in Donington,A16 at Surfleet
+A153,A607 bypass at Honington,A16 bypass at Louth
+A154,A14 north of Felixstowe,A14 Felixstowe docks
+A155,A153 at Tumby,A16 at West Keal
+A156,A57 in Drinsey Nook,A631 in Gainsborough
+A157,A158 in Wragby,A1104 in Maltby le Marsh
+A158,A15 in Lincoln,A52 in Skegness
+A159,A18 in Scunthorpe,A631 & A156 in Gainsborough
+A160,"A180 at Ulceby, North Lincolnshire",A1173 at Immingham docks
+A161,A631 on Beckingham bypass,A614 at Goole
+A162,A1 at Darrington,A659  at Tadcaster
+A163,A19 near Barlby on Selby bypass,A614 in Holme on Spalding Moor
+A164,A15 in Hessle,A614 at Driffield
+A165,A1079 in Kingston upon Hull,A171 north of Scarborough
+A166,"A64 at Grimston Bar, York",A614 on Driffield bypass
+A167,A168 at Topcliffe,A1 at Kenton Bar
+A168,A659 at Boston Spa,A167 at Northallerton
+A169,A64 bypass at Malton,A171 west of Whitby
+A170,"A19 & A168, south-east of Thirsk",A171 & A64 in Scarborough
+A171,A66 in Middlesbrough,A170 in Scarborough
+A172,A19 at Tontine,A66 in Middlesbrough
+A173,A172 bypass at Stokesley,A174 north of Skelton-in-Cleveland
+A174,A1044 at Thornaby,A171 at Whitby
+A175,Unused,
+A176,"A13 in Vange, near Basildon",A129 in Billericay
+A177,A1305 & A139 in Stockton,A167 south of Durham
+A178,A66 in Middlesbrough,A689 near the harbour in Hartlepool
+A179,A19 near Wingate,A689 in Hartlepool
+A180,M180 at Barnetby-le-Wold,A46 near Cleethorpes
+A181,A690 at Durham,A19 near Castle Eden
+A182,A194 near Washington,Unclassified road in Seaham
+A183,"A1, Junction 63 near Chester-le-Street",A194 & A1018 in South Shields
+A184,A1018  near Sunderland,"A1 at Gateshead Quays Interchange, west of Gateshead"
+A185,A184 Heworth station near Felling,A194 near South Shields
+A186,"A1, Denton Burn Interchange Newcastle upon Tyne","A192 at Earsdon, North Shields"
+A187,A193 in Heaton,A193 in North Shields
+A188,A193 at Byker,"A189, near Forest Hall"
+A189,A184 in Gateshead Newcastle upon Tyne,A1068 north of Ashington
+A190,"A189 on Dudley bypass, North Tyneside",A193 in Seaton Sluice
+A191,A6085 at Kenton Bar,A193 in Whitley Bay
+A192,A193 in North Shields,A197 bypass north of Morpeth
+A193,A1068 in Bedlington,A167 in Newcastle city centre
+A194,"A194 in Wardley, Gateshead",A183 in South Shields
+A195,A1 J64 near Washington,A184 in Wardley
+A196,A192 in Morpeth,"A197, east of Ashington"
+A197,A1 north of Morpeth,B1334 in Newbiggin-by-the-Sea
+A198,A199 in Tyninghame,"A1, north of Tranent"
+A199,A901 in Leith,"A1 on Thistly Cross Roundabout, Dunbar"

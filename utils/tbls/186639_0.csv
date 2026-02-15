@@ -1,0 +1,48 @@
+Call sign,Frequency (MHz),City of license,State,Class,ERP (W),FCC info
+W209CN,89.7,Andalusia,Alabama,D,10,FCC
+W205BX,88.9,Eufaula,Alabama,D,13,FCC
+K250BQ,97.9,Camden,Arkansas,D,250,FCC
+K209DT,89.7,El Dorado,Arkansas,D,38,FCC
+K219AO,91.7,Fairmont,California,D,89,
+W213BF,90.5,Key West,Florida,D,50,FCC
+W215BM,90.9,Dublin,Georgia,D,13,FCC
+W212BL,90.3,LaGrange,Georgia,D,10,FCC
+W214BG,90.7,Waycross,Georgia,D,38,FCC
+W206AN,89.1,Carlinville,Illinois,D,80,FCC
+W204BG,88.7,Effingham,Illinois,D,19,FCC
+W217BJ,91.3,Freeport,Illinois,D,55,FCC
+W201BL,88.1,Jacksonville,Illinois,D,27,FCC
+K208DW,89.5,DeSoto Parish,Louisiana,D,20,FCC
+K220ID,91.9,Grayson,Louisiana,D,10,FCC
+K232FN,94.3,Many,Louisiana,D,250,FCC
+K216EX,91.1,Minden,Louisiana,D,38,FCC
+K218EY,91.5,Morgan City,Louisiana,D,160,FCC
+K211DY,90.1,Natchitoches,Louisiana,D,10,FCC
+K219FA,91.7,Alexandria,Minnesota,D,50,FCC
+K213DN,90.5,Morris,Minnesota,D,27,FCC
+K201GD,88.1,Kirksville,Missouri,D,10,FCC
+K219FD,91.7,Mountain Grove,Missouri,D,50,FCC
+K207DG,89.3,Rosati,Missouri,D,140,FCC
+K218DC,91.5,Springfield,Missouri,D,250,FCC
+K213DK,90.5,Willow Springs,Missouri,D,50,FCC
+W202BS,88.3,Columbia,Mississippi,D,13,FCC
+W208BC,89.5,Corning,New York,D,10,FCC
+W220DD,91.9,Morehead City,North Carolina,D,50,FCC
+W202BR,88.3,Rockingham,North Carolina,D,10,FCC
+W209BN,89.7,Chambersburg,Pennsylvania,D,10,FCC
+W212BK,90.3,Franklin,Pennsylvania,D,10,FCC
+W207BM,89.3,Lock Haven,Pennsylvania,D,55,FCC
+W218BN,91.5,Mansfield,Pennsylvania,D,10,FCC
+W204BQ,88.7,Andrews,South Carolina,D,55,FCC
+W202CG,88.3,Clinton,South Carolina,D,27,FCC
+W204BR,88.7,Manning,South Carolina,D,50,FCC
+W215CK,90.9,Winnsboro,South Carolina,D,10,FCC
+K209DX,89.7,Brookings,South Dakota,D,250,FCC
+K207EW,89.3,Mitchell,South Dakota,D,250,FCC
+K211EC,90.1,Watertown,South Dakota,D,100,FCC
+K214FC,90.7,Yankton,South Dakota,D,92,FCC
+W217BG,91.3,Pikeville,Tennessee,D,10,FCC
+K216DN,91.1,Bonham,Texas,D,45,FCC
+K216FD,91.1,Columbus,Texas,D,40,FCC
+K219FH,91.7,Midland,Texas,D,50,FCC
+K216FC,91.1,Palestine,Texas,D,170,FCC

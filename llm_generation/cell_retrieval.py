@@ -18,7 +18,7 @@ def cell_retrieval():
     import yaml
     with open('../config.yaml', 'r') as f:
         conf = yaml.load(f, Loader=yaml.FullLoader)
-    key_model = 'gpt-4.1-2025-04-14' # conf['llm_model']
+    key_model =  conf['llm_model']
     model = 'gemini-2.5-pro'
     context = conf['context']
     random.seed(10)
@@ -40,7 +40,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
     MAX_ITER = 150
     count = 0
     rephrased_response = 'NA'
-    for tbl in generated_tbl_cache.iterkeys():
+    for tbl in ['https://en.wikipedia.org/wiki/2018_Korean_Tour']: # generated_tbl_cache.iterkeys():
         count += 1
         print(f'Retrieving {count}...')
         if count > MAX_ITER:
@@ -50,8 +50,8 @@ Return only the value, with no additional words, punctuation, or explanation."""
             generated_tbl_cache.delete(tbl)
             continue
         df = pd.read_csv(f'../tbls/{cfg["page_id"]}_{cfg["table_idx"]}.csv')
-        if key_model not in cfg['llm_generated']:
-            continue
+        # if key_model not in cfg['llm_generated']:
+        #     continue
         key = cfg['llm_generated'][key_model]['key']
         if len(str(key)) == 1 or key.isnumeric():
             continue
@@ -71,7 +71,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
         for row_index, key_value in get_random_sample(df, key, 3):
             single_value_scores[tbl][key_value] = {}
 
-            for col in columns_without_key:
+            for col in [k for k in columns_without_key if k!='Date']:
                 if len(str(col)) == 1 or col.isnumeric():
                     continue
                 real_value = df.iloc[row_index][col]
@@ -887,7 +887,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
         ],
     )
     plt.figure()
-    plot_df = df_min_comparison[['correct', 'Rephrased לֹorrect']]
+    plot_df = df_min_comparison[['correct', 'Rephrased Correct']]
     if context:
         plot_df = df_min_comparison[['correct', 'Rephrased correct', 'Context Correct']]
 

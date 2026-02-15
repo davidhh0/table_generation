@@ -1,0 +1,301 @@
+Ticker,Company,Segment,Exchange,Weighting (%)
+SSE: 600519,Kweichow Moutai,Consumer Staples,Shanghai,5.972
+SSE: 601318,Ping An Insurance,Financials,Shanghai,2.59
+SZSE: 300750,CATL,Industrials,Shenzhen,2.421
+SSE: 600036,China Merchants Bank,Financials,Shanghai,2.225
+SZSE: 000333,Midea Group,Consumer Discretionary,Shenzhen,1.727
+SZSE: 000858,Wuliangye Yibin,Consumer Staples,Shenzhen,1.549
+SSE: 600900,China Yangtze Power,Utilities,Shanghai,1.375
+SSE: 601166,Industrial Bank,Financials,Shanghai,1.358
+SSE: 601899,Zijin Mining Group,Materials,Shanghai,1.211
+SSE: 600030,CITIC Securities,Financials,Shanghai,1.166
+SSE: 600276,Jiangsu Hengrui Medicine,Health Care,Shanghai,1.068
+SSE: 601398,Industrial and Commercial Bank of China,Financials,Shanghai,1.048
+SSE: 600887,Inner Mongolia Yili Industrial Group,Consumer Staples,Shanghai,1.012
+SZSE: 300059,East Money,Financials,Shenzhen,0.999
+SZSE: 000651,Gree Electric,Consumer Discretionary,Shenzhen,0.987
+SZSE: 300760,Mindray,Health Care,Shenzhen,0.983
+SZSE: 002594,BYD,Consumer Discretionary,Shenzhen,0.972
+SSE: 601328,Bank of Communications,Financials,Shanghai,0.966
+SSE: 600309,Wanhua Chemical Group,Materials,Shanghai,0.841
+SZSE: 000725,BOE Technology Group,Information Technology,Shenzhen,0.839
+SSE: 600919,Bank of Jiangsu,Financials,Shanghai,0.79
+SZSE: 002475,Luxshare Precision Industry,Information Technology,Shenzhen,0.774
+SZSE: 300124,Shenzhen Inovance Technology,Industrials,Shenzhen,0.757
+SSE: 601288,Agricultural Bank of China,Financials,Shanghai,0.75
+SZSE: 002415,Hangzhou Hikvision Digital Technology,Information Technology,Shenzhen,0.732
+SZSE: 000568,Luzhou Lao Jiao,Consumer Staples,Shenzhen,0.726
+SSE: 601012,Longi Green Energy Technology,Information Technology,Shanghai,0.722
+SSE: 601088,China Shenhua Energy,Energy,Shanghai,0.714
+SSE: 601816,Beijing-Shanghai High Speed Railway,Industrials,Shanghai,0.696
+SSE: 600028,China Petroleum & Chemical Corporation,Energy,Shanghai,0.667
+SSE: 600809,Shanxi Xinghuacun Fen Wine Factory,Consumer Staples,Shanghai,0.638
+SSE: 601668,China State Construction Engineering,Industrials,Shanghai,0.629
+SSE: 603259,WuXi AppTec,Health Care,Shanghai,0.627
+SZSE: 002714,Muyuan Foodstuff,Consumer Staples,Shenzhen,0.59
+SZSE: 000001,Ping An Bank,Financials,Shenzhen,0.576
+SZSE: 300498,Wens Foodstuff Group,Consumer Staples,Shenzhen,0.572
+SSE: 600016,China Minsheng Bank,Financials,Shanghai,0.563
+SSE: 601857,PetroChina,Energy,Shanghai,0.562
+SSE: 601225,Shaanxi Coal Industry Company,Energy,Shanghai,0.561
+SZSE: 300308,Zhongji Innolight,Information Technology,Shenzhen,0.559
+SSE: 688981,Semiconductor Manufacturing International Corporation,Information Technology,Shanghai,0.535
+SZSE: 000063,ZTE,Information Technology,Shenzhen,0.534
+SSE: 601988,Bank of China,Financials,Shanghai,0.528
+SZSE: 002352,S.F. Holding,Industrials,Shenzhen,0.527
+SSE: 600406,NARI Technology,Industrials,Shanghai,0.522
+SSE: 600941,China Mobile,Communication,Shanghai,0.517
+SZSE: 000338,Weichai Power,Industrials,Shenzhen,0.514
+SSE: 600050,China United Network Communications,Communication,Shanghai,0.514
+SZSE: 002230,Iflytek,Information Technology,Shenzhen,0.513
+SSE: 600690,Qingdao Haier,Consumer Discretionary,Shanghai,0.512
+SSE: 601728,China Telecom Corporation,Communication,Shanghai,0.51
+SZSE: 300274,Sungrow Power Supply,Industrials,Shenzhen,0.509
+SZSE: 002142,Bank of Ningbo,Financials,Shenzhen,0.495
+SSE: 600837,Haitong Securities Company,Financials,Shanghai,0.495
+SZSE: 000792,Qinghai Salt Lake Potash,Materials,Shenzhen,0.492
+SSE: 601601,China Pacific Insurance,Financials,Shanghai,0.492
+SZSE: 000100,TCL Corporation,Information Technology,Shenzhen,0.477
+SSE: 601888,China International Travel Service,Consumer Discretionary,Shanghai,0.477
+SSE: 600000,Shanghai Pudong Development Bank,Financials,Shanghai,0.471
+SSE: 600031,Sany Heavy Industry,Industrials,Shanghai,0.464
+SSE: 601985,China National Nuclear Power,Utilities,Shanghai,0.46
+SSE: 600150,China CSSC Holdings,Industrials,Shanghai,0.445
+SSE: 688041,Hygon Information Technology,Information Technology,Shanghai,0.444
+SSE: 601766,CRRC Corporation,Industrials,Shanghai,0.435
+SSE: 601169,Bank of Beijing,Financials,Shanghai,0.43
+SZSE: 002371,NAURA Technology Group,Information Technology,Shenzhen,0.422
+SSE: 600089,TBEA,Industrials,Shanghai,0.422
+SSE: 601688,Huatai Securities,Financials,Shanghai,0.42
+SSE: 601138,Foxconn Industrial Internet,Information Technology,Shanghai,0.417
+SZSE: 000625,Chongqing Changan Automobile,Consumer Discretionary,Shenzhen,0.415
+SSE: 600438,Tongwei Company,Information Technology,Shanghai,0.402
+SSE: 600048,Poly Real Estate Group,Real Estate,Shanghai,0.394
+SSE: 603501,Will Semiconductor,Information Technology,Shanghai,0.393
+SSE: 600104,SAIC Motor,Consumer Discretionary,Shanghai,0.392
+SSE: 600660,Fuyao Glass Industry Group,Consumer Discretionary,Shanghai,0.389
+SZSE: 000002,China Vanke,Real Estate,Shenzhen,0.383
+SZSE: 300015,Aier Eye Hospital,Health Care,Shenzhen,0.383
+SSE: 601211,Guotai Junan Securities,Financials,Shanghai,0.382
+SSE: 603288,Foshan Haitian Flavouring & Food Co,Consumer Staples,Shanghai,0.38
+SSE: 600436,Zhangzhou Pientzehuang Pharmaceutical,Health Care,Shanghai,0.377
+SSE: 601919,China Cosco Holdings,Industrials,Shanghai,0.376
+SSE: 600905,China Three Gorges Renewables,Utilities,Shanghai,0.371
+SSE: 601390,China Railway Group Limited,Industrials,Shanghai,0.366
+SSE: 601229,Bank of Shanghai,Financials,Shanghai,0.364
+SZSE: 300122,Chongqing Zhifei Biological Products,Health Care,Shenzhen,0.36
+SZSE: 002027,Focus Media Information Technology,Communication,Shenzhen,0.357
+SSE: 688012,Advanced Micro-Fabrication Equipment,Information Technology,Shanghai,0.357
+SSE: 688111,Beijing Kingsoft Office Software,Information Technology,Shanghai,0.351
+SSE: 601006,Daqin Railway,Industrials,Shanghai,0.343
+SZSE: 002304,Jiangsu Yanghe Brewery Joint-Stock,Consumer Staples,Shenzhen,0.341
+SSE: 601818,China Everbright Bank,Financials,Shanghai,0.335
+SSE: 600019,Baoshan Iron and Steel,Materials,Shanghai,0.331
+SSE: 688271,United Imaging,Health Care,Shanghai,0.329
+SSE: 603019,Dawning Information Industry,Information Technology,Shanghai,0.327
+SSE: 600585,Anhui Conch Cement,Materials,Shanghai,0.322
+SZSE: 002050,ZHEJIANG SANHUA INTELLIGENT CONTROLS,Industrials,Shenzhen,0.313
+SZSE: 002466,Tianqi Lithium Industries,Materials,Shenzhen,0.311
+SSE: 601658,Postal Savings Bank of China,Financials,Shanghai,0.302
+SSE: 601989,China Shipbuilding Industry Company,Industrials,Shanghai,0.301
+SSE: 600938,CNOOC Limited,Energy,Shanghai,0.297
+SSE: 600999,China Merchants Securities,Financials,Shanghai,0.294
+SSE: 688036,Transsion,Information Technology,Shanghai,0.287
+SZSE: 000938,Unisplendour,Information Technology,Shenzhen,0.284
+SSE: 601628,China Life Insurance Company,Financials,Shanghai,0.283
+SSE: 603986,GigaDevice,Information Technology,Shanghai,0.274
+SZSE: 002049,Unigroup Guoxin Microelectronics,Information Technology,Shenzhen,0.273
+SSE: 601600,Aluminum Corporation of China Limited,Materials,Shanghai,0.269
+SSE: 600111,China Northern Rare Earth Group,Materials,Shanghai,0.268
+SSE: 688008,Montage Technology,Information Technology,Shanghai,0.267
+SZSE: 300014,Eve Energy,Industrials,Shenzhen,0.264
+SSE: 601939,China Construction Bank,Financials,Shanghai,0.264
+SSE: 600958,Orient Securities,Financials,Shanghai,0.258
+SSE: 600893,AVIC Aviation Engine Corporation,Industrials,Shanghai,0.257
+SZSE: 002460,Ganfeng Lithium,Materials,Shenzhen,0.254
+SSE: 601009,Bank of Nanjing,Financials,Shanghai,0.254
+SZSE: 000538,Yunnan Baiyao Group,Health Care,Shenzhen,0.251
+SSE: 601669,Power Construction Corporation of China,Industrials,Shanghai,0.247
+SSE: 600009,Shanghai International Airport,Industrials,Shanghai,0.246
+SZSE: 002129,Tianjin Zhonghuan Semiconductor,Information Technology,Shenzhen,0.245
+SSE: 603993,China Molybdenum,Materials,Shanghai,0.244
+SSE: 600886,SDIC Power Holdings,Utilities,Shanghai,0.241
+SSE: 600760,AVIC SHENYANG AIRCRAFT COMPANY,Industrials,Shanghai,0.237
+SZSE: 000425,XCMG Construction Machinery,Industrials,Shenzhen,0.236
+SZSE: 000776,GF Securities,Financials,Shenzhen,0.235
+SSE: 601916,China Zheshang Bank,Financials,Shanghai,0.235
+SSE: 600795,GD Power Development,Utilities,Shanghai,0.234
+SZSE: 000661,Chang Chun High and New Technology Industry,Health Care,Shenzhen,0.233
+SZSE: 000166,Shenwan Hongyuan,Financials,Shenzhen,0.232
+SSE: 600426,Shandong Hualu-Hengsheng Chemical,Materials,Shanghai,0.229
+SSE: 600015,Hua Xia Bank,Financials,Shanghai,0.226
+SZSE: 300782,Maxscend Microelectronics,Information Technology,Shenzhen,0.225
+SSE: 601377,Industrial Securities,Financials,Shanghai,0.225
+SSE: 601186,China Railway Construction,Industrials,Shanghai,0.224
+SZSE: 000157,Zoomlion Heavy Industry Science & Technology,Industrials,Shenzhen,0.223
+SZSE: 002241,GoerTek,Information Technology,Shenzhen,0.223
+SSE: 600926,Bank of Hangzhou,Financials,Shanghai,0.221
+SSE: 600547,Shandong Gold-Mining,Materials,Shanghai,0.22
+SSE: 600011,Huaneng Power International,Utilities,Shanghai,0.218
+SZSE: 000977,Inspur Electronic Information Industry,Information Technology,Shenzhen,0.216
+SZSE: 002252,Shanghai RAAS Blood Products,Health Care,Shenzhen,0.215
+SSE: 600674,Sichuan Chuantou Energy,Utilities,Shanghai,0.214
+SSE: 603799,ZHEJIANG HUAYOU COBALT,Materials,Shanghai,0.213
+SSE: 600584,JCET,Information Technology,Shanghai,0.21
+SSE: 600570,Hundsun Technologies,Information Technology,Shanghai,0.208
+SZSE: 002236,Zhejiang Dahua Technology,Information Technology,Shenzhen,0.205
+SZSE: 002179,AVIC Jonhon Optronic Technology,Information Technology,Shenzhen,0.204
+SZSE: 000596,Anhui Gujing Distillery,Consumer Staples,Shenzhen,0.201
+SZSE: 002311,Guangdong Haid Group,Consumer Staples,Shenzhen,0.201
+SSE: 600188,Yanzhou Coal Mining,Energy,Shanghai,0.2
+SZSE: 300896,IMEIK TECHNOLOGY DEVELOPMENT,Health Care,Shenzhen,0.198
+SSE: 688256,Cambricon Technologies,Information Technology,Shanghai,0.197
+SSE: 600010,Inner Mongolia Baotou Steel Union,Materials,Shanghai,0.196
+SZSE: 002271,Beijing Oriental Yuhong Waterproof Technology,Materials,Shenzhen,0.195
+SSE: 601111,Air China,Industrials,Shanghai,0.195
+SZSE: 001979,China Merchants Shekou Industrial Zone Holdings,Real Estate,Shenzhen,0.192
+SZSE: 300408,Chaozhou Three-Circle,Information Technology,Shenzhen,0.191
+SSE: 600845,Baosight Software,Information Technology,Shanghai,0.189
+SSE: 603369,Jiangsu King's Luck Brewery Joint-Stock,Consumer Staples,Shanghai,0.189
+SSE: 600989,Ningxia Baofeng Energy Group,Materials,Shanghai,0.188
+SSE: 600745,Wingtech,Information Technology,Shanghai,0.186
+SSE: 601788,Everbright Securities,Financials,Shanghai,0.185
+SSE: 600115,China Eastern Airlines Corp,Industrials,Shanghai,0.183
+SSE: 600029,China Southern Airlines,Industrials,Shanghai,0.179
+SZSE: 002601,LB Group,Materials,Shenzhen,0.176
+SSE: 601360,360 Security Technology,Information Technology,Shanghai,0.176
+SSE: 601901,Founder Securities,Financials,Shanghai,0.176
+SZSE: 002493,Rongsheng Petro Chemical,Materials,Shenzhen,0.175
+SSE: 600196,Fosun Pharmaceutical,Health Care,Shanghai,0.175
+SZSE: 002459,JA Solar Technology,Information Technology,Shenzhen,0.174
+SSE: 601699,Shanxi Lu'an Environmental Energy Development,Energy,Shanghai,0.173
+SSE: 601995,China International Capital Corporation,Financials,Shanghai,0.172
+SSE: 600085,Beijing Tongrentang,Health Care,Shanghai,0.171
+SSE: 601100,Jiangsu Hengli Hydraulic,Industrials,Shanghai,0.171
+SSE: 601800,China Communications Construction Company,Industrials,Shanghai,0.171
+SZSE: 000895,Henan Shuanghui Investment & Development,Consumer Staples,Shenzhen,0.17
+SZSE: 002555,37 Interactive Entertainment Network Technology Group,Communication,Shenzhen,0.17
+SZSE: 003816,CGN Power,Utilities,Shenzhen,0.17
+SSE: 600489,Zhongjin Gold,Materials,Shanghai,0.17
+SSE: 601066,China Securities,Financials,Shanghai,0.17
+SZSE: 000963,Huadong Medicine,Health Care,Shenzhen,0.166
+SZSE: 300142,Walvax Biotechnology,Health Care,Shenzhen,0.166
+SZSE: 300033,Hithink RoyalFlush Information Network,Financials,Shenzhen,0.165
+SZSE: 000768,AVIC Aircraft,Industrials,Shenzhen,0.163
+SSE: 601633,Great Wall Motor,Consumer Discretionary,Shanghai,0.162
+SZSE: 000786,Beijing New Building Materials Public,Industrials,Shenzhen,0.16
+SZSE: 002920,Huizhou Desay SV Automotive,Consumer Discretionary,Shenzhen,0.16
+SSE: 600600,Tsingtao Brewery,Consumer Staples,Shanghai,0.16
+SSE: 601868,China Energy Engineering Corporation,Industrials,Shanghai,0.159
+SZSE: 002648,SATELLITE CHEMICAL,Materials,Shenzhen,0.157
+SSE: 601021,Spring Airlines,Industrials,Shanghai,0.157
+SSE: 603392,BEIJING WANTAI BIOLOGICAL PHARMACY ENTERPRISE,Health Care,Shanghai,0.157
+SZSE: 000301,Jiangsu Eastern Shenghong,Materials,Shenzhen,0.156
+SZSE: 002001,Zhejiang NHU,Health Care,Shenzhen,0.156
+SSE: 600741,HUAYU Automotive Systems Company,Consumer Discretionary,Shanghai,0.154
+SSE: 601336,New China Life Insurance,Financials,Shanghai,0.153
+SSE: 601689,Ningbo Tuopu Group,Consumer Discretionary,Shanghai,0.153
+SSE: 688599,Trina Solar,Information Technology,Shanghai,0.153
+SZSE: 002812,Yunnan Energy New Material,Materials,Shenzhen,0.151
+SSE: 600346,Hengli Petrochemical,Materials,Shanghai,0.151
+SZSE: 000983,Shanxi Coking Coal Energy Group,Energy,Shenzhen,0.148
+SSE: 601881,China Galaxy Securities,Financials,Shanghai,0.148
+SSE: 600588,Yonyou Network Technology,Information Technology,Shanghai,0.146
+SSE: 600515,Hainan Airport Infrastructure,Real Estate,Shanghai,0.144
+SSE: 601117,China National Chemical Engineering,Industrials,Shanghai,0.144
+SSE: 601838,BANK OF CHENGDU,Financials,Shanghai,0.142
+SSE: 688126,National Silicon Industry Group,Information Technology,Shanghai,0.142
+SZSE: 300450,WUXI LEAD INTELLIGENT EQUIPMENT,Industrials,Shenzhen,0.14
+SZSE: 002736,Guosen Securities,Financials,Shenzhen,0.139
+SZSE: 002821,Asymchem Laboratories,Health Care,Shenzhen,0.136
+SZSE: 300316,Zhejiang Jingsheng Mechanical & Electrical,Information Technology,Shenzhen,0.136
+SZSE: 300433,Lens Technology,Information Technology,Shenzhen,0.135
+SSE: 600176,CHINA JUSHI,Materials,Shanghai,0.135
+SZSE: 002709,Guangzhou Tinci Materials Technology,Materials,Shenzhen,0.134
+SZSE: 300347,Hangzhou Tigermed Consulting,Health Care,Shenzhen,0.133
+SSE: 601618,Metallurgical Corporation of China,Industrials,Shanghai,0.133
+SSE: 601872,China Merchants Energy Shipping,Energy,Shanghai,0.132
+SZSE: 000408,ZANGGE MINING COMPANY,Materials,Shenzhen,0.13
+SZSE: 002180,Ninestar Corporation,Information Technology,Shenzhen,0.13
+SZSE: 300661,SG Micro,Information Technology,Shenzhen,0.13
+SSE: 600372,China Avionics Systems,Industrials,Shanghai,0.129
+SSE: 601898,China Coal Energy,Energy,Shanghai,0.128
+SSE: 688396,China Resources Microelectronics,Information Technology,Shanghai,0.127
+SZSE: 300496,Thunder Software Technology,Information Technology,Shenzhen,0.125
+SZSE: 000733,China Zhenhua  Science & Technology,Information Technology,Shenzhen,0.124
+SSE: 601877,Zhejiang Chint Electrics,Industrials,Shanghai,0.124
+SSE: 600233,YTO Express Group,Industrials,Shanghai,0.123
+SZSE: 000999,China Resources Sanjiu Medical & Pharmaceutical,Health Care,Shenzhen,0.122
+SSE: 600219,Shandong Nanshan Aluminium,Materials,Shanghai,0.122
+SZSE: 002007,Hualan Biological Engineering,Health Care,Shenzhen,0.121
+SSE: 600023,Zhejiang Zheneng Electric Power,Utilities,Shanghai,0.121
+SZSE: 002074,GUOXUAN HIGH-TECH,Industrials,Shenzhen,0.118
+SZSE: 002202,Xinjiang Goldwind Science & Technology,Industrials,Shenzhen,0.118
+SZSE: 300759,Pharmaron Beijing,Health Care,Shenzhen,0.117
+SSE: 600332,Guangzhou Baiyunshan Pharmaceutical Holdings,Health Care,Shanghai,0.117
+SSE: 603806,HANGZHOU FIRST PV MATERIAL,Information Technology,Shanghai,0.116
+SSE: 600362,Jiangxi Copper,Materials,Shanghai,0.114
+SZSE: 000876,New Hope Liuhe,Consumer Staples,Shenzhen,0.113
+SSE: 600183,Shengyi Technology,Information Technology,Shanghai,0.113
+SSE: 601607,Shanghai Pharmaceuticals Holding,Health Care,Shanghai,0.113
+SSE: 601799,Changzhou Xingyu Automotive Lighting Systems,Consumer Discretionary,Shanghai,0.113
+SZSE: 301269,Empyrean Technology,Information Technology,Shenzhen,0.111
+SSE: 601238,Guangzhou Automobile Group,Consumer Discretionary,Shanghai,0.111
+SSE: 601878,ZHESHANG SECURITIES,Financials,Shanghai,0.111
+SSE: 601998,China Citic Bank,Financials,Shanghai,0.111
+SSE: 600918,Zhongtai Securities,Financials,Shanghai,0.109
+SZSE: 300999,Yihai Kerry,Consumer Staples,Shenzhen,0.108
+SZSE: 300223,Ingenic Semiconductor,Information Technology,Shenzhen,0.106
+SSE: 603260,Hoshine Silicon Industry,Materials,Shanghai,0.105
+SSE: 688303,XinJiang Daqo New Energy,Information Technology,Shanghai,0.105
+SZSE: 300413,Mango Excellent Media,Communication,Shenzhen,0.104
+SSE: 601615,MingYangSmartEnergyGroup,Industrials,Shanghai,0.104
+SZSE: 002410,Glodon Software,Information Technology,Shenzhen,0.102
+SSE: 600875,Dongfang Electric Corporation,Industrials,Shanghai,0.102
+SZSE: 002603,Shijiazhuang Yiling Pharmaceutical,Health Care,Shenzhen,0.101
+SSE: 600061,SDIC Essence,Financials,Shanghai,0.099
+SSE: 688223,Jinko Solar,Information Technology,Shanghai,0.099
+SSE: 600460,Hangzhou Silan Microelectronics,Information Technology,Shanghai,0.098
+SSE: 600803,ENN Ecological Holdings,Utilities,Shanghai,0.098
+SZSE: 300751,Suzhou Maxwell Technologies,Information Technology,Shenzhen,0.095
+SSE: 600025,HuanengLancang River Hydropower,Utilities,Shanghai,0.094
+SSE: 601319,People's Insurance Company of China,Financials,Shanghai,0.094
+SZSE: 002841,Guangzhou Shiyuan Electronic Technology Company,Information Technology,Shenzhen,0.093
+SSE: 600732,Shanghai Aiko Solar Energy,Information Technology,Shanghai,0.093
+SSE: 603659,Shanghai Putailai New Energy Technology,Materials,Shanghai,0.09
+SZSE: 300454,Sangfor Technologies,Information Technology,Shenzhen,0.089
+SZSE: 300919,CNGR Advanced Material,Materials,Shenzhen,0.089
+SSE: 600132,Chongqing Brewery,Consumer Staples,Shanghai,0.089
+SZSE: 000617,CNPC Capital Company,Financials,Shenzhen,0.088
+SZSE: 300763,Ginlong Technologies,Industrials,Shenzhen,0.088
+SZSE: 000069,Shenzhen Overseas Chinese Town Company,Real Estate,Shenzhen,0.085
+SSE: 600018,Shanghai International Port Group,Industrials,Shanghai,0.085
+SZSE: 000708,CITIC Pacific Special Steel Group,Materials,Shenzhen,0.083
+SZSE: 300628,Yealink Network Technology,Information Technology,Shenzhen,0.083
+SZSE: 002938,Avary Holding  Co,Information Technology,Shenzhen,0.082
+SZSE: 002916,Shennan Circuits,Information Technology,Shenzhen,0.081
+SSE: 605117,Ningbo Deye Technology,Industrials,Shanghai,0.081
+SSE: 600039,Sichuan Road&Bridge,Industrials,Shanghai,0.08
+SSE: 605499,Eastroc Beverage,Consumer Staples,Shanghai,0.08
+SSE: 603195,GONGNIU GROUP,Industrials,Shanghai,0.077
+SSE: 600754,Shanghai Jin Jiang International Hotels,Consumer Discretionary,Shanghai,0.075
+SSE: 603899,SHANGHAI M&G STATIONERY,Industrials,Shanghai,0.074
+SSE: 603290,StarPower Semiconductor,Information Technology,Shanghai,0.073
+SSE: 603833,Oppein Home Group,Consumer Discretionary,Shanghai,0.071
+SSE: 601865,Flat Glass Group,Information Technology,Shanghai,0.07
+SSE: 688363,Bloomage Biotechnology Corporation,Health Care,Shanghai,0.069
+SZSE: 000877,Xinjiang Tianshan Cement,Materials,Shenzhen,0.067
+SSE: 688065,Cathay Biotech,Materials,Shanghai,0.063
+SZSE: 300957,Yunnan Botanee Bio-Technology Group,Consumer Staples,Shenzhen,0.062
+SSE: 601236,HONGTA SECURITIES,Financials,Shanghai,0.062
+SSE: 601698,China Satellite Communications,Communication,Shanghai,0.06
+SSE: 688187,Zhuzhou CRRC Times Electric,Industrials,Shanghai,0.057
+SSE: 688561,Qi An Xin Technology Group,Information Technology,Shanghai,0.054
+SSE: 601155,Future Land Holdings,Real Estate,Shanghai,0.053
+SSE: 600606,China Development Holdings,Real Estate,Shanghai,0.052
+SZSE: 300979,Huali Industrial Group Company,Consumer Discretionary,Shenzhen,0.049
+SSE: 601808,China Oilfield Services,Energy,Shanghai,0.048
+SSE: 603486,Ecovacs Robotics,Consumer Discretionary,Shanghai,0.048
+SZSE: 000800,FAW Car,Industrials,Shenzhen,0.046
+SSE: 601059,CINDA SECURITIES,Financials,Shanghai,0.031
+SZSE: 001289,China Longyuan Power Group Limited,Utilities,Shenzhen,0.016

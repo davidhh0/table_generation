@@ -1,0 +1,11 @@
+Species,Anterior (thoracic),Intermediate (abdominal),Posterior (inguinal),Total
+"Goat, sheep, horse  guinea pig",0,0,2,2
+Cattle,0,0,4,4
+Cat,2,2,4,8
+Dog,4,2,2 or 4,8 or 10
+Mouse,6,0,4,10
+Rat,6,2,4,12
+Pig,6,6,6,18
+"Proboscideans, primates",2,0,0,2
+Virginia opossum,0,0,13,13
+Southern red-sided opossum,0,0,25 to 27,25 to 27

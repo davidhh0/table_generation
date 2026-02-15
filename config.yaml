@@ -1,4 +1,4 @@
-llm_model: gpt-4.1-2025-04-14
+llm_model: gemini-2.5-pro # gpt-4.1-2025-04-14
 context: false
 run_tables_to_fetch: 1
 
@@ -91,7 +91,7 @@ known_dates_format:
 
 header_manipulations:
   # Example: https://en.wikipedia.org/wiki/List_of_cities_in_Yamanashi_Prefecture_by_population - Rank (2020) -> Rank
-  remove_data_inside_parentheses: false
+  remove_data_inside_parentheses: true
   # Example: https://en.wikipedia.org/wiki/Latin_American_migration_to_the_United_Kingdom#Official_statistics_on_Latin_American-born_residents - Population (2021/22 census)[14][15][16] -> Population (2021/22 census)
   remove_data_inside_square_brackets: true
 
@@ -105,7 +105,7 @@ maximum_mixed_types:
   # If a column has more than this number of mixed types, it will be considered invalid and will be dropped.
   # Example: A column with both numbers and strings will be considered invalid if this value is set to 1.
   type: abs # Can be 'abs' or 'percent'
-  value: 3 # 10% of number of cells in the table.
+  value: 3
   # Example for 'abs':
   # type: abs
   # value: 2 # 2 cells in the table.

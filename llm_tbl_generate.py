@@ -77,7 +77,7 @@ def run(chunk, conf, ts):
     f1_scores = []
     rel_nk_acc_scores = []
     for key, value in {k: v for d in chunk.tolist() for k, v in d.items()}.items():
-        if counter >= 350:
+        if counter >= 650:
             break
         cfg = json.loads(value)
         if not os.path.isfile(f'tbls/{cfg["page_id"]}_{cfg["table_idx"]}.csv'):
@@ -118,7 +118,7 @@ def run(chunk, conf, ts):
             continue
         cfg["table_key"] = key
 
-        prompt = TEMPLATE.format(
+        prompt = TEMPLATE_ROW_EXAMPLE.format(
             NUM_FIELDS=cfg["shape"][1],
             COLUMNS=cfg["columns"],
             TABLE_TITLE=title_response,
@@ -250,8 +250,8 @@ def llm_table_generation(conf, ts):
     from numpy import array_split
 
     working_dir = git.Repo(".", search_parent_directories=True).working_tree_dir
-    tbl_details = diskcache.Cache(f"{working_dir}/local_dbs/tables/generated_tables.db")
-    tbls_to_generate = [{k: tbl_details[k]} for k in tbl_details.iterkeys()]
+    tbl_details =  diskcache.Cache(f"{working_dir}/local_dbs/tbl_metadata.db")
+    tbls_to_generate = [{k: tbl_details[k]} for k in tbl_details.iterkeys() if '8_Korea' in k ]
     list_divided = array_split(tbls_to_generate, 1)
     for _chunk in list_divided:
         run(_chunk, conf, ts)

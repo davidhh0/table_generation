@@ -18,7 +18,7 @@ def cell_retrieval():
     import yaml
     with open('../config.yaml', 'r') as f:
         conf = yaml.load(f, Loader=yaml.FullLoader)
-    key_model = 'gpt-4.1-2025-04-14' # conf['llm_model']
+    key_model =  conf['llm_model']
     model = 'gemini-2.5-pro'
     context = conf['context']
     random.seed(10)
@@ -38,7 +38,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
     MAX_ITER = 150
     count = 0
     rephrased_response = 'NA'
-    for tbl in generated_tbl_cache.iterkeys():
+    for tbl in ['https://en.wikipedia.org/wiki/2018_Korean_Tour']: # generated_tbl_cache.iterkeys():
         count += 1
         print(f'Retrieving {count}...')
         if count > MAX_ITER:
