@@ -18,8 +18,8 @@ def cell_retrieval():
     import yaml
     with open('../config.yaml', 'r') as f:
         conf = yaml.load(f, Loader=yaml.FullLoader)
-    key_model =  conf['llm_model']
-    model = 'gemini-2.5-pro'
+    key_model =  conf['title_and_key_model']
+    model = conf['llm_model']
     context = conf['context']
     random.seed(10)
     working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
@@ -37,7 +37,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
     MAX_ITER = 150
     count = 0
     rephrased_response = 'NA'
-    for tbl in ['https://en.wikipedia.org/wiki/2018_Korean_Tour']: # generated_tbl_cache.iterkeys():
+    for tbl in generated_tbl_cache.iterkeys():
         count += 1
         print(f'Retrieving {count}...')
         if count > MAX_ITER:
@@ -100,24 +100,10 @@ Return only the value, with no additional words, punctuation, or explanation."""
                     TABLE_TITLE=table_description, QUESTION=max_prompt_question
                 ).strip()
                 max_response = get_llm_response(max_prompt, MODEL=model)
-                max_rephrased_prompt = prompts['rephrase_wrapper'].format(
-                    QUESTION=max_prompt_question,
-                    TABLE_TITLE=table_description,
-                    ANSWER=actual_value_max,
-                    URL=cfg['url'],
-                    MODEL=model,
-                ).strip()
-                max_rephrased_response = get_llm_response(max_rephrased_prompt,MODEL=model,)
-                max_rephrased_llm_response = get_llm_response(
-                    REPHRASED_SUFFIX.format(REPHRASE=max_rephrased_response),MODEL=model,
-                )
                 if max_response is None or max_response == '':
                     continue
                 max_parsed_response = parser_ins.try_cast(max_response)
-                max_rephrased_parsed_response = parser_ins.try_cast(
-                    max_rephrased_llm_response
-                )
-                if max_parsed_response is None or max_rephrased_parsed_response is None:
+                if max_parsed_response is None:
                     continue
 
                 # Min section:
@@ -133,23 +119,10 @@ Return only the value, with no additional words, punctuation, or explanation."""
                 ).strip()
 
                 min_response = get_llm_response(min_prompt, MODEL=model)
-                min_rephrased_prompt = prompts['rephrase_wrapper'].format(
-                    QUESTION=min_prompt_question,
-                    TABLE_TITLE=table_description,
-                    ANSWER=actual_value_min,
-                    URL=cfg['url'],MODEL=model,
-                ).strip()
-                min_rephrased_response = get_llm_response(min_rephrased_prompt,MODEL=model,)
-                min_rephrased_llm_response = get_llm_response(
-                    REPHRASED_SUFFIX.format(REPHRASE=min_rephrased_response),MODEL=model,
-                )
                 if min_response is None or min_response == '':
                     continue
                 min_parsed_response = parser_ins.try_cast(min_response)
-                min_rephrased_parsed_response = parser_ins.try_cast(
-                    min_rephrased_llm_response
-                )
-                if min_parsed_response is None or min_rephrased_parsed_response is None:
+                if min_parsed_response is None:
                     continue
 
                 max_context_response = None
@@ -168,22 +141,12 @@ Return only the value, with no additional words, punctuation, or explanation."""
                     'max_response': max_response,
                     'max_actual_result': actual_value_max,
                     'max_correct': int(max_parsed_response == actual_value_max),
-                    'max_rephrased_correct': int(
-                        max_rephrased_parsed_response == actual_value_max
-                    ),
                     'max_prompt': max_prompt_question,
-                    'max_rephrased_question': max_rephrased_response,
-                    'max_rephrased_response': max_rephrased_parsed_response,
                     # Min values:
                     'min_response': min_response,
                     'min_actual_result': actual_value_min,
                     'min_correct': int(min_parsed_response == actual_value_min),
-                    'min_rephrased_correct': int(
-                        min_rephrased_parsed_response == actual_value_min
-                    ),
                     'min_prompt': min_prompt_question,
-                    'min_rephrased_question': min_rephrased_response,
-                    'min_rephrased_response': min_rephrased_llm_response,
                     # Context responses
                     'max_context_response': max_context_response,
                     'min_context_response': min_context_response,
@@ -200,7 +163,6 @@ Return only the value, with no additional words, punctuation, or explanation."""
     max_comparison_list = []
     max_comparison_match = 0
     max_comparison_count = 0
-    max_comparison_rephrased_match = 0
     max_comparison_context_match = 0
     for record in comparison_scores.items():
         url = record[0]
@@ -215,16 +177,12 @@ Return only the value, with no additional words, punctuation, or explanation."""
                         result['max_response'],
                         result['max_actual_result'],
                         result['max_correct'],
-                        result['max_rephrased_correct'],
                         result['max_prompt'],
-                        result['max_rephrased_question'],
-                        result['max_rephrased_response'],
                         result['max_context_response'] if 'max_context_response' in result else 'NA',
                         result['max_context_correct'] if 'max_context_correct' in result else 'NA',
                     ]
                 )
                 max_comparison_count += 1
-                max_comparison_rephrased_match += result['max_rephrased_correct']
                 max_comparison_match += result['max_correct']
                 if 'max_context_correct' in result and result['max_context_correct'] != 'NA':
                     max_comparison_context_match += result['max_context_correct']
@@ -232,7 +190,6 @@ Return only the value, with no additional words, punctuation, or explanation."""
     print(
         f"Comparison match: {max_comparison_match} out of {max_comparison_count} for MAX comparison"
     )
-    print(f"Rephrased matched: {max_comparison_rephrased_match} out of {max_comparison_count} for MAX comparison")
     print(f"Context matched: {max_comparison_context_match} out of {max_comparison_count} for MAX comparison")
     df_max_comparison = pd.DataFrame(
         max_comparison_list,
@@ -243,17 +200,14 @@ Return only the value, with no additional words, punctuation, or explanation."""
             'Response',
             'Actual Result',
             'Correct',
-            'Rephrased Correct',
             'Prompt',
-            'Rephrased Question',
-            'Rephrased Response',
             'Context Response',
             'Context Correct',
         ],
     )
-    plot_df = df_max_comparison[['Correct', 'Rephrased Correct']]
+    plot_df = df_max_comparison[['Correct']]
     if context:
-        plot_df = df_max_comparison[['correct', 'Rephrased correct', 'Context Correct']]
+        plot_df = df_max_comparison[['correct', 'Context Correct']]
 
     mapping = {-1: "mistake", 0: "neutral", 1: "correct"}
 
@@ -283,7 +237,6 @@ Return only the value, with no additional words, punctuation, or explanation."""
     min_comparison_list = []
     min_comparison_match = 0
     min_comparison_count = 0
-    min_comparison_rephrased_match = 0
     min_comparison_context_match = 0
     for record in comparison_scores.items():
         url = record[0]
@@ -298,16 +251,12 @@ Return only the value, with no additional words, punctuation, or explanation."""
                         result['min_response'],
                         result['min_actual_result'],
                         result['min_correct'],
-                        result['min_rephrased_correct'],
                         result['min_prompt'],
-                        result['min_rephrased_question'],
-                        result['min_rephrased_response'],
                         result['min_context_response'] if 'min_context_response' in result else 'NA',
                         result['min_context_correct'] if 'min_context_correct' in result else 'NA',
                     ]
                 )
                 min_comparison_count += 1
-                min_comparison_rephrased_match += result['min_rephrased_correct']
                 min_comparison_match += result['min_correct']
                 if 'min_context_correct' in result and result['min_context_correct'] != 'NA':
                     min_comparison_context_match += result['min_context_correct']
@@ -315,7 +264,6 @@ Return only the value, with no additional words, punctuation, or explanation."""
     print(
         f"Comparison match: {min_comparison_match} out of {min_comparison_count} for MIN comparison"
     )
-    print(f"Rephrased matched: {min_comparison_rephrased_match} out of {min_comparison_count} for MIN comparison")
     print(f"Context matched: {min_comparison_context_match} out of {min_comparison_count} for MIN comparison")
     df_min_comparison = pd.DataFrame(
         min_comparison_list,
@@ -326,17 +274,14 @@ Return only the value, with no additional words, punctuation, or explanation."""
             'Response',
             'Actual Result',
             'Correct',
-            'Rephrased Correct',
             'Prompt',
-            'Rephrased Question',
-            'Rephrased Response',
             'Context Response',
             'Context Correct',
         ],
     )
-    plot_df = df_min_comparison[['Correct', 'Rephrased Correct']]
+    plot_df = df_min_comparison[['Correct']]
     if context:
-        plot_df = df_min_comparison[['correct', 'Rephrased correct', 'Context Correct']]
+        plot_df = df_min_comparison[['correct', 'Context Correct']]
 
     mapping = {-1: "mistake", 0: "neutral", 1: "correct"}
 

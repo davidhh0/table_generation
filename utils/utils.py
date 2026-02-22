@@ -3,6 +3,7 @@ import re
 import dateutil.parser as parser
 # import requests
 import  stealth_requests as  requests
+from anthropic import MessageStreamManager
 from bs4 import BeautifulSoup
 
 from datetime import datetime, timedelta
@@ -14,12 +15,11 @@ import anthropic
 import os
 from google.genai import types
 from google.genai import Client
-from google.genai.errors import ServerError
 from google.genai.types import Tool, GenerateContentConfig
 
-client = Client(api_key=os.environ["gemini_api_key"], http_options=types.HttpOptions(timeout=1_000_000, ))
+client = Client(api_key=os.environ.get("gemini_api_key"), http_options=types.HttpOptions(timeout=1_000_000, ))
 claude_client = anthropic.Anthropic(
-    api_key=os.environ.get("claude_api_key")
+    api_key=os.environ.get("claude_api")
 )
 
 
@@ -335,35 +335,42 @@ def gemini(MODEL, prompt_string, context=False):
     return response_str
 
 def llama(MODEL, prompt_string):
-    from transformers import AutoModelForCausalLM, AutoTokenizer
-    import torch
-
-    MODEL = "meta-llama/Llama-3.3-70B-Instruct"
-    model_path = '/Users/david.harroch/.llama/checkpoints/Llama3.3-70B-Instruct'
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
-
-    model = AutoModelForCausalLM.from_pretrained(
-        model_path,
-        # device_map="auto",  # automatically spreads layers across GPUs if available
-        torch_dtype=torch.float16,
+    from huggingface_hub import InferenceClient
+    hf_client = InferenceClient(
+        model=MODEL,
+        token=os.environ.get("HF_TOKEN")
     )
 
-    # Generate text
-    prompt = "Explain quantum entanglement in simple terms:"
-    inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
-    outputs = model.generate(**inputs, max_new_tokens=200)
-    print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+    response = hf_client.chat_completion(
+        messages=[
+            {"role": "user",
+             "content": prompt_string}
+        ],
+        temperature=0.0,
+        stream=True,
+    )
+    response_str = ""
+    for chunk in response:
+        if chunk.choices[0].delta.content is None:
+            break
+        if hasattr(chunk, 'choices') and len(chunk.choices) > 0:
+            chunk_content = chunk.choices[0].delta.content
+            response_str += chunk_content
+    return response_str
+
 def claude(MODEL, prompt_string, context=False):
     prompt_string = prompt_string.strip()
     with claude_client.messages.stream(
             max_tokens=1024,
             messages=[
-                {"role": "user", "content": prompt_string}
+                {"role": "user",
+                 "content": prompt_string}
             ],
-            model="claude-sonnet-4-20250514",
+            model=MODEL,
     ) as stream:
-        for text in stream.text_stream:
-            print(text, end="", flush=True)
+        response = stream.get_final_message()
+    return response.content[0].text
+
 
 
 def get_llm_response(
@@ -388,6 +395,8 @@ def get_llm_response(
         response_str = gemini(MODEL, prompt_string, context)
     if 'llama' in MODEL.lower():
         response_str = llama(MODEL, prompt_string)
+    if 'claude' in MODEL.lower():
+        response_str = claude(MODEL, prompt_string, context)
     if response_str is None:
         return None
     prompt_response = response_str.strip()

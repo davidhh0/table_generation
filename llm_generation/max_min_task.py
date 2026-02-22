@@ -18,8 +18,8 @@ def cell_retrieval():
     import yaml
     with open('../config.yaml', 'r') as f:
         conf = yaml.load(f, Loader=yaml.FullLoader)
-    key_model =  conf['llm_model']
-    model = 'gemini-2.5-pro'
+    key_model =  conf['title_and_key_model']
+    model = conf['llm_model']
     context = conf['context']
     random.seed(10)
     working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
@@ -38,7 +38,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
     MAX_ITER = 150
     count = 0
     rephrased_response = 'NA'
-    for tbl in ['https://en.wikipedia.org/wiki/2018_Korean_Tour']: # generated_tbl_cache.iterkeys():
+    for tbl in generated_tbl_cache.iterkeys():
         count += 1
         print(f'Retrieving {count}...')
         if count > MAX_ITER:
@@ -99,32 +99,18 @@ Return only the value, with no additional words, punctuation, or explanation."""
             response_with_keys = parser_ins.try_cast(
                 get_llm_response(max_prompt_with_keys, MODEL=model,)
             )
-            rephrased_prompt = prompts['rephrase_wrapper'].format(
-                QUESTION=max_prompt_question,
-                TABLE_TITLE=table_description,
-                ANSWER=df[comparable_col].max(),
-                URL=cfg['url'],
-            ).strip()
-            rephrased_response = get_llm_response(rephrased_prompt,MODEL=model,)
-            rephrased_llm_response = get_llm_response(
-                REPHRASED_SUFFIX.format(REPHRASE=rephrased_response),MODEL=model,
-            )
+
 
             response = get_llm_response(max_prompt,MODEL=model,)
             parsed_response = parser_ins.try_cast(response)
-            if response is None or response == '' or rephrased_llm_response is None or rephrased_llm_response == '':
+            if response is None or response == '':
                 continue
-            rephrased_parsed_response = parser_ins.try_cast(rephrased_llm_response)
 
             llm_indices = list(df[df[key] == response][comparable_col].index) + list(
                 df[df[key] == parsed_response][comparable_col].index
             )
             llm_indices = set(llm_indices)
 
-            rephrased_llm_indices = list(
-                df[df[key] == rephrased_response][comparable_col].index
-            ) + list(df[df[key] == rephrased_parsed_response][comparable_col].index)
-            rephrased_llm_indices = set(rephrased_llm_indices)
 
             context_response,context_matched = None,None
             if context:
@@ -142,12 +128,6 @@ Return only the value, with no additional words, punctuation, or explanation."""
                 if len(llm_indices.intersection(max_indices)) > 0:
                     matched = 1
 
-            if rephrased_parsed_response not in df[key].values:
-                rephrased_matched = -1
-            else:
-                rephrased_matched = 0
-                if len(rephrased_llm_indices.intersection(max_indices)) > 0:
-                    rephrased_matched = 1
 
             if response_with_keys not in df[key].values:
                 max_with_keys = -1
@@ -169,9 +149,6 @@ Return only the value, with no additional words, punctuation, or explanation."""
                 'actual_result': list(
                     df[df[comparable_col] == df[comparable_col].max()][key]
                 ),
-                'rephrased_response': rephrased_llm_response,
-                'rephrased_question': rephrased_response,
-                'rephrased_correct': rephrased_matched,
                 'correct': matched,
                 'prompt': max_prompt_question,
                 'keys_provided': max_with_keys,
@@ -211,32 +188,19 @@ Return only the value, with no additional words, punctuation, or explanation."""
             response_with_keys = parser_ins.try_cast(
                 get_llm_response(min_prompt_with_keys, MODEL=model,)
             )
-            rephrased_prompt = prompts['rephrase_wrapper'].format(
-                QUESTION=min_prompt_question,
-                TABLE_TITLE=table_description,
-                ANSWER=df[comparable_col].min(),
-                URL=cfg['url'],
-            ).strip()
-            rephrased_response = get_llm_response(rephrased_prompt,MODEL=model,)
-            rephrased_llm_response = get_llm_response(
-                REPHRASED_SUFFIX.format(REPHRASE=rephrased_response),MODEL=model,
-            )
-            if rephrased_llm_response is None or rephrased_llm_response == '':
-                continue
+
+
+
             response = get_llm_response(min_prompt,MODEL=model,)
             parsed_response = parser_ins.try_cast(response)
 
-            rephrased_parsed_response = parser_ins.try_cast(rephrased_llm_response)
 
             llm_indices = list(df[df[key] == response][comparable_col].index) + list(
                 df[df[key] == parsed_response][comparable_col].index
             )
             llm_indices = set(llm_indices)
 
-            rephrased_llm_indices = list(
-                df[df[key] == rephrased_response][comparable_col].index
-            ) + list(df[df[key] == rephrased_parsed_response][comparable_col].index)
-            rephrased_llm_indices = set(rephrased_llm_indices)
+
 
 
             if context:
@@ -259,12 +223,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
                 if len(llm_indices.intersection(min_indices)) > 0:
                     matched = 1
 
-            if rephrased_parsed_response not in df[key].values:
-                rephrased_matched = -1
-            else:
-                rephrased_matched = 0
-                if len(rephrased_llm_indices.intersection(min_indices)) > 0:
-                    rephrased_matched = 1
+
             if response_with_keys not in df[key].values:
                 min_with_keys = -1
             else:
@@ -276,9 +235,6 @@ Return only the value, with no additional words, punctuation, or explanation."""
                 'actual_result': list(
                     df[df[comparable_col] == df[comparable_col].min()][key]
                 ),
-                'rephrased_response': rephrased_llm_response,
-                'rephrased_question': rephrased_response,
-                'rephrased_correct': rephrased_matched,
                 'correct': matched,
                 'prompt': min_prompt_question,
                 'keys_provided': min_with_keys,
@@ -294,7 +250,6 @@ Return only the value, with no additional words, punctuation, or explanation."""
     max_count = 0
     max_values_values = []
     max_with_keys_match = 0
-    max_rephrased_matched = 0
     max_context_matched = 0
     for record in max_scores.items():
         url = record[0]
@@ -307,11 +262,8 @@ Return only the value, with no additional words, punctuation, or explanation."""
                     value['response'],
                     value['actual_result'],
                     value['correct'],
-                    value['rephrased_correct'],
                     value['keys_provided'],
                     value['prompt'],
-                    value['rephrased_question'],
-                    value['rephrased_response'],
                     value['context_response'],
                     value['context_correct'] if 'context_correct' in value else 'NA',
                 ]
@@ -325,15 +277,12 @@ Return only the value, with no additional words, punctuation, or explanation."""
             max_count += 1
             if value['keys_provided'] == 1:
                 max_with_keys_match += 1
-            if value['rephrased_correct'] == 1:
-                max_rephrased_matched += 1
             if 'context_correct' in value and value['context_correct'] == 1:
                 max_context_matched += 1
 
     print(
         f'Out of {max_count} records for MAX: match {max_total_match} ({max_with_keys_match}) , non-match {max_total_non_match}, non-in {max_total_non_in} (match means exact match, non-match means wrong answer but the response is in the key column, non-in means none)'
     )
-    print(f"Rephrased matched: {max_rephrased_matched} out of {max_count}")
     print(f"Context: {max_context_matched} out of {max_count}")
     df_max = pd.DataFrame(
         max_values_values,
@@ -343,18 +292,15 @@ Return only the value, with no additional words, punctuation, or explanation."""
             'Response',
             'actual_result',
             'correct',
-            'Rephrased correct',
             'With keys',
             'Prompt',
-            'Rephrased Question',
-            'Rephrased Response',
             'Context Response',
             'Context Correct',
         ],
     )
-    plot_df = df_max[['correct','Rephrased correct', 'With keys']]
+    plot_df = df_max[['correct','With keys']]
     if context:
-        plot_df = df_max[['correct', 'Rephrased correct', 'With keys', 'Context Correct']]
+        plot_df = df_max[['correct', 'With keys', 'Context Correct']]
 
     mapping = {-1: "mistake", 0: "neutral", 1: "correct"}
 
@@ -387,7 +333,6 @@ Return only the value, with no additional words, punctuation, or explanation."""
     min_count = 0
     min_values_values = []
     min_with_keys_match = 0
-    min_rephrased_matched = 0
     min_context_matched = 0
     for record in min_scores.items():
         url = record[0]
@@ -400,11 +345,8 @@ Return only the value, with no additional words, punctuation, or explanation."""
                     value['response'],
                     value['actual_result'],
                     value['correct'],
-                    value['rephrased_correct'],
                     value['keys_provided'],
                     value['prompt'],
-                    value['rephrased_question'],
-                    value['rephrased_response'],
                     value['context_response'],
                     value['context_correct'] if 'context_correct' in value else 'NA',
                 ]
@@ -418,14 +360,11 @@ Return only the value, with no additional words, punctuation, or explanation."""
             min_count += 1
             if value['keys_provided'] == 1:
                 min_with_keys_match += 1
-            if value['rephrased_correct'] == 1:
-                min_rephrased_matched += 1
             if 'context_correct' in value and value['context_correct'] == 1:
                 min_context_matched += 1
     print(
         f'Out of {min_count} records for MIN: match {min_total_match} ({min_with_keys_match}), non-match {min_total_non_match}, non-in {min_total_non_in} (match means exact match, non-match means wrong answer but the response is in the key column, non-in means none)'
     )
-    print(f"Rephrased matched: {min_rephrased_matched} out of {min_count}")
     print(f"Context matched: {min_context_matched} out of {min_count}")
     df_min = pd.DataFrame(
         min_values_values,
@@ -435,18 +374,15 @@ Return only the value, with no additional words, punctuation, or explanation."""
             'Response',
             'actual_result',
             'correct',
-            'Rephrased correct',
             'With keys',
             'Prompt',
-            'Rephrased Question',
-            'Rephrased Response',
             'Context Response',
             'Context Correct',
         ],
     )
-    plot_df = df_min[['correct', 'Rephrased correct', 'With keys']]
+    plot_df = df_min[['correct', 'With keys']]
     if context:
-        plot_df = df_min[['correct', 'Rephrased correct', 'With keys', 'Context Correct']]
+        plot_df = df_min[['correct', 'With keys', 'Context Correct']]
 
     mapping = {-1: "mistake", 0: "neutral", 1: "correct"}
 

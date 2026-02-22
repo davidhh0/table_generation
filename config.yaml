@@ -1,4 +1,5 @@
-llm_model: gemini-2.5-pro # gpt-4.1-2025-04-14
+llm_model: claude-opus-4-6 # gpt-4.1-2025-04-14
+title_and_key_model: gpt-4.1-2025-04-14
 context: false
 run_tables_to_fetch: 1
 
