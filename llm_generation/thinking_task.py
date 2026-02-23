@@ -18,8 +18,8 @@ def thinking_task_given_table():
     import yaml
     with open('../config.yaml', 'r') as f:
         conf = yaml.load(f, Loader=yaml.FullLoader)
-    model = conf['llm_model'] # 'gemini-2.5-pro'
-    key_model = model
+    key_model = conf['title_and_key_model']
+    model = conf['llm_model']
     context = conf['context']
     random.seed(10)
     working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
@@ -32,9 +32,9 @@ def thinking_task_given_table():
         f'{working_dir}/local_dbs/tables/generated_tables.db'
     )
     thinking_scores = {}
-    MAX_ITER = 850
+    MAX_ITER = 300
     count = 0
-    for tbl in ['https://en.wikipedia.org/wiki/2018_Korean_Tour']: # generated_tbl_cache.iterkeys():
+    for tbl in generated_tbl_cache.iterkeys():
         count += 1
         print(f'Retrieving {count}...')
         if count > MAX_ITER:
@@ -45,6 +45,7 @@ def thinking_task_given_table():
             continue
         df = pd.read_csv(f'../tbls/{cfg["page_id"]}_{cfg["table_idx"]}.csv')
         if key_model not in cfg['llm_generated']:
+            b=5
             continue
         key = cfg['llm_generated'][key_model]['key']
         if len(str(key)) == 1 or key.isnumeric():
@@ -87,6 +88,26 @@ def thinking_task_given_table():
             ).strip()
 
             response = get_llm_response(thinking_prompt,MODEL=model,)
+            if response is None:
+                if 'gemini-2.5-pro' not in cfg['llm_generated']:
+                    continue
+                thinking_prompt_question = prompts['thinking'].format(
+                    Primary_key=cfg['llm_generated']['gemini-2.5-pro']['key'],
+                    Comparison_Column=comparable_col,
+                    PROVIDED_KEYS=''
+                ).strip()
+                thinking_prompt = prompts['table_wrapper'].format(
+                    TABLE_TITLE=cfg['llm_generated']['gemini-2.5-pro']['table_title'],
+                    QUESTION=thinking_prompt_question,
+                    TABLE=df.to_csv(index=False)
+                ).strip()
+                response = get_llm_response(thinking_prompt,MODEL='gemini-2.5-pro',)
+                if response is None:
+                    continue
+                else:
+                    set_cfg = cfg.copy()
+                    set_cfg['llm_generated']['default'] = cfg['llm_generated']['gemini-2.5-pro']
+                    generated_tbl_cache[tbl] = json.dumps(set_cfg)
             parsed_response = parser_ins.try_cast(response)
             if response is None :
                 continue

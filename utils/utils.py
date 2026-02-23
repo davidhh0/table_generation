@@ -338,7 +338,7 @@ def llama(MODEL, prompt_string):
     from huggingface_hub import InferenceClient
     hf_client = InferenceClient(
         model=MODEL,
-        token=os.environ.get("HF_TOKEN")
+        token=os.environ.get("hf_api")
     )
 
     response = hf_client.chat_completion(
@@ -369,6 +369,8 @@ def claude(MODEL, prompt_string, context=False):
             model=MODEL,
     ) as stream:
         response = stream.get_final_message()
+    if len(response.content) == 0:
+        return None
     return response.content[0].text
 
 
@@ -383,12 +385,11 @@ def get_llm_response(
         cache = diskcache.Cache(f'{working_dir}/local_dbs/cache/llm_cache.db')
     context_key = "Context" if context else "NoContext"
     prompt_cache_key = f"{context_key}_{MODEL}_{prompt_string}"
-    if f"{context_key}_{MODEL}_\n{prompt_string}" in cache:
-        cache[prompt_cache_key] = cache[f"{context_key}_{MODEL}_\n{prompt_string}"]
-        cache.delete(f"{context_key}_{MODEL}_\n{prompt_string}")
 
     if use_cache and prompt_cache_key in cache and cache[prompt_cache_key] != '':
         return cache[prompt_cache_key]
+    if use_cache and f"{context_key}_{MODEL}_\n{prompt_string}" in cache and cache[f"{context_key}_{MODEL}_\n{prompt_string}"] != '':
+        return cache[f"{context_key}_{MODEL}_\n{prompt_string}"]
     if 'gpt' in MODEL:
         response_str = chatgpt(MODEL, prompt_string)
     if 'gemini' in MODEL:

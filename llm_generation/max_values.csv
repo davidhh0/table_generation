@@ -1,1 +1,180 @@
-URL,Key,Response,actual_result,correct,Rephrased correct,With keys,Prompt,Rephrased Question,Rephrased Response,Context Response,Context Correct
+URL,Key,Response,actual_result,correct,With keys,Prompt,Context Response,Context Correct
+https://en.wikipedia.org/wiki/1990_Ben_Hogan_Tour,Purse (US$),300000,['Ben Hogan Quicksilver Open'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1990_PGA_Tour_of_Australia,OWGR points,32,['Australian Masters'],-1,0,Which 'Tournament' has the maximum value in the 'OWGR points' column ?,,NA
+https://en.wikipedia.org/wiki/1991%E2%80%9392_Southern_Africa_Tour,Purse (R),300000,"['Fancourt Hall of Fame', 'Protea Assurance South African Open']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (R)' column ?,,NA
+https://en.wikipedia.org/wiki/1991_Ben_Hogan_Tour,Purse (US$),300000,['Ben Hogan Quicksilver Open'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1991_NCAA_Division_I_women%27s_basketball_tournament,Bids,California,"['California', 'Texas']",1,1,Which 'State' has the maximum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1991_PGA_Tour_of_Australasia,OWGR points,32,"['Daikyo Palm Meadows Cup', 'Australian Open']",-1,0,Which 'Tournament' has the maximum value in the 'OWGR points' column ?,,NA
+https://en.wikipedia.org/wiki/1992%E2%80%9393_Southern_Africa_Tour,Purse (R),300000,['EVS South African Masters'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (R)' column ?,,NA
+https://en.wikipedia.org/wiki/1992_NCAA_Division_I_women%27s_basketball_tournament,Bids,California,['California'],1,1,Which 'State' has the maximum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1992_PGA_Tour_of_Australasia,OWGR points,48,['Daikyo Palm Meadows Cup'],-1,0,Which 'Tournament' has the maximum value in the 'OWGR points' column ?,,NA
+https://en.wikipedia.org/wiki/1993%E2%80%9394_Southern_Africa_Tour,Purse (R),300000,"['FNB Players Championship', 'Phillips South African Open', 'Lexington PGA Championship']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (R)' column ?,,NA
+https://en.wikipedia.org/wiki/1993_NCAA_Division_I_women%27s_basketball_tournament,Bids,California,['California'],1,1,Which 'State' has the maximum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1994_Commonwealth_Games,Rank,38,"['Bermuda', 'Botswana', 'Guernsey', 'Norfolk Island', 'Seychelles', 'Tanzania', 'Tonga']",-1,0,Which 'Nation' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/1994_Nike_Tour,Purse (US$),300000,['Nike Tour Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1995_Asian_PGA_Tour,Purse (US$),500000,"['Gadgil Western Dubai Creek Open', 'Samsung Masters', 'Gadgil Western Masters', 'Omega PGA Championship']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1995_Canadian_Tour,Purse (C$),300000,['Canadian Masters'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/1995_NCAA_Division_I_women%27s_basketball_tournament,Bids,California,['California'],1,1,Which 'State' has the maximum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1995_Nike_Tour,Purse (US$),300000,"['Nike Boise Open', 'Nike Tour Championship']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1996_Cricket_World_Cup_statistics,Runs,Sachin Tendulkar,['Sachin Tendulkar'],1,1,Which 'Players' has the maximum value in the 'Runs' column ?,,NA
+https://en.wikipedia.org/wiki/1996_NCAA_Division_I_women%27s_basketball_tournament,Bids,California,"['Tennessee', 'Texas']",0,0,Which 'State' has the maximum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1996_Nike_Tour,Purse (US$),700000,"['Nike Louisiana Open', 'Nike Dakota Dunes Open', 'Nike Boise Open', 'Nike Tour Championship']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1997_NCAA_Division_I_women%27s_basketball_tournament,Bids,California,['California'],1,1,Which 'State' has the maximum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1997_Nike_Tour,Purse (US$),300000,"['Nike Louisiana Open', 'Nike Tour Championship']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1997_PGA_Tour,Position,10,['Brad Faxon'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/1998_NCAA_Division_I_women%27s_basketball_tournament,Bids,California,"['California', 'North Carolina', 'Tennessee', 'Virginia']",1,1,Which 'State' has the maximum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1998_Nike_Tour,Purse (US$),300000,['Nike Dakota Dunes Open'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1999%E2%80%932000_NCAA_football_bowl_games,Rank,25,['Texas'],-1,0,Which 'Team' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/1999_Canadian_Tour,Purse (C$),300000,"['Canadian Masters', 'Bayer Championship']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/1999_Nike_Tour,Purse (US$),600000,['Nike Tour Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2000_Canadian_Tour,OWGR points,12,"['Telus Vancouver Open', 'Shell Payless Open', 'Telus Edmonton Open', 'Telus Calgary Open', 'MTS Classic', 'Ontario Open Heritage Classic', 'Eagle Creek Classic', 'QuebecTel Open', 'Samsung Canadian PGA Championship', 'Benefit Partners/NRCS Classic', ""McDonald's PEI Challenge"", 'Bayer Championship', 'Panasonic Panama Open']",-1,0,Which 'Tournament' has the maximum value in the 'OWGR points' column ?,,NA
+https://en.wikipedia.org/wiki/2001_PGA_Tour,Purse ($),5000000,['Williams World Challenge'],-1,0,Which 'Tournament' has the maximum value in the 'Purse ($)' column ?,,NA
+https://en.wikipedia.org/wiki/2002%E2%80%9303_snooker_season,Points 2000/01,6075,"[""Ronnie O'Sullivan""]",-1,0,Which 'Player' has the maximum value in the 'Points 2000/01' column ?,,NA
+https://en.wikipedia.org/wiki/2002_PGA_Tour,Position,10,['Retief Goosen'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2003_AIHL_season,GP,28,"['Pavel Shtefan', 'Daryl Bat', 'Greg Oddy', 'Jake Ludvig', 'Chris Sekura', 'Dylan Martini', 'Phillipe Roussell', 'Murray Wand']",-1,0,Which 'Player' has the maximum value in the 'GP' column ?,,NA
+https://en.wikipedia.org/wiki/2003_Australian_GT_Performance_Car_Championship,Position,40,"['Stewart McColl', 'Warren Millet']",-1,0,Which 'Driver' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2003_Canadian_Tour,Purse (C$),450000,['Bay Mills Open Players Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/2003_Jordanian_general_election,Districts,Amman,['Total'],0,0,Which 'Governorate' has the maximum value in the 'Districts' column ?,,NA
+https://en.wikipedia.org/wiki/2003_PGA_Tour_of_Australasia,Purse (A$),1500000,"['Bega Cheese NSW PGA Championship', 'Toyota Southern Classic', 'Schweppes SA PGA Championship', 'WA PGA Championship', 'Queensland Masters', 'Links Group Victorian PGA Championship', 'QLD Group Queensland Open', 'Queensland PGA Championship', 'GolfSkins New South Wales Open']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (A$)' column ?,,NA
+https://en.wikipedia.org/wiki/2003_Rugby_World_Cup_statistics,Played,5,"['Doug Howlett', 'Mils Muliaina', 'Mat Rogers', 'Lote Tuqiri']",-1,0,Which 'Player' has the maximum value in the 'Played' column ?,,NA
+https://en.wikipedia.org/wiki/2004_Australian_federal_election,Total votes,384710,['Christian Democratic Party'],-1,0,Which 'Minor party' has the maximum value in the 'Total votes' column ?,,NA
+https://en.wikipedia.org/wiki/2004_Champions_Tour,Purse (US$),5000000,['Liberty Mutual Legends of Golf'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2004_NCAA_Division_I_women%27s_basketball_tournament,Bids,California,['Tennessee'],0,0,Which 'State' has the maximum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/2005_Armenian_Premier_League,Capacity,7600,"['Kilikia', 'Lernayin Artsakh']",-1,0,Which 'Club' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2005_Supercheap_Auto_1000,No.,10,[1],0,0,Which 'Pos.' has the maximum value in the 'No.' column ?,,NA
+https://en.wikipedia.org/wiki/2006%E2%80%9307_snooker_season,Points 2005/06,31475,['Ken Doherty'],-1,0,Which 'Player' has the maximum value in the 'Points 2005/06' column ?,,NA
+https://en.wikipedia.org/wiki/2006_Champions_Tour,Purse (US$),4500000,['U.S. Senior Open'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2006_Euro_Beach_Soccer_League_%E2%80%93_Last_chance_bracket,Rank,8,['Russia'],-1,0,Which 'Team' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2006_Kerrick_Sports_Sedan_Series,Position,32,['Bill Martin'],-1,0,Which 'Driver' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2007%E2%80%9308_snooker_season,Ch,7500,"['Marco Fu', 'Mark Allen']",-1,0,Which 'Player' has the maximum value in the 'Ch' column ?,,NA
+https://en.wikipedia.org/wiki/2007_Champions_Tour,Purse (US$),1850000,"['U.S. Senior Open', 'JELD-WEN Tradition', 'Constellation Energy Senior Players Championship']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2007_League_of_Ireland_Premier_Division,Capacity,8160,['Shamrock Rovers'],-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2008%E2%80%9309_Ukrainian_Premier_League,Rank,16,['FC Lviv'],-1,0,Which 'Club' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2008%E2%80%9309_snooker_season,Ch,Ronnie O'Sullivan,['Mark Williams'],0,0,Which 'Player' has the maximum value in the 'Ch' column ?,,NA
+https://en.wikipedia.org/wiki/2008_Champions_Tour,Purse (US$),7500000,"['Liberty Mutual Legends of Golf', 'U.S. Senior Open', 'JELD-WEN Tradition', 'Constellation Energy Senior Players Championship']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2008_United_States_presidential_election_in_New_Hampshire,Votes,Barack Obama,['Total'],-1,0,Which 'Candidate' has the maximum value in the 'Votes' column ?,,NA
+https://en.wikipedia.org/wiki/2008_United_States_presidential_election_in_Washington_(state),Votes,John McCain,['Total'],0,0,Which 'Candidate' has the maximum value in the 'Votes' column ?,,NA
+https://en.wikipedia.org/wiki/2008_Washington_Republican_presidential_caucuses_and_primary,Votes,John McCain,['Total'],0,0,Which 'Candidate' has the maximum value in the 'Votes' column ?,,NA
+https://en.wikipedia.org/wiki/2009%E2%80%9310_snooker_season,Ch,John Higgins,['Graeme Dott'],0,0,Which 'Player' has the maximum value in the 'Ch' column ?,,NA
+https://en.wikipedia.org/wiki/2010%E2%80%9311_Pakistan_federal_budget,Rs. in Billion,Tax Revenue,['Gross Revenue Receipt'],0,0,Which 'Receipts' has the maximum value in the 'Rs. in Billion' column ?,,NA
+https://en.wikipedia.org/wiki/2010%E2%80%932014_NCAA_conference_realignment,Old membership total,12,['Big East'],-1,0,Which 'Conference' has the maximum value in the 'Old membership total' column ?,,NA
+https://en.wikipedia.org/wiki/2010_Australian_GT_Championship,No,69,['Livi Bathroom Tissue'],-1,0,Which 'Team' has the maximum value in the 'No' column ?,,NA
+https://en.wikipedia.org/wiki/2010_Champions_Tour,Purse (US$),8000000,['Posco E&C Songdo Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2011%E2%80%9312_South_African_Premiership,Capacity,45000,['Kaizer Chiefs'],-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2011_Alps_Tour,Position,10,['Jordan Gibb'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2011_Australian_GT_Championship,No,95,"[""Nick O'Halloran  Allan Simonsen  Jason Richards""]",-1,-1,Which 'Driver' has the maximum value in the 'No' column ?,,NA
+https://en.wikipedia.org/wiki/2011_Big_Easy_Tour,Purse (R),150000,['Big Easy Tour Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (R)' column ?,,NA
+https://en.wikipedia.org/wiki/2011_Challenge_Trophy,Place,10,['Yukon Selects SC'],-1,0,Which 'Team' has the maximum value in the 'Place' column ?,,NA
+https://en.wikipedia.org/wiki/2011_Champions_Tour,Purse (US$),8000000,['Songdo IBD Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2011_Korean_Tour,OWGR points,14,"[""Ballantine's Championship""]",-1,0,Which 'Tournament' has the maximum value in the 'OWGR points' column ?,,NA
+https://en.wikipedia.org/wiki/2011_LSU_vs._Alabama_football_game,Year,2012,"['Jalston Fowler', 'Kenny Hilliard', 'Xzavier Dickson']",-1,0,Which 'Player name' has the maximum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/2012%E2%80%9313_South_African_Premiership,Capacity,45000,['Kaizer Chiefs'],-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2012_Big_Easy_Tour,Purse (R),150000,['Big Easy Tour Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (R)' column ?,,NA
+https://en.wikipedia.org/wiki/2012_Champions_Tour,Purse (US$),4750000,"['Liberty Mutual Insurance Legends of Golf', 'Constellation Senior Players Championship']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2012_Nordic_Golf_League,Position,10,['Victor Hielte'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2012_St._Louis_Cardinals_season,Pct.,0.654,['Leading after 7 innings'],-1,0,Which 'Situation' has the maximum value in the 'Pct.' column ?,,NA
+https://en.wikipedia.org/wiki/2012_Supercheap_Auto_Bathurst_1000,Position,10,['Steve Owen'],-1,0,Which 'Driver' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2012_Web.com_Tour,Purse (US$),700000,['Web.com Tour Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2012_Zimbabwe_Premier_Soccer_League,Capacity,60000,['CAPS United'],-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2013%E2%80%9314_South_African_Premiership,Capacity,94000,['Kaizer Chiefs'],-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2013%E2%80%9314_Ukrainian_First_League,Rank,17,"['UkrAhroKom Holovkivka', 'Zirka Kirovohrad']",-1,0,Which 'Club' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2013_Australian_Carrera_Cup_Championship,Pos.,28,['Martin Wagg'],-1,0,Which 'Driver' has the maximum value in the 'Pos.' column ?,,NA
+https://en.wikipedia.org/wiki/2013_Big_Easy_Tour,Purse (R),150000,['Big Easy Tour Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (R)' column ?,,NA
+https://en.wikipedia.org/wiki/2013_MENA_Golf_Tour,Purse (US$),500000,['MENA Golf Tour Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2013_PGA_Tour,Position,10,['Justin Rose'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2013_Pro_Golf_Tour,Position,10,['Anton Kirstein'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2013_Q_School,Rank,10,['Josh Boileau'],-1,0,Which 'Player' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2013_Zimbabwe_Premier_Soccer_League,Capacity,60000,['CAPS United'],-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2014%E2%80%9315_PGA_Tour,Position,10,['Charley Hoffman'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2014%E2%80%9315_South_African_Premiership,Capacity,45000,['Kaizer Chiefs'],-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2014_PGA_Tour_Canada,Purse (C$),250000,"['PC Financial Open', 'Bayview Place Island Savings Open', 'Syncrude Boreal Open', 'SIGA Dakota Dunes Open', 'The Players Cup', 'Staal Foundation Open', 'ATB Financial Classic', 'Forces and Families Open', 'Great Waterway Classic', 'Wildfire Invitational', 'Cape Breton Celtic Classic', 'Tour Championship of Canada']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/2014_Pro_Golf_Tour,Position,10,['Moritz Lampert'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2014_Q_School,Event 1,1086,"['Jamie Clarke', 'Duane Jones']",-1,0,Which 'Player' has the maximum value in the 'Event 1' column ?,,NA
+https://en.wikipedia.org/wiki/2015%E2%80%9316_PGA_Tour,Position,10,['Russell Knox'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2015%E2%80%9316_Saudi_Pro_League,GP.,26,['Total'],-1,0,Which 'Round' has the maximum value in the 'GP.' column ?,,NA
+https://en.wikipedia.org/wiki/2015%E2%80%9316_South_African_Premiership,Capacity,94000,['Kaizer Chiefs'],-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2015_Alps_Tour,Position,10,['Gerard Piris'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2015_MERS_outbreak_in_South_Korea,Cases*1*2,2015-06-04,"['04 July 2015', '05 July 2015', '06 July 2015', '07 July 2015', '08 July 2015', '09 July 2015', '10 July 2015', '11 July 2015', '12 July 2015', '13 July 2015', '14 July 2015', '15 July 2015', '16 July 2015', '17 July 2015', '18 July 2015', '19 July 2015', '20 July 2015', '21 July 2015', '22 July 2015', '23 July 2015', '24 July 2015', '25 July 2015', '26 July 2015', '27 July 2015', '28 July 2015 ~ 24 October 2015', '25 October 2015', '26 October 2015 ~ 24 November 2015', '25 November 2015', '26 November 2015 ~ 28 September 2016']",-1,0,Which 'Date' has the maximum value in the 'Cases*1*2' column ?,,NA
+https://en.wikipedia.org/wiki/2015_PGA_Tour_Canada,Purse (C$),250000,['Freedom 55 Financial Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/2015_Pacific_Games,Rank,11,"['Northern Mariana Islands', 'Tokelau']",-1,0,Which 'Nation' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2015_Pro_Golf_Tour,Position,10,['Chris Robb'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2015_Q_School,Event 1,1050,['Adam Duffy'],-1,0,Which 'Player' has the maximum value in the 'Event 1' column ?,,NA
+https://en.wikipedia.org/wiki/2015_UCI_men%27s_road_cycling_rankings,Rank,10,['Norway'],-1,0,Which 'Nation' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2015_Web.com_Tour,Purse (US$),700000,"['Hotel Fitness Championship', 'Small Business Connection Championship', ""Nationwide Children's Hospital Championship"", 'Web.com Tour Championship']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2016%E2%80%9317_PGA_Tour,Position,10,['Brooks Koepka'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2016%E2%80%9317_Saudi_Pro_League,GP.,26,['Total'],-1,0,Which 'Round' has the maximum value in the 'GP.' column ?,,NA
+https://en.wikipedia.org/wiki/2016%E2%80%9317_Ukrainian_Premier_League,Rank,12,['FC Oleksandriya'],-1,0,Which 'Club' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2016%E2%80%9317_United_States_national_rugby_sevens_team_season,Matches,Carlin Isles,"['Stephen Tomasin', 'Folau Niua']",-1,0,Which 'Player' has the maximum value in the 'Matches' column ?,,NA
+https://en.wikipedia.org/wiki/2016_PGA_Tour_Canada,Purse (C$),250000,['Freedom 55 Financial Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/2016_USL_season,Capacity,"25,500",['FC Cincinnati'],-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2017%E2%80%9318_Saudi_Pro_League,GP.,26,['Total'],-1,0,Which 'Round' has the maximum value in the 'GP.' column ?,,NA
+https://en.wikipedia.org/wiki/2017%E2%80%9318_Ukrainian_Premier_League,Rank,12,['Stal Kamianske'],-1,0,Which 'Club' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2017_Alps_Tour,Position,10,['Maxime Radureau'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2017_Euro_Beach_Soccer_League,Pos,12,['Romania'],-1,0,Which 'Team' has the maximum value in the 'Pos' column ?,,NA
+https://en.wikipedia.org/wiki/2017_PGA_Tour_Canada,Purse (C$),250000,['Freedom 55 Financial Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/2017_Q_School,Rank,10,['William Lemons'],-1,0,Which 'Player' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2018%E2%80%9319_Bangladesh_Premier_League_(football),Capacity,15000,"['Brothers Union', 'Chittagong Abahani Ltd.', 'Dhaka Abahani Ltd.', 'Dhaka Mohammedan SC Ltd.', 'Lt. Sheikh Jamal Dhanmondi Club Ltd.', 'Rahmatganj MFS']",-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2018%E2%80%9319_Saudi_Pro_League,Capacity,"68,752","['Al-Nassr', 'Al-Shabab']",-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2018%E2%80%9319_Ukrainian_Premier_League,Rank,12,['FC Oleksandriya'],-1,0,Which 'Club' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2018%E2%80%9319_United_States_national_rugby_sevens_team_season,Matches,Carlin Isles,"['Stephen Tomasin', 'Ben Pinkelman']",0,0,Which 'Player' has the maximum value in the 'Matches' column ?,,NA
+https://en.wikipedia.org/wiki/2018_Euro_Beach_Soccer_League,Rank,9,"['Ionel Florea ""Boata""', 'Nicolai Ignat', 'Grigorii Cojocari', 'Johan Elverum Salveson']",-1,-1,Which 'Player' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2018_J2_League,Rank,30,"['Masashi Oguro', 'Seigo Kobayashi', 'Yuki Nakashima', 'Mateus', 'Kenji Baba', 'Noriaki Fujimoto']",-1,0,Which 'Player' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2018_Korean_Tour,Purse,1000000,['Genesis Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse' column ?,,NA
+https://en.wikipedia.org/wiki/2018_PGA_Tour_Canada,Purse (C$),250000,['Freedom 55 Financial Championship'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/2018_Philippine_Golf_Tour,Purse (US$),300000,['Solaire Philippine Open'],-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2018_Q_School,Rank,10,['Michael Judge'],-1,0,Which 'Player' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2019%E2%80%9320_Bangladesh_Premier_League_(football),Capacity,15000,"['Arambagh KS', 'Bangladesh Police FC', 'Brothers Union', 'Dhaka Abahani Ltd.', 'Rahmatganj MFS', 'Uttar Baridhara SC']",-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2019%E2%80%9320_Saudi_Pro_League,GP.,30,['Total'],-1,0,Which 'Round' has the maximum value in the 'GP.' column ?,,NA
+https://en.wikipedia.org/wiki/2019%E2%80%9320_Ukrainian_Premier_League,Rank,12,['Kolos Kovalivka'],-1,0,Which 'Club' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2019_Euro_Beach_Soccer_League,Pos,12,['Georgia'],-1,0,Which 'Team' has the maximum value in the 'Pos' column ?,,NA
+https://en.wikipedia.org/wiki/2019_Pacific_Games,Rank,New Caledonia,['Palau'],0,0,Which 'Nation' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2020%E2%80%9321_Bangladesh_Premier_League_(football),Rank,12,['Appel Mahmud'],-1,0,Which 'Player' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2020%E2%80%9321_Saudi_Pro_League,Capacity,"68,752","['Al-Hilal', 'Al-Shabab']",-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2021%E2%80%9322_Bangladesh_Premier_League_(football),Capacity,15000,"['Chittagong Abahani Ltd.', 'Dhaka Mohammedan SC Ltd.']",-1,0,Which 'Team' has the maximum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2021%E2%80%9322_Sunshine_Tour,Position,11,['Wilco Nienaber'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2021_Q_School,Rank,10,['John Astley'],-1,0,Which 'Player' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2022%E2%80%9323_Saudi_Pro_League,GP.,30,['Total'],-1,0,Which 'Round' has the maximum value in the 'GP.' column ?,,NA
+https://en.wikipedia.org/wiki/2022_Korn_Ferry_Tour,Purse (US$),750000,"['Albertsons Boise Open', ""Nationwide Children's Hospital Championship"", 'Korn Ferry Tour Championship']",-1,0,Which 'Tournament' has the maximum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2022_Pro_Golf_Tour,Position,10,['Dario Antonisse'],-1,0,Which 'Player' has the maximum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2023%E2%80%9324_Bangladesh_Championship_League,Goals,6,['Total'],-1,0,Which 'Player' has the maximum value in the 'Goals' column ?,,NA
+https://en.wikipedia.org/wiki/2023%E2%80%9324_Horizon_League_men%27s_basketball_season,GP,18,"['Youngstown State', 'Cleveland State', 'Detroit Mercy']",-1,0,Which 'Team' has the maximum value in the 'GP' column ?,,NA
+https://en.wikipedia.org/wiki/2023%E2%80%9324_Saudi_Pro_League,GP.,22,['Total'],-1,0,Which 'Round' has the maximum value in the 'GP.' column ?,,NA
+https://en.wikipedia.org/wiki/2023_Rugby_World_Cup_statistics,Rank,10,['Australia vs Georgia'],-1,0,Which 'Match' has the maximum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/AACTA_Award_for_Best_Documentary_Series,Year,2010,"['Liberal Rule - The Politics That Changed Australia', 'Addicted to Money', 'Disable Bodied Sailors', 'Kokoda']",-1,0,Which 'Film' has the maximum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/AACTA_Award_for_Best_Feature_Length_Documentary,Year,2017,"['Casting JonBenet', 'David Stratton: A Cinematic Life', 'Deep Water: The Real Story', 'Whiteley', ""Zach's Ceremony""]",-1,0,Which 'Film' has the maximum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/AEX_index,Index weighting (%),ASML Holdings NV - 23.21,['Unilever'],-1,0,Which 'Company' has the maximum value in the 'Index weighting (%)' column ?,,NA
+https://en.wikipedia.org/wiki/ARIA_Award_for_Best_Female_Artist,Wins,Kylie Minogue,"['Kasey Chambers', 'Wendy Matthews', 'Sia']",-1,0,Which 'Artist' has the maximum value in the 'Wins' column ?,,NA
+https://en.wikipedia.org/wiki/ARIA_Award_for_Best_Male_Artist,Nominations,Gotye,['Paul Kelly'],0,0,Which 'Artist' has the maximum value in the 'Nominations' column ?,,NA
+https://en.wikipedia.org/wiki/ARIA_Award_for_Engineer_of_the_Year,Year,2019,"[nan, 'Chris Collins', 'Dom Dolla', 'Eric J Debowsky', 'Luke Steele, Nick Littlemore and Peter Mayes', 'Tony Buchen']",-1,0,Which 'Engineer(s)' has the maximum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/ASEAN_PGA_Tour,Prize money (US$),2016,[2013],0,0,Which 'Year' has the maximum value in the 'Prize money (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/Abaqulusi_Local_Municipality,Code,342001,['Zulu/Khambi'],-1,0,Which 'Place' has the maximum value in the 'Code' column ?,,NA
+https://en.wikipedia.org/wiki/Academy_Award_for_Best_Actress,Wins,2,['Katharine Hepburn'],-1,0,Which 'Actress' has the maximum value in the 'Wins' column ?,,NA
+https://en.wikipedia.org/wiki/Academy_Award_for_Best_Director,Year,1949,"['A Letter to Three Wives', 'The Fallen Idol', ""All the King's Men"", 'Battleground', 'The Heiress']",-1,0,Which 'Film' has the maximum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Aconitine,Dose data (mg/kg),Mouse,"['Mouse', 'Mouse']",1,1,Which 'Species observed' has the maximum value in the 'Dose data (mg/kg)' column ?,,NA
+https://en.wikipedia.org/wiki/Administrative_distance,Administrative distance,255,['Bootp'],-1,-1,Which 'Routing protocol' has the maximum value in the 'Administrative distance' column ?,,NA
+https://en.wikipedia.org/wiki/Afro-Asian_Club_Championship,Winners,South Korea,['Egypt'],0,0,Which 'Nation' has the maximum value in the 'Winners' column ?,,NA
+https://en.wikipedia.org/wiki/Aircraft_carrier_operations_during_World_War_II,Carrier Lost-Time Involvements,Kamikaze attacks,"['Total Lost-Time Involvements', 'Total Lost-Time Involvements']",-1,0,Which 'Causes For Damage' has the maximum value in the 'Carrier Lost-Time Involvements' column ?,,NA
+https://en.wikipedia.org/wiki/Albert_Luthuli_Local_Municipality,Code,NL5030018,['Tshabalala'],-1,0,Which 'Place' has the maximum value in the 'Code' column ?,,NA
+https://en.wikipedia.org/wiki/Aleksinac,Population,Serbs,['Total'],0,0,Which 'Ethnic group' has the maximum value in the 'Population' column ?,,NA
+https://en.wikipedia.org/wiki/Amahlathi_Local_Municipality,Code,EC144,['Stutterheim Part 2'],-1,0,Which 'Place' has the maximum value in the 'Code' column ?,,NA
+https://en.wikipedia.org/wiki/Antipodes_Islands,Area (ha),Antipodes Island,['Total'],0,0,Which 'Location' has the maximum value in the 'Area (ha)' column ?,,NA
+https://en.wikipedia.org/wiki/Appinite,Appinite Meenalargan,126,['Sr'],-1,0,Which 'Trace elements ppm' has the maximum value in the 'Appinite Meenalargan' column ?,,NA
+https://en.wikipedia.org/wiki/Apple_Music_100_Best_Albums,Number of albums,Hip-Hop/Rap,['Hip-Hop/Rap'],1,1,Which 'Genre' has the maximum value in the 'Number of albums' column ?,,NA
+"https://en.wikipedia.org/wiki/Arbus,_Sardinia",Arrivals in town,Italy,['Germany'],-1,0,Which 'Country of origin' has the maximum value in the 'Arrivals in town' column ?,,NA
+https://en.wikipedia.org/wiki/Argentina_at_the_2015_Pan_American_Games,Men,Athletics,['Total'],0,0,Which 'Sport' has the maximum value in the 'Men' column ?,,NA
+https://en.wikipedia.org/wiki/Argentina_at_the_2015_Parapan_American_Games,Men,Football 7-a-side,['Total'],0,0,Which 'Sport' has the maximum value in the 'Men' column ?,,NA
+https://en.wikipedia.org/wiki/Armenian_language,Armenian speakers,Armenia,['Armenia'],1,1,Which 'Country' has the maximum value in the 'Armenian speakers' column ?,,NA
+https://en.wikipedia.org/wiki/Asian_Cup_Winners%27_Cup,Titles,Japan,['Saudi Arabia'],0,0,Which 'Nation' has the maximum value in the 'Titles' column ?,,NA
+"https://en.wikipedia.org/wiki/Atlanta_campaign_order_of_battle:_First_phase,_Union",April 30,XIV,['Grand Total'],-1,0,Which 'Corps' has the maximum value in the 'April 30' column ?,,NA
+"https://en.wikipedia.org/wiki/Atlanta_campaign_order_of_battle:_Second_phase,_Union",April 30,XIV,['Grand Total'],-1,0,Which 'Corps' has the maximum value in the 'April 30' column ?,,NA
+https://en.wikipedia.org/wiki/Atlantic_slave_trade,Portuguese,Brazil,['Total'],-1,0,Which 'Destination' has the maximum value in the 'Portuguese' column ?,,NA
+https://en.wikipedia.org/wiki/Auckland_Islands,Area (ha),Auckland Island,['Total'],0,0,Which 'Location' has the maximum value in the 'Area (ha)' column ?,,NA
+https://en.wikipedia.org/wiki/Aude,Population,Narbonne,['Narbonne'],1,1,Which 'Town' has the maximum value in the 'Population' column ?,,NA
+https://en.wikipedia.org/wiki/Aurealis_Award_for_Best_Children%27s_Fiction,Year,2019,"['The Wintrish Girl', 'Gus and the Starlight', 'The Wrath of the Woolington Wym', ""The Raven's Song"", 'The Goodbye Year', 'Mars Awakens']",-1,0,Which 'Work(s)' has the maximum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Aurealis_Award_for_Best_Collection,Year,2019,"['The Art of Broken Things', 'The Fall: Tales From The Gulp 2', 'Everything Feels Like the End of the World', 'Here be Leviathans', 'Hard Places', 'Team Queen']",-1,0,Which 'Collection' has the maximum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Aurealis_Award_for_Best_Fantasy_Short_Story,Year,2021,"['""Truth Be Told""', '""The Dead May Dance""', '""The Case of the Somewhat Mythic Sword""', '""Terracotta Daughter""', '""A Solace of Shadows""']",-1,-1,Which 'Short story' has the maximum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Aurealis_Award_for_Best_Horror_Novella,Year,2021,"['""All the Long Way Down', '""The Band Plays On""', 'Cryptid Killers', '""Hell\'s Teeth""', 'When the Cicadas Stop Singing']",-1,-1,Which 'Novella' has the maximum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Aurealis_Award_for_Best_Illustrated_Book_or_Graphic_Novel,Year,2021,"['Ember and the Island of Lost Creatures', 'Frankenstein Monstrance Preview #1', 'MEAT4BURGERS', 'Monomyth']",-1,0,Which 'Illustrated book or graphic novel' has the maximum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Aurealis_Award_for_Best_Young_Adult_Short_Story,Year,2021,"['""Don\'t Look!""', '""Hunger""', '""Of Slaves and Lions""', '""Slaughterhouse Boys""', '""Way-bread Rising""', '""The Woods Echo Back""']",-1,-1,Which 'Short story' has the maximum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Australia_at_the_2017_Asian_Winter_Games,Men,Short Track Speed Skating,['Total'],-1,0,Which 'Sport' has the maximum value in the 'Men' column ?,,NA
+https://en.wikipedia.org/wiki/Australia_at_the_2022_Commonwealth_Games,Men,Athletics,['Total'],0,0,Which 'Sport' has the maximum value in the 'Men' column ?,,NA

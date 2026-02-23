@@ -18,8 +18,8 @@ def cell_retrieval():
     import yaml
     with open('../config.yaml', 'r') as f:
         conf = yaml.load(f, Loader=yaml.FullLoader)
-    key_model =  conf['llm_model']
-    model = 'gemini-2.5-pro'
+    key_model =  conf['title_and_key_model']
+    model = conf['llm_model']
     context = conf['context']
     random.seed(10)
     working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
@@ -34,10 +34,9 @@ Return only the value, with no additional words, punctuation, or explanation."""
         f'{working_dir}/local_dbs/tables/generated_tables.db'
     )
     single_value_scores = {}
-    MAX_ITER = 150
+    MAX_ITER = 300
     count = 0
-    rephrased_response = 'NA'
-    for tbl in ['https://en.wikipedia.org/wiki/2018_Korean_Tour']: # generated_tbl_cache.iterkeys():
+    for tbl in generated_tbl_cache.iterkeys():
         count += 1
         print(f'Retrieving {count}...')
         if count > MAX_ITER:
@@ -81,26 +80,13 @@ Return only the value, with no additional words, punctuation, or explanation."""
                     .strip()
                 )
                 response = get_llm_response(prompt, MODEL=model,)
-                rephrased_prompt = prompts['rephrase_wrapper'].format(
-                    QUESTION=single_value_prompt,
-                    TABLE_TITLE=table_description,
-                    ANSWER=real_value,
-                    URL=cfg['url'],
 
-                ).strip()
-                rephrased_response = get_llm_response(rephrased_prompt,MODEL=model,)
-                rephrased_llm_response = get_llm_response(
-                    REPHRASED_SUFFIX.format(REPHRASE=rephrased_response), MODEL=model,
-                )
                 if (
                     response is None
                     or response == ''
-                    or rephrased_llm_response is None
-                    or rephrased_llm_response == ''
                 ):
                     continue
                 parsed_response = parser_ins.try_cast(response)
-                rephrased_parsed_response = parser_ins.try_cast(rephrased_llm_response)
                 context_response = None
                 if context:
                     context_response = prompts['context_wrapper'].format(TABLE_TITLE=table_description, QUESTION=single_value_prompt,URL=cfg['url'],)
@@ -111,11 +97,6 @@ Return only the value, with no additional words, punctuation, or explanation."""
                     'real_value': parsed_real_value,
                     'response': parsed_response,
                     'correct': int(parsed_response == parsed_real_value),
-                    'rephrased_correct': int(
-                        rephrased_parsed_response == parsed_real_value
-                    ),
-                    'rephrased_question': rephrased_response,
-                    'rephrased_response': rephrased_parsed_response,
                     'prompt': single_value_prompt,
                     'context_response': context_response,
                     'context_correct': int(context_response == parsed_real_value) if context_response is not None else 'NA',
@@ -133,7 +114,6 @@ Return only the value, with no additional words, punctuation, or explanation."""
     single_value_list = []
     single_value_count = 0
     single_value_match = 0
-    single_value_rephrased_match = 0
     single_value_context_match = 0
     for record in single_value_scores.items():
         url = record[0]
@@ -149,21 +129,16 @@ Return only the value, with no additional words, punctuation, or explanation."""
                         result['response'],
                         result['correct'],
                         result['prompt'],
-                        result['rephrased_question'],
-                        result['rephrased_correct'],
-                        result['rephrased_response'],
                         result['context_response'] if 'context_response' in result else 'NA',
                         result['context_correct'] if 'context_correct' in result else 'NA',
                     ]
                 )
                 single_value_match += result['correct']
                 single_value_count += 1
-                single_value_rephrased_match += result['rephrased_correct']
                 if 'context_correct' in result and result['context_correct'] != 'NA':
                     single_value_context_match += result['context_correct']
 
     print(f"Single value match: {single_value_match} out of {single_value_count}")
-    print(f"Single value rephrased match: {single_value_rephrased_match} out of {single_value_count}")
     print(f"Context matched: {single_value_context_match} out of {single_value_count}")
 
     df_single_value = pd.DataFrame(
@@ -176,17 +151,14 @@ Return only the value, with no additional words, punctuation, or explanation."""
             'Response',
             'Correct',
             'Prompt',
-            'Rephrased_question',
-            'Rephrased Correct',
-            'Rephased_response',
             'Context Response',
             'Context Correct',
         ],
     )
     plt.figure()
-    plot_df = df_single_value[['Correct', 'Rephrased Correct']]
+    plot_df = df_single_value[['Correct',]]
     if context:
-        plot_df = df_single_value[['correct', 'Rephrased correct', 'Context Correct']]
+        plot_df = df_single_value[['correct', 'Context Correct']]
 
     mapping = {-1: "mistake", 0: "neutral", 1: "correct"}
 

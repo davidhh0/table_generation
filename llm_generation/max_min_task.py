@@ -35,7 +35,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
     )
     max_scores = {}
     min_scores = {}
-    MAX_ITER = 150
+    MAX_ITER = 300
     count = 0
     rephrased_response = 'NA'
     for tbl in generated_tbl_cache.iterkeys():

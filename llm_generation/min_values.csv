@@ -1,1 +1,257 @@
-URL,Key,Response,actual_result,correct,Rephrased correct,With keys,Prompt,Rephrased Question,Rephrased Response,Context Response,Context Correct
+URL,Key,Response,actual_result,correct,With keys,Prompt,Context Response,Context Correct
+https://en.wikipedia.org/wiki/1990_Ben_Hogan_Tour,Purse (US$),35000,"['Ben Hogan Bakersfield Open', 'Ben Hogan Yuma Open', 'Ben Hogan South Texas Open', 'Ben Hogan Baton Rouge Open', 'Ben Hogan Gulf Coast Classic', 'Ben Hogan Panama City Beach Classic', 'Ben Hogan Lake City Classic', 'Ben Hogan Pensacola Open', 'Ben Hogan Gateway Open', 'Ben Hogan Macon Open', 'Ben Hogan Knoxville Open', 'Ben Hogan Elizabethtown Open', 'Ben Hogan Quail Hollow Open', 'Ben Hogan Fort Wayne Open', 'Ben Hogan Central New York Classic', 'Ben Hogan New Haven Open', 'Ben Hogan New England Classic', 'Ben Hogan Buffalo Open', 'Ben Hogan Dakota Dunes Open', 'Ben Hogan Kansas City Classic', 'Ben Hogan Greater Ozarks Open', 'Ben Hogan Reflection Ridge', 'Ben Hogan Texarkana Open', 'Ben Hogan Amarillo Open', 'Ben Hogan Utah Classic', 'Ben Hogan Boise Open', 'Ben Hogan Reno Open', 'Ben Hogan Santa Rosa Open', 'Ben Hogan El Paso Open']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1990_PGA_Tour_of_Australia,OWGR points,6,"['Mercedes-Benz Australian Match Play Championship', 'Monro Interiors Nedlands Masters', 'New South Wales Open', 'Air New Zealand Shell Open', 'West End South Australian Open', 'Coolum Classic']",-1,0,Which 'Tournament' has the minimum value in the 'OWGR points' column ?,,NA
+https://en.wikipedia.org/wiki/1991%E2%80%9392_Southern_Africa_Tour,Purse (R),300000,"['Goodyear Classic', 'Spoornet Classic', 'ICL International', 'Hollard Royal Swazi Sun Classic']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (R)' column ?,,NA
+https://en.wikipedia.org/wiki/1991_Ben_Hogan_Tour,Purse (US$),100000,"['Ben Hogan Bakersfield Open', 'Ben Hogan Yuma Open', 'Ben Hogan South Texas Open', 'Ben Hogan Panama City Beach Classic', 'Ben Hogan Gateway Open', 'Ben Hogan Pensacola Open', 'Ben Hogan Macon Open', 'Ben Hogan Knoxville Open', 'Ben Hogan Elizabethtown Open', 'Ben Hogan Fort Wayne Open', 'Ben Hogan New England Classic', 'Ben Hogan Connecticut Open', 'Ben Hogan Reno Open', 'Ben Hogan Utah Classic', 'Ben Hogan Santa Rosa Open']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1991_NCAA_Division_I_women%27s_basketball_tournament,Bids,26,"['Alabama', 'Arkansas', 'District of Columbia', 'Florida', 'Georgia', 'Indiana', 'Iowa', 'Maryland', 'Massachusetts', 'Michigan', 'Mississippi', 'Missouri', 'Montana', 'Nevada', 'New Jersey', 'Ohio', 'Oklahoma', 'Pennsylvania', 'Rhode Island', 'Utah']",-1,0,Which 'State' has the minimum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1991_PGA_Tour_of_Australasia,OWGR points,6,"['Rothmans Malaysian Masters', 'Perak Masters', 'Pioneer Singapore PGA Championship']",-1,0,Which 'Tournament' has the minimum value in the 'OWGR points' column ?,,NA
+https://en.wikipedia.org/wiki/1992%E2%80%9393_Southern_Africa_Tour,Purse (R),150000,"['Goodyear Classic', 'Hollard Royal Swazi Sun Classic']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (R)' column ?,,NA
+https://en.wikipedia.org/wiki/1992_NCAA_Division_I_women%27s_basketball_tournament,Bids,"Alaska, Alabama, Arizona, Arkansas, Delaware, Hawaii, Idaho, Iowa, Maine, Mississippi, Montana, Nebraska, Nevada, New Hampshire, New Mexico, North Dakota, Oklahoma, Oregon, Rhode Island, South Dakota, Utah, Vermont, Wyoming 
+all have 
+1","['Alabama', 'Arizona', 'Colorado', 'Connecticut', 'District of Columbia', 'Florida', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maryland', 'Missouri', 'Montana', 'Nebraska', 'North Carolina', 'Ohio', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'Vermont', 'West Virginia', 'Wisconsin']",-1,0,Which 'State' has the minimum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1992_PGA_Tour_of_Australasia,OWGR points,6,['Pioneer Singapore PGA Championship'],-1,0,Which 'Tournament' has the minimum value in the 'OWGR points' column ?,,NA
+https://en.wikipedia.org/wiki/1993%E2%80%9394_Southern_Africa_Tour,Purse (R),150000,['Zimbabwe Open'],-1,0,Which 'Tournament' has the minimum value in the 'Purse (R)' column ?,,NA
+https://en.wikipedia.org/wiki/1993_NCAA_Division_I_women%27s_basketball_tournament,Bids,26,"['Colorado', 'Connecticut', 'District of Columbia', 'Iowa', 'Kansas', 'Louisiana', 'Maryland', 'Missouri', 'Montana', 'Nebraska', 'North Carolina', 'Oklahoma', 'Pennsylvania', 'South Carolina', 'Utah', 'Vermont', 'Washington']",-1,0,Which 'State' has the minimum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1994_Commonwealth_Games,Rank,24,['Australia'],-1,0,Which 'Nation' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/1994_Nike_Tour,Purse (US$),150000,"['Nike Louisiana Open', 'Nike Mississippi Gulf Coast Classic', 'Nike Panama City Beach Classic', 'Nike Shreveport Open', 'Nike South Carolina Classic', 'Nike Central Georgia Open', 'Nike Greater Greenville Classic', 'Nike Wichita Open', 'Nike Permian Basin Open', 'Nike New Mexico Charity Classic', 'Nike Utah Classic', 'Nike Tri-Cities Open', 'Nike Sonoma County Open']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1995_Asian_PGA_Tour,Purse (US$),100000,['Volvo Masters of Thailand'],-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1995_Canadian_Tour,Purse (C$),"30,000","['Payless Open', 'Morningstar Classic', 'Henry Singer Alberta Open', 'Klondike Klassic', 'Xerox Manitoba Open', 'Export ""A"" Inc. Ontario Open']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/1995_NCAA_Division_I_women%27s_basketball_tournament,Bids,26,"['Alabama', 'Arkansas', 'Colorado', 'Connecticut', 'District of Columbia', 'Georgia', 'Iowa', 'Kansas', 'Maine', 'Massachusetts', 'Missouri', 'Montana', 'New Hampshire', 'New Jersey', 'South Carolina', 'Utah', 'Washington']",-1,0,Which 'State' has the minimum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1995_Nike_Tour,Purse (US$),150000,"['Nike San Jose Open', 'Nike Inland Empire Open', 'Nike Louisiana Open', 'Nike Pensacola Classic', 'Nike Mississippi Gulf Coast Classic', 'Nike Tallahassee Open', 'Nike Shreveport Open', 'Nike Alabama Classic', 'Nike South Carolina Classic', 'Nike Central Georgia Open', 'Nike Knoxville Open', 'Nike Greater Greenville Classic', 'Nike Dominion Open', 'Nike Miami Valley Open', 'Nike Cleveland Open', 'Nike Carolina Classic', 'Nike Philadelphia Classic', 'Nike Buffalo Open', 'Nike Gateway Classic', 'Nike Wichita Open', 'Nike Dakota Dunes Open', 'Nike Ozarks Open', 'Nike Permian Basin Open', 'Nike Texarkana Open', 'Nike Utah Classic', 'Nike Tri-Cities Open', 'Nike Sonoma County Open']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1996_Cricket_World_Cup_statistics,Runs,239,['Brian Lara'],-1,0,Which 'Players' has the minimum value in the 'Runs' column ?,,NA
+https://en.wikipedia.org/wiki/1996_NCAA_Division_I_women%27s_basketball_tournament,Bids,"Alabama 
+Alaska 
+Arizona 
+Arkansas 
+California 
+Colorado 
+Connecticut 
+Delaware 
+Florida 
+Georgia 
+Hawaii 
+Idaho 
+Illinois 
+Indiana 
+Iowa 
+Kansas 
+Kentucky 
+Louisiana 
+Maine 
+Maryland 
+Massachusetts 
+Michigan 
+Minnesota 
+Mississippi 
+Missouri 
+Montana 
+Nebraska 
+Nevada 
+New Hampshire 
+New Jersey 
+New Mexico 
+New York 
+North Carolina 
+North Dakota 
+Ohio 
+Oklahoma 
+Oregon 
+Pennsylvania 
+Rhode Island 
+South Carolina 
+South Dakota 
+Tennessee 
+Texas 
+Utah 
+Vermont 
+Virginia 
+Washington 
+West Virginia 
+Wisconsin 
+Wyoming 
+40
+1","['New York', 'Connecticut', 'Georgia', 'Hawaii', 'Illinois', 'Iowa', 'Kansas', 'Maine', 'Michigan', 'Missouri', 'Montana', 'Nebraska', 'Oklahoma', 'Rhode Island', 'South Carolina', 'Utah', 'Wisconsin']",-1,0,Which 'State' has the minimum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1996_Nike_Tour,Purse (US$),"200,000","['Nike San Jose Open', 'Nike Inland Empire Open', 'Nike Tallahassee Open', 'Nike South Carolina Classic', 'Nike Alabama Classic', 'Nike Shreveport Open', 'Nike Mississippi Gulf Coast Classic', 'Nike Carolina Classic', 'Nike Greater Greenville Classic', 'Nike Dominion Open', 'Nike Cleveland Open', 'Nike Knoxville Open', 'Nike Ozarks Open', 'Nike Buffalo Open', 'Nike Philadelphia Classic', 'Nike Miami Valley Open', 'Nike Gateway Classic', 'Nike Omaha Classic', 'Nike Wichita Open', 'Nike Permian Basin Open', 'Nike Colorado Classic', 'Nike Utah Classic', 'Nike Tri-Cities Open', 'Nike Olympia Open']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1997_NCAA_Division_I_women%27s_basketball_tournament,Bids,36,"['Arizona', 'Colorado', 'Connecticut', 'Georgia', 'Maine', 'Maryland', 'Massachusetts', 'Montana', 'New Jersey', 'Ohio', 'South Carolina', 'Utah', 'Washington', 'West Virginia', 'Wisconsin']",-1,0,Which 'State' has the minimum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1997_Nike_Tour,Purse (US$),175000,"['Nike Lakeland Classic', 'Nike Inland Empire Open', 'Nike Greater Austin Open', 'Nike Mississippi Gulf Coast Classic', 'Nike Alabama Classic', 'Nike South Carolina Classic', 'Nike Carolina Classic', 'Nike Upstate Classic', 'Nike Knoxville Open', 'Nike Miami Valley Open', 'Nike Cleveland Open', 'Nike Hershey Open', 'Nike Laurel Creek Classic', 'Nike St. Louis Golf Classic', 'Nike Wichita Open', 'Nike Dakota Dunes Open', 'Nike Omaha Classic', 'Nike Ozarks Open', 'Nike Permian Basin Open', 'Nike Colorado Classic', 'Nike San Jose Open', 'Nike Tri-Cities Open', 'Nike Puget Sound Open', 'Nike Shreveport Open']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1997_PGA_Tour,Position,10,['Tiger Woods'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/1998_NCAA_Division_I_women%27s_basketball_tournament,Bids,26,"['Alabama', 'Arizona', 'Arkansas', 'Colorado', 'Georgia', 'Hawaii', 'Illinois', 'Kansas', 'Maine', 'Michigan', 'Missouri', 'Montana', 'Nebraska', 'New Jersey', 'New Mexico', 'Pennsylvania', 'Oregon', 'South Carolina', 'Utah', 'Washington']",-1,0,Which 'State' has the minimum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/1998_Nike_Tour,Purse (US$),175000,"['Nike Lakeland Classic', 'Nike South Florida Open', 'Nike Greater Austin Open', 'Nike Shreveport Open', 'Nike Upstate Classic', 'Nike Huntsville Open', 'Nike South Carolina Classic', 'Nike Carolina Classic', 'Nike Dominion Open', 'Nike Knoxville Open', 'Nike Miami Valley Open', 'Nike Cleveland Open', 'Nike Lehigh Valley Open', 'Nike Greensboro Open', 'Nike Hershey Open', 'Nike St. Louis Golf Classic', 'Nike Wichita Open', 'Nike Ozarks Open', 'Nike Fort Smith Classic', 'Nike Permian Basin Open', 'Nike Tri-Cities Open', 'Nike Oregon Classic', 'Nike San Jose Open', 'Nike Inland Empire Open']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/1999%E2%80%932000_NCAA_football_bowl_games,Rank,25,['Florida State'],-1,0,Which 'Team' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/1999_Canadian_Tour,Purse (C$),30000,['AmEx-SAQ Championship'],-1,0,Which 'Tournament' has the minimum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/1999_Nike_Tour,Purse (US$),225000,"['Nike South Florida Classic', 'Nike Lakeland Classic', 'Nike Florida Classic', 'Nike Shreveport Open', 'Nike South Carolina Classic', 'Nike Upstate Classic', 'Nike Carolina Classic', 'Nike Knoxville Open', 'Nike Cleveland Open', 'Nike Lehigh Valley Open', 'Nike Hershey Open', 'Nike Greensboro Open', 'Nike Wichita Open', 'Nike Permian Basin Open', 'Nike Tri-Cities Open', 'Nike Oregon Classic', 'Nike Inland Empire Open', 'Nike New Mexico Classic']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2000_Canadian_Tour,OWGR points,6,"['Telus Vancouver Open', 'Shell Payless Open', 'Telus Edmonton Open', 'Telus Calgary Open', 'MTS Classic', 'Ontario Open Heritage Classic', 'Eagle Creek Classic', 'QuebecTel Open', 'Samsung Canadian PGA Championship', 'Benefit Partners/NRCS Classic', ""McDonald's PEI Challenge"", 'Bayer Championship', 'Panasonic Panama Open']",-1,0,Which 'Tournament' has the minimum value in the 'OWGR points' column ?,,NA
+https://en.wikipedia.org/wiki/2001_PGA_Tour,Purse ($),3000000,['Hyundai Team Matches'],-1,0,Which 'Tournament' has the minimum value in the 'Purse ($)' column ?,,NA
+https://en.wikipedia.org/wiki/2002%E2%80%9303_snooker_season,Points 2000/01,5400,['Joe Perry'],-1,0,Which 'Player' has the minimum value in the 'Points 2000/01' column ?,,NA
+https://en.wikipedia.org/wiki/2002_PGA_Tour,Position,10,['Tiger Woods'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2003_AIHL_season,GP,11,['Vladimir Rubes'],-1,0,Which 'Player' has the minimum value in the 'GP' column ?,,NA
+https://en.wikipedia.org/wiki/2003_Australian_GT_Performance_Car_Championship,Position,1,['Mark King'],-1,0,Which 'Driver' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2003_Canadian_Tour,Purse (C$),175000,"['TravelTex.com Canadian Tour Classic', 'TravelTex.com Canadian Tour Challenge', 'Michelin Guadalajara Classic', 'Corona Ixtapa Classic', 'MTS Classic', 'Telus Edmonton Open', 'Lewis Chitengwa Memorial Championship']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/2003_Jordanian_general_election,Districts,Ajloun,"['Mafraq', 'Jerash', 'Aqaba', 'North Bedouin Tribes', 'Center Bedouin Tribes', 'South Bedouin Tribes']",0,0,Which 'Governorate' has the minimum value in the 'Districts' column ?,,NA
+https://en.wikipedia.org/wiki/2003_PGA_Tour_of_Australasia,Purse (A$),200000,['Volvo Trucks Klassic'],-1,0,Which 'Tournament' has the minimum value in the 'Purse (A$)' column ?,,NA
+https://en.wikipedia.org/wiki/2003_Rugby_World_Cup_statistics,Played,5,['Chris Latham'],-1,0,Which 'Player' has the minimum value in the 'Played' column ?,,NA
+https://en.wikipedia.org/wiki/2004_Australian_federal_election,Total votes,474,['Aged and Disability Pensioners Party'],-1,0,Which 'Minor party' has the minimum value in the 'Total votes' column ?,,NA
+https://en.wikipedia.org/wiki/2004_Champions_Tour,Purse (US$),"1,500,000",['Royal Caribbean Golf Classic'],-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2004_NCAA_Division_I_women%27s_basketball_tournament,Bids,26,"['Alabama', 'Arizona', 'Colorado', 'Connecticut', 'District of Columbia', 'Georgia', 'Illinois', 'Iowa', 'Kansas', 'Maine', 'Maryland', 'Massachusetts', 'Minnesota', 'Mississippi', 'Montana', 'New Jersey', 'New Mexico', 'Ohio', 'Oklahoma', 'West Virginia']",-1,0,Which 'State' has the minimum value in the 'Bids' column ?,,NA
+https://en.wikipedia.org/wiki/2005_Armenian_Premier_League,Capacity,1000,['Shirak'],-1,0,Which 'Club' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2005_Supercheap_Auto_1000,No.,1,[2],0,0,Which 'Pos.' has the minimum value in the 'No.' column ?,,NA
+https://en.wikipedia.org/wiki/2006%E2%80%9307_snooker_season,Points 2005/06,0,['Mark Selby'],-1,0,Which 'Player' has the minimum value in the 'Points 2005/06' column ?,,NA
+https://en.wikipedia.org/wiki/2006_Champions_Tour,Purse (US$),"1,750,000","['Turtle Bay Championship', 'Allianz Championship', 'Commerce Bank Championship']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2006_Euro_Beach_Soccer_League_%E2%80%93_Last_chance_bracket,Rank,1,['Montenegro'],-1,0,Which 'Team' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2006_Kerrick_Sports_Sedan_Series,Position,1,['Dean Randle'],-1,0,Which 'Driver' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2007%E2%80%9308_snooker_season,Ch,0,"['Stephen Hendry', 'Ding Junhui']",-1,0,Which 'Player' has the minimum value in the 'Ch' column ?,,NA
+https://en.wikipedia.org/wiki/2007_Champions_Tour,Purse (US$),2000000,['Commerce Bank Championship'],-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2007_League_of_Ireland_Premier_Division,Capacity,1700,"['Kildare County', 'UCD']",-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2008%E2%80%9309_Ukrainian_Premier_League,Rank,16,['Dnipro Dnipropetrovsk'],-1,0,Which 'Club' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2008%E2%80%9309_snooker_season,Ch,0,"['John Higgins', 'Neil Robertson', 'Mark King']",-1,0,Which 'Player' has the minimum value in the 'Ch' column ?,,NA
+https://en.wikipedia.org/wiki/2008_Champions_Tour,Purse (US$),1500000,"['Turtle Bay Championship', 'ACE Group Classic', 'AT&T Champions Classic', ""FedEx Kinko's Classic"", 'Commerce Bank Championship', ""Dick's Sporting Goods Open""]",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2008_United_States_presidential_election_in_New_Hampshire,Votes,"Richard Duncan
+ Bob Barr 
+ Chuck Baldwin 
+ Ron Paul 
+ Ralph Nader 
+ Cynthia McKinney 
+ John McCain 
+ Barack Obama 
+ Hillary Clinton 
+ Mitt Romney 
+ Rudy Giuliani 
+ Fred Thompson 
+ Mike Huckabee 
+ Duncan Hunter 
+ Alan Keyes 
+ Dennis Kucinich 
+ Bill Richardson 
+ Joe Biden 
+ Chris Dodd 
+ Mike Gravel 
+ Barack Obama 
+ John Edwards 
+ Hillary Clinton 
+are some of the candidates, however, the candidate with the minimum votes is 
+ Richard Duncan with 31 votes",['H. Neal Fendig Jr.'],-1,0,Which 'Candidate' has the minimum value in the 'Votes' column ?,,NA
+https://en.wikipedia.org/wiki/2008_United_States_presidential_election_in_Washington_(state),Votes,Duncan Hunter,['Duncan Hunter*'],-1,0,Which 'Candidate' has the minimum value in the 'Votes' column ?,,NA
+https://en.wikipedia.org/wiki/2008_Washington_Republican_presidential_caucuses_and_primary,Votes,Alan Keyes,['Duncan Hunter*'],0,0,Which 'Candidate' has the minimum value in the 'Votes' column ?,,NA
+https://en.wikipedia.org/wiki/2009%E2%80%9310_snooker_season,Ch,0,"['Ali Carter', 'Mark Allen', 'Stephen Hendry', 'Mark King']",-1,0,Which 'Player' has the minimum value in the 'Ch' column ?,,NA
+https://en.wikipedia.org/wiki/2010%E2%80%9311_Pakistan_federal_budget,Rs. in Billion,1198,['Bank Borrowing'],-1,0,Which 'Receipts' has the minimum value in the 'Rs. in Billion' column ?,,NA
+https://en.wikipedia.org/wiki/2010%E2%80%932014_NCAA_conference_realignment,Old membership total,6,['Big East'],-1,0,Which 'Conference' has the minimum value in the 'Old membership total' column ?,,NA
+https://en.wikipedia.org/wiki/2010_Australian_GT_Championship,No,3,['Wall Racing'],-1,0,Which 'Team' has the minimum value in the 'No' column ?,,NA
+https://en.wikipedia.org/wiki/2010_Champions_Tour,Purse (US$),1500000,"['ACE Group Classic', 'Cap Cana Championship', 'Mississippi Gulf Resort Classic']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2011%E2%80%9312_South_African_Premiership,Capacity,8000,['Bidvest Wits'],-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2011_Alps_Tour,Position,1,['Guillaume Cambis'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2011_Australian_GT_Championship,No,1,['David Wall'],-1,-1,Which 'Driver' has the minimum value in the 'No' column ?,,NA
+https://en.wikipedia.org/wiki/2011_Big_Easy_Tour,Purse (R),150000,"['Crown Mines', 'Irene Country Club', 'Observatory Golf Club', 'Glendower Golf Club', 'Kempton Park Golf Club', 'ERPM Golf Club', 'Maccauvlei Golf Club', 'Houghton Golf Club', 'Benoni Country Club', 'Modderfontein Golf Club']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (R)' column ?,,NA
+https://en.wikipedia.org/wiki/2011_Challenge_Trophy,Place,1,['HUSA Alumni'],-1,0,Which 'Team' has the minimum value in the 'Place' column ?,,NA
+https://en.wikipedia.org/wiki/2011_Champions_Tour,Purse (US$),1750000,"['ACE Group Classic', 'Mississippi Gulf Resort Classic', 'Nature Valley First Tee Open at Pebble Beach']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2011_Korean_Tour,OWGR points,6,"['Twayair Open', 'Volvik Gunsan CC Open', 'Lake Hills Open', 'Subaru Classic', 'Dongbu Insurance Promy Open', 'Johnnie Walker Open', 'Daishin Securities KPGA Championship', 'Munsingwear Championship', 'Meritz Solmoro Open', 'NH Open']",-1,0,Which 'Tournament' has the minimum value in the 'OWGR points' column ?,,NA
+https://en.wikipedia.org/wiki/2011_LSU_vs._Alabama_football_game,Year,2011,"['Trent Richardson', 'Morris Claiborne', 'Mark Barron', 'Michael Brockers', 'Dre Kirkpatrick', ""Dont'a Hightower"", 'Courtney Upshaw', 'Rueben Randle', 'Brandon Taylor', 'Ron Brooks', 'Josh Chapman', 'DeQuan Menzie', 'Brad Smelley']",-1,0,Which 'Player name' has the minimum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/2012%E2%80%9313_South_African_Premiership,Capacity,8000,['Bidvest Wits'],-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2012_Big_Easy_Tour,Purse (R),150000,"['Houghton', 'Observatory', 'Modderfontein', 'Kempton Park', 'ERPM', 'Benoni CC', 'Royal J & K', 'Gary Player CC', 'Maccauvlei', 'Irene', 'Glendower']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (R)' column ?,,NA
+https://en.wikipedia.org/wiki/2012_Champions_Tour,Purse (US$),1750000,"['ACE Group Classic', 'Mississippi Gulf Resort Classic', 'Encompass Insurance Pro-Am of Tampa Bay', 'Greater Hickory Classic at Rock Barn']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2012_Nordic_Golf_League,Position,1,['Lucas Bjerregaard'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2012_St._Louis_Cardinals_season,Pct.,.167,['Trailing after 8 innings'],-1,0,Which 'Situation' has the minimum value in the 'Pct.' column ?,,NA
+https://en.wikipedia.org/wiki/2012_Supercheap_Auto_Bathurst_1000,Position,10,['Will Davison'],-1,0,Which 'Driver' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2012_Web.com_Tour,Purse (US$),500000,"['Chitimacha Louisiana Open', 'News Sentinel Open']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2012_Zimbabwe_Premier_Soccer_League,Capacity,6000,['Motor Action'],-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2013%E2%80%9314_South_African_Premiership,Capacity,8000,['Bidvest Wits'],-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2013%E2%80%9314_Ukrainian_First_League,Rank,17,['FC Sumy'],-1,0,Which 'Club' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2013_Australian_Carrera_Cup_Championship,Pos.,1,['Max Twigg'],-1,0,Which 'Driver' has the minimum value in the 'Pos.' column ?,,NA
+https://en.wikipedia.org/wiki/2013_Big_Easy_Tour,Purse (R),150000,"['Roodepoort CC', 'Observatory GC', 'Centurion CC', 'Kempton Park GC', 'Irene CC', 'Wingate CC', 'Houghton GC', 'Benoni CC', 'Royal J & K', 'The Els Club', 'ERPM GC']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (R)' column ?,,NA
+https://en.wikipedia.org/wiki/2013_MENA_Golf_Tour,Purse (US$),30000,"['Royal Golf Dar Es Salam Open', ""Royal D'Anfa Open"", 'Dubai Creek Open', 'American Express Dirab Golf Championship', 'Shaikh Maktoum Dubai Open', 'Ras Al Khaimah Classic', 'Abu Dhabi Golf Citizen Open', 'Qatar Classic', 'Ghala Valley']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2013_PGA_Tour,Position,10,['Henrik Stenson'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2013_Pro_Golf_Tour,Position,1,['Florian Fritsch'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2013_Q_School,Rank,1,['Adam Wicheard'],-1,0,Which 'Player' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2013_Zimbabwe_Premier_Soccer_League,Capacity,2000,['Motor Action'],-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2014%E2%80%9315_PGA_Tour,Position,1,['Jordan Spieth'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2014%E2%80%9315_South_African_Premiership,Capacity,8000,['Bidvest Wits'],-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2014_PGA_Tour_Canada,Purse (C$),175000,"['PC Financial Open', 'Bayview Place Island Savings Open', 'Syncrude Boreal Open', 'SIGA Dakota Dunes Open', 'The Players Cup', 'Staal Foundation Open', 'ATB Financial Classic', 'Forces and Families Open', 'Great Waterway Classic', 'Wildfire Invitational', 'Cape Breton Celtic Classic', 'Tour Championship of Canada']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/2014_Pro_Golf_Tour,Position,1,['Marcel Schneider'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2014_Q_School,Event 1,-7,"[""Joe O'Connor""]",-1,0,Which 'Player' has the minimum value in the 'Event 1' column ?,,NA
+https://en.wikipedia.org/wiki/2015%E2%80%9316_PGA_Tour,Position,1,['Rory McIlroy'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2015%E2%80%9316_Saudi_Pro_League,GP.,26,"['Round 1', 'Round 2', 'Round 3', 'Round 4', 'Round 5', 'Round 6', 'Round 7', 'Round 8', 'Round 9', 'Round 10', 'Round 11', 'Round 12', 'Round 13', 'Round 14', 'Round 15', 'Round 16', 'Round 17', 'Round 18', 'Round 19', 'Round 20', 'Round 21', 'Round 22', 'Round 23', 'Round 24', 'Round 25', 'Round 26']",-1,0,Which 'Round' has the minimum value in the 'GP.' column ?,,NA
+https://en.wikipedia.org/wiki/2015%E2%80%9316_South_African_Premiership,Capacity,8000,['University of Pretoria'],-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2015_Alps_Tour,Position,1,['Darius van Driel'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2015_MERS_outbreak_in_South_Korea,Cases*1*2,2015-05-20,['20 May 2015'],-1,-1,Which 'Date' has the minimum value in the 'Cases*1*2' column ?,,NA
+https://en.wikipedia.org/wiki/2015_PGA_Tour_Canada,Purse (C$),175000,"['PC Financial Open', 'Bayview Place Island Savings Open', 'Syncrude Boreal Open', 'SIGA Dakota Dunes Open', 'The Players Cup', 'Staal Foundation Open', 'ATB Financial Classic', 'National Capital Open to Support Our Troops', 'Great Waterway Classic', 'Wildfire Invitational', 'Cape Breton Celtic Classic']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/2015_Pacific_Games,Rank,1,['Papua New Guinea*'],-1,-1,Which 'Nation' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2015_Pro_Golf_Tour,Position,1,['Philipp Mejow'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2015_Q_School,Event 1,0,"['Kuldesh Johal', 'Greg Casey']",-1,0,Which 'Player' has the minimum value in the 'Event 1' column ?,,NA
+https://en.wikipedia.org/wiki/2015_UCI_men%27s_road_cycling_rankings,Rank,1,['Belgium'],-1,0,Which 'Nation' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2015_Web.com_Tour,Purse (US$),600000,['Greater Dallas Open'],-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2016%E2%80%9317_PGA_Tour,Position,10,['Justin Thomas'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2016%E2%80%9317_Saudi_Pro_League,GP.,26,"['Round 1', 'Round 2', 'Round 3', 'Round 4', 'Round 5', 'Round 6', 'Round 7', 'Round 8', 'Round 9', 'Round 10', 'Round 11', 'Round 12', 'Round 13', 'Round 14', 'Round 15', 'Round 16', 'Round 17', 'Round 18', 'Round 19', 'Round 20', 'Round 21', 'Round 22', 'Round 23', 'Round 24', 'Round 25', 'Round 26']",-1,0,Which 'Round' has the minimum value in the 'GP.' column ?,,NA
+https://en.wikipedia.org/wiki/2016%E2%80%9317_Ukrainian_Premier_League,Rank,12,['Dynamo Kyiv'],-1,0,Which 'Club' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2016%E2%80%9317_United_States_national_rugby_sevens_team_season,Matches,Carlin Isles,"[""Mike Te'o""]",-1,0,Which 'Player' has the minimum value in the 'Matches' column ?,,NA
+https://en.wikipedia.org/wiki/2016_PGA_Tour_Canada,Purse (C$),125000,"['Freedom 55 Financial Open', 'Bayview Place Island Savings Open', 'GolfBC Championship', 'SIGA Dakota Dunes Open', 'The Players Cup', 'Staal Foundation Open', 'Syncrude Oil Country Championship', 'ATB Financial Classic', 'National Capital Open to Support Our Troops', 'Cape Breton Celtic Classic', 'Niagara Championship']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/2016_USL_season,Capacity,"1,500",['LA Galaxy II'],-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2017%E2%80%9318_Saudi_Pro_League,GP.,26,"['Round 1', 'Round 2', 'Round 3', 'Round 4', 'Round 5', 'Round 6', 'Round 7', 'Round 8', 'Round 9', 'Round 10', 'Round 11', 'Round 12', 'Round 13', 'Round 14', 'Round 15', 'Round 16', 'Round 17', 'Round 18', 'Round 19', 'Round 20', 'Round 21', 'Round 22', 'Round 23', 'Round 24', 'Round 25', 'Round 26']",-1,0,Which 'Round' has the minimum value in the 'GP.' column ?,,NA
+https://en.wikipedia.org/wiki/2017%E2%80%9318_Ukrainian_Premier_League,Rank,12,['Dynamo Kyiv'],-1,0,Which 'Club' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2017_Alps_Tour,Position,1,['Adri Arnaus'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2017_Euro_Beach_Soccer_League,Pos,1,['Turkey'],-1,0,Which 'Team' has the minimum value in the 'Pos' column ?,,NA
+https://en.wikipedia.org/wiki/2017_PGA_Tour_Canada,Purse (C$),175000,"['Freedom 55 Financial Open', 'Bayview Place Cardtronics Open', 'GolfBC Championship', 'The Players Cup', 'Staal Foundation Open', 'Mackenzie Investments Open', 'Syncrude Oil Country Championship', 'ATB Financial Classic', 'National Capital Open to Support Our Troops', 'Cape Breton Open', 'Ontario Championship']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/2017_Q_School,Rank,1,['Zhang Yong'],-1,0,Which 'Player' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2018%E2%80%9319_Bangladesh_Premier_League_(football),Capacity,7500,['Muktijoddha Sangsad KC'],-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2018%E2%80%9319_Saudi_Pro_League,Capacity,7620,['Al-Hazem'],-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2018%E2%80%9319_Ukrainian_Premier_League,Rank,12,['Dynamo Kyiv'],-1,0,Which 'Club' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2018%E2%80%9319_United_States_national_rugby_sevens_team_season,Matches,Naima Fuala'au,['Perry Baker'],-1,0,Which 'Player' has the minimum value in the 'Matches' column ?,,NA
+https://en.wikipedia.org/wiki/2018_Euro_Beach_Soccer_League,Rank,1,['Filip Filipov'],-1,0,Which 'Player' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2018_J2_League,Rank,1,['Genki Omae'],-1,0,Which 'Player' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2018_Korean_Tour,Purse,300000000,"['DB Insurance Promy Open', 'NS HomeShopping Gunsan CC Jeonbuk Open', 'Dong-A Membership Group Busan Open', 'DGB Financial Group Daegu Gyeongbuk Open', 'Huons Celebrity Pro-Am', 'A+Life Hyodam Jeju Open', 'Golfzon-DYB Education KPGA Tour Championship']",-1,0,Which 'Tournament' has the minimum value in the 'Purse' column ?,,NA
+https://en.wikipedia.org/wiki/2018_PGA_Tour_Canada,Purse (C$),175000,"['Freedom 55 Financial Open', 'Bayview Place DCBank Open', 'GolfBC Championship', 'Lethbridge Paradise Canyon Open', 'Windsor Championship', 'Staal Foundation Open', 'Osprey Valley Open', 'Syncrude Oil Country Championship', 'ATB Financial Classic', 'The Players Cup', 'Mackenzie Investments Open']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (C$)' column ?,,NA
+https://en.wikipedia.org/wiki/2018_Philippine_Golf_Tour,Purse (US$),300000,"['ICTSI Luisita Championship', 'ICTSI Riviera Classic', 'ICTSI Manila Southwoods Championship', 'ICTSI Forest Hills Championship', 'Aboitiz Invitational', 'CAT Open', 'Summit Point World 18 Challenge', 'ICTSI Pradera Verde Classic', 'ICTSI Riviera Challenge']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2018_Q_School,Rank,1,['David Lilley'],-1,0,Which 'Player' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2019%E2%80%9320_Bangladesh_Premier_League_(football),Capacity,"8,000",['Muktijoddha Sangsad KC'],-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2019%E2%80%9320_Saudi_Pro_League,GP.,30,['Round 21'],-1,0,Which 'Round' has the minimum value in the 'GP.' column ?,,NA
+https://en.wikipedia.org/wiki/2019%E2%80%9320_Ukrainian_Premier_League,Rank,12,"['Dynamo Kyiv', 'Shakhtar Donetsk', 'Kolos Kovalivka']",-1,0,Which 'Club' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2019_Euro_Beach_Soccer_League,Pos,1,['Azerbaijan'],-1,0,Which 'Team' has the minimum value in the 'Pos' column ?,,NA
+https://en.wikipedia.org/wiki/2019_Pacific_Games,Rank,1,['New Caledonia'],-1,0,Which 'Nation' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2020%E2%80%9321_Bangladesh_Premier_League_(football),Rank,1,['Anisur Zico'],-1,0,Which 'Player' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2020%E2%80%9321_Saudi_Pro_League,Capacity,7628,['Al-Batin'],-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2021%E2%80%9322_Bangladesh_Premier_League_(football),Capacity,"8,000","['Muktijoddha Sangsad KC', 'Uttar Baridhara Club']",-1,0,Which 'Team' has the minimum value in the 'Capacity' column ?,,NA
+https://en.wikipedia.org/wiki/2021%E2%80%9322_Sunshine_Tour,Position,11,['Shaun Norris'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2021_Q_School,Rank,1,['Hammad Miah'],-1,0,Which 'Player' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/2022%E2%80%9323_Saudi_Pro_League,GP.,30,"['Round 1', 'Round 2', 'Round 3', 'Round 4', 'Round 5', 'Round 6', 'Round 7', 'Round 8', 'Round 9', 'Round 10', 'Round 11', 'Round 12', 'Round 13', 'Round 14', 'Round 15', 'Round 16', 'Round 17', 'Round 18', 'Round 19', 'Round 20', 'Round 21', 'Round 22', 'Round 23', 'Round 24', 'Round 25', 'Round 26', 'Round 27', 'Round 28', 'Round 29', 'Round 30']",-1,0,Which 'Round' has the minimum value in the 'GP.' column ?,,NA
+https://en.wikipedia.org/wiki/2022_Korn_Ferry_Tour,Purse (US$),600000,"['The Bahamas Great Exuma Classic', 'The Bahamas Great Abaco Classic', 'Panama Championship', 'Astara Golf Championship', 'LECOM Suncoast Classic', 'Chitimacha Louisiana Open', 'Lake Charles Championship', 'Club Car Championship', 'Veritex Bank Championship', 'Huntsville Championship', 'Simmons Bank Open', 'Visit Knoxville Open', 'AdventHealth Championship', 'NV5 Invitational', 'Rex Hospital Open', 'BMW Charity Pro-Am', 'Wichita Open', 'Live and Work in Maine Open', 'The Ascendant', 'Memorial Health Championship', 'Price Cutter Charity Championship', 'Utah Championship']",-1,0,Which 'Tournament' has the minimum value in the 'Purse (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/2022_Pro_Golf_Tour,Position,1,['Michael Hirmer'],-1,0,Which 'Player' has the minimum value in the 'Position' column ?,,NA
+https://en.wikipedia.org/wiki/2023%E2%80%9324_Bangladesh_Championship_League,Goals,0,"['Aswad Bin Walid Khan', 'Hira Ghose', 'Md Delowar Hasan Nehal', 'Joyonto Lal', 'Abu Sadek', 'Md Nazim Uddin Mithu', 'Md Shadhin', 'Md Ridoy Hossain', 'Md Sakib Chowdahury', 'Naky Chandra Das', 'Md Ripon', 'Md Sohel', 'Tanin Sarker', 'Shofikul Islam', 'Akash Ali', 'Md Rakib Rahman', 'Prakas Das', 'Md Manik', 'Md Shawon', 'Md Sohag Mia', 'Md Hasebul Hasan Santo', 'Elias Hasdak', 'Iftiar Hossain', 'Md Labibur Rahman', 'Md Al-Amin', 'Tarikul Islam', 'Md Nazmul Ahmed Shakil', 'Sobuj Sheikh', 'Md Sagor', 'Mujahid Hossain Mollik', 'Akikul Islam', 'Abdullah Tofel', 'Md Habibullah Bashar', 'Anik Hossain Siam', 'Md Joy Ahmed', 'Md Sujon', 'Diderul Islam', 'Using Marma']",-1,0,Which 'Player' has the minimum value in the 'Goals' column ?,,NA
+https://en.wikipedia.org/wiki/2023%E2%80%9324_Horizon_League_men%27s_basketball_season,GP,9,['Oakland'],-1,0,Which 'Team' has the minimum value in the 'GP' column ?,,NA
+https://en.wikipedia.org/wiki/2023%E2%80%9324_Saudi_Pro_League,GP.,13,"['Round 1', 'Round 2', 'Round 3', 'Round 4', 'Round 5', 'Round 6', 'Round 7', 'Round 8', 'Round 9', 'Round 10', 'Round 11', 'Round 12', 'Round 13', 'Round 14', 'Round 15', 'Round 16', 'Round 17', 'Round 18', 'Round 19', 'Round 20', 'Round 21', 'Round 22', 'Round 23', 'Round 24', 'Round 25', 'Round 26', 'Round 27', 'Round 28', 'Round 29', 'Round 30', 'Round 31', 'Round 32', 'Round 33', 'Round 34']",-1,0,Which 'Round' has the minimum value in the 'GP.' column ?,,NA
+https://en.wikipedia.org/wiki/2023_Rugby_World_Cup_statistics,Rank,10,['New Zealand vs South Africa'],-1,0,Which 'Match' has the minimum value in the 'Rank' column ?,,NA
+https://en.wikipedia.org/wiki/AACTA_Award_for_Best_Documentary_Series,Year,2009,"['First Australians', 'Beyond Kokoda', 'Once Bitten', 'Voices from the Cape']",-1,-1,Which 'Film' has the minimum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/AACTA_Award_for_Best_Feature_Length_Documentary,Year,2011,"[""Mrs Carey's Concert"", 'Life in Movement', 'Shut Up Little Man! An Audio Misadventure', 'The Tall Man']",-1,0,Which 'Film' has the minimum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/AEX_index,Index weighting (%),0.59,['Randstad'],-1,0,Which 'Company' has the minimum value in the 'Index weighting (%)' column ?,,NA
+https://en.wikipedia.org/wiki/ARIA_Award_for_Best_Female_Artist,Wins,1,"['Kate Ceberano', 'Missy Higgins', 'Natalie Imbruglia', 'Kimbra', 'Jenny Morris']",-1,0,Which 'Artist' has the minimum value in the 'Wins' column ?,,NA
+https://en.wikipedia.org/wiki/ARIA_Award_for_Best_Male_Artist,Nominations,1,"['Peter Blakeley', 'Daryl Braithwaite', 'Matt Corby', 'Paul Dempsey', 'Bob Evans', 'Bernard Fanning', 'Tim Finn', 'Flume', 'Dave Graney', 'Illy', 'Ed Kuepper', 'Dean Lewis', 'Paul Mac', 'Tim Rogers', 'Mark Seymour']",-1,0,Which 'Artist' has the minimum value in the 'Nominations' column ?,,NA
+https://en.wikipedia.org/wiki/ARIA_Award_for_Engineer_of_the_Year,Year,1987,"[nan, 'Styalz Fuego', 'Dann Hume, Chris Collins, Matt Corby', 'Dom Dolla', 'Eric J Dobowsky, Sam Teskey, Wayne Connelly', 'Simon Cohen, Dave Hammer']",-1,-1,Which 'Engineer(s)' has the minimum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/ASEAN_PGA_Tour,Prize money (US$),2008,[2011],0,0,Which 'Year' has the minimum value in the 'Prize money (US$)' column ?,,NA
+https://en.wikipedia.org/wiki/Abaqulusi_Local_Municipality,Code,Not available,['Remainder of the municipality'],-1,0,Which 'Place' has the minimum value in the 'Code' column ?,,NA
+https://en.wikipedia.org/wiki/Academy_Award_for_Best_Actress,Wins,2,"['Meryl Streep', 'Bette Davis', 'Ingrid Bergman', 'Jane Fonda', 'Elizabeth Taylor', 'Olivia de Havilland', 'Glenda Jackson', 'Jodie Foster', 'Sally Field', 'Vivien Leigh', 'Luise Rainer', 'Emma Stone', 'Hilary Swank']",-1,0,Which 'Actress' has the minimum value in the 'Wins' column ?,,NA
+https://en.wikipedia.org/wiki/Academy_Award_for_Best_Director,Year,1940,"['The Grapes of Wrath', 'The Philadelphia Story', 'Rebecca', 'Kitty Foyle', 'The Letter']",-1,0,Which 'Film' has the minimum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Aconitine,Dose data (mg/kg),Mouse,['Guinea pig'],0,0,Which 'Species observed' has the minimum value in the 'Dose data (mg/kg)' column ?,,NA
+https://en.wikipedia.org/wiki/Administrative_distance,Administrative distance,1,['Directly connected'],-1,0,Which 'Routing protocol' has the minimum value in the 'Administrative distance' column ?,,NA
+https://en.wikipedia.org/wiki/Afro-Asian_Club_Championship,Winners,0,"['Japan', 'Iran', 'Qatar', 'Saudi Arabia', 'South Africa']",-1,0,Which 'Nation' has the minimum value in the 'Winners' column ?,,NA
+https://en.wikipedia.org/wiki/Aircraft_carrier_operations_during_World_War_II,Carrier Lost-Time Involvements,Accidental,['Incidents Involving Multiple Causes'],-1,0,Which 'Causes For Damage' has the minimum value in the 'Carrier Lost-Time Involvements' column ?,,NA
+https://en.wikipedia.org/wiki/Albert_Luthuli_Local_Municipality,Code,Not provided,['Remainder of the municipality'],-1,0,Which 'Place' has the minimum value in the 'Code' column ?,,NA
+https://en.wikipedia.org/wiki/Aleksinac,Population,"Bulgarians, 10",['Gorani'],-1,0,Which 'Ethnic group' has the minimum value in the 'Population' column ?,,NA
+https://en.wikipedia.org/wiki/Amahlathi_Local_Municipality,Code,EC104,['Amahlathi'],-1,0,Which 'Place' has the minimum value in the 'Code' column ?,,NA
+https://en.wikipedia.org/wiki/Antipodes_Islands,Area (ha),Bollons Island,['Orde Lees Islet'],0,0,Which 'Location' has the minimum value in the 'Area (ha)' column ?,,NA
+https://en.wikipedia.org/wiki/Appinite,Appinite Meenalargan,0.04,['Nb'],-1,0,Which 'Trace elements ppm' has the minimum value in the 'Appinite Meenalargan' column ?,,NA
+https://en.wikipedia.org/wiki/Apple_Music_100_Best_Albums,Number of albums,4,"['Country', 'Latin', 'Metal', 'Roots Reggae']",-1,0,Which 'Genre' has the minimum value in the 'Number of albums' column ?,,NA
+"https://en.wikipedia.org/wiki/Arbus,_Sardinia",Arrivals in town,No data provided,['Australia'],-1,0,Which 'Country of origin' has the minimum value in the 'Arrivals in town' column ?,,NA
+https://en.wikipedia.org/wiki/Argentina_at_the_2015_Pan_American_Games,Men,2,['Weightlifting'],-1,0,Which 'Sport' has the minimum value in the 'Men' column ?,,NA
+https://en.wikipedia.org/wiki/Argentina_at_the_2015_Parapan_American_Games,Men,Judo,['Archery'],0,0,Which 'Sport' has the minimum value in the 'Men' column ?,,NA
+https://en.wikipedia.org/wiki/Armenian_language,Armenian speakers,Georgia,['Jordan'],0,0,Which 'Country' has the minimum value in the 'Armenian speakers' column ?,,NA
+https://en.wikipedia.org/wiki/Asian_Cup_Winners%27_Cup,Titles,0,"['South Korea', 'Iraq', 'Bahrain', 'China', 'Hong Kong', 'United Arab Emirates']",-1,0,Which 'Nation' has the minimum value in the 'Titles' column ?,,NA
+"https://en.wikipedia.org/wiki/Atlanta_campaign_order_of_battle:_First_phase,_Union",April 30,"Cavalry Corps: 8,819",['Cavalry Division'],-1,0,Which 'Corps' has the minimum value in the 'April 30' column ?,,NA
+"https://en.wikipedia.org/wiki/Atlanta_campaign_order_of_battle:_Second_phase,_Union",April 30,"Cavalry Corps, 8,948",['Cavalry Division'],-1,0,Which 'Corps' has the minimum value in the 'April 30' column ?,,NA
+https://en.wikipedia.org/wiki/Atlantic_slave_trade,Portuguese,North America,['Danish West Indies'],0,0,Which 'Destination' has the minimum value in the 'Portuguese' column ?,,NA
+https://en.wikipedia.org/wiki/Auckland_Islands,Area (ha),Disappointment Island,"['Davis Island', 'Archer Rock']",0,0,Which 'Location' has the minimum value in the 'Area (ha)' column ?,,NA
+https://en.wikipedia.org/wiki/Aude,Population,11200,['Ouveillan'],-1,0,Which 'Town' has the minimum value in the 'Population' column ?,,NA
+https://en.wikipedia.org/wiki/Aurealis_Award_for_Best_Children%27s_Fiction,Year,1995,"['The Four Seasons of Lucy McKenzie', 'Kingdom of the Lost, book 2: Cloud Road', 'Refuge', 'Song for a scarlet runner', 'Rules of Summer', 'Icebreaker: The Hidden 1']",-1,-1,Which 'Work(s)' has the minimum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Aurealis_Award_for_Best_Collection,Year,1995,"['Magic Dirt: The Best of Sean Williams', 'Creeping in Reptile Flesh']",-1,0,Which 'Collection' has the minimum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Aurealis_Award_for_Best_Fantasy_Short_Story,Year,1995,"['""Harvest Bay""', '""Angel Thing""', '""Sail On, Sail On""', '""The Blue Stream""', '""The Other Side of Paradise""']",-1,-1,Which 'Short story' has the minimum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Aurealis_Award_for_Best_Horror_Novella,Year,2015,"['""The Miseducation of Mara Lys""', '""Night Shift""', '""The Cherry Crow Children of Haverny Wood""', '""Wages of Honey""', '""Sleepless""', '""Ripper""']",-1,-1,Which 'Novella' has the minimum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Aurealis_Award_for_Best_Illustrated_Book_or_Graphic_Novel,Year,1996,"['Tales from Outer Suburbia', 'The Cloudchasers', 'The Floods Family Files', 'The Art of Graeme Base']",-1,0,Which 'Illustrated book or graphic novel' has the minimum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Aurealis_Award_for_Best_Young_Adult_Short_Story,Year,1995,[nan],-1,-1,Which 'Short story' has the minimum value in the 'Year' column ?,,NA
+https://en.wikipedia.org/wiki/Australia_at_the_2017_Asian_Winter_Games,Men,1,"['Alpine skiing', 'Speed skating']",-1,0,Which 'Sport' has the minimum value in the 'Men' column ?,,NA
+https://en.wikipedia.org/wiki/Australia_at_the_2022_Commonwealth_Games,Men,3,['Para powerlifting'],-1,0,Which 'Sport' has the minimum value in the 'Men' column ?,,NA

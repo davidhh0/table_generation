@@ -7,7 +7,7 @@ with open('config.yaml', 'r') as f:
     conf = yaml.load(f, Loader=yaml.FullLoader)
 ts = datetime.now()
 
-# llm_table_generation(conf, ts)
+llm_table_generation(conf, ts)
 # get_articles_to_parse(conf, ts)
 idx = 0
 # while True:

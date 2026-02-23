@@ -34,7 +34,7 @@ Return only the value, with no additional words, punctuation, or explanation."""
         f'{working_dir}/local_dbs/tables/generated_tables.db'
     )
     comparison_scores = {}
-    MAX_ITER = 150
+    MAX_ITER = 300
     count = 0
     rephrased_response = 'NA'
     for tbl in generated_tbl_cache.iterkeys():
