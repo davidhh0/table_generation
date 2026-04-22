@@ -1,5 +1,8 @@
 huggingface-hub
 anthropic
+stealth-requests
+python-dotenv
+seaborn
 annotated-types==0.7.0
 anyio==4.11.0
 beautifulsoup4==4.14.2

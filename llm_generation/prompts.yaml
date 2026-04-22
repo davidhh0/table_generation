@@ -1,62 +1,94 @@
-ignore_comparable_cols:
-  - "Rank"
-  - "No."
-  - "No"
-  - "Position"
-  - "Pos."
-  - "Total"
+rephrasing: |
+  Transform the structured task below into a single, natural language question.
+  The task describes a query on a specific table.
+  Your goal is to write a question that sounds natural and implies the context of the table (from the title) without explicitly stating "Assume a table...".
+  Guidelines:
+  1.  **Context**: Incorporate the table's specific topic (e.g., from the title "1990 Ben Hogan Tour") so the question makes sense on its own.
+  2.  **Phrasing**: Convert technical conditions into natural language:
+      - "equals 'X'" → "in X", "of X", or "is X"
+      - "does not equal 'X'" → "outside of X", "other than X", or "excluding X"
+      - "is either 'X' or 'Y'" → "in X or Y"
+  3.  **Cleanliness**: Remove technical terms like "rows", "columns", "primary key", or instructions about the output format (e.g., "exact value").
+  Task:
+  """
+  {STRUCTURED_TASK}
+  """
+  Natural Question:
 
-wrapper: |
-  Based on data regarding: 
-  {TABLE_TITLE}.
-  {QUESTION}
-  Return only the value, with no additional words, punctuation, or explanation.
-  If you are unsure, return the most likely value from your knowledge; do not guess or make something up.
+# == Wrapper templates ==
+closed_book_wrapper: |
+ Assume a factual table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}':
+ {QUESTION}
+ {INSTRUCTION}
 
-table_wrapper: |
-    Based on the following table: 
-    {TABLE_TITLE}
-    ```
-    {TABLE}
-    ```
-    {QUESTION}
-    
-    Return only the value, with no additional words, punctuation, or explanation.
-    If you are unsure, return the most likely value from your knowledge; do not guess or make something up.
 
-rephrase_wrapper: |
-    Given the following template-based question: 
-    Based on data regarding: 
-    ```
-    {TABLE_TITLE}.
-    {QUESTION}
-    ```
-    Regarding the table from wiki page {URL}, rephrase the question to be more natural and human-like, while keeping the same meaning.
-    For you guidance, the answer to the question is '{ANSWER}'.
-    Answer only with the rephrased question.
+multiple_choice_wrapper: |
+ Assume a factual table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}':
+ {QUESTION}
+ Select one from the following options: ['{CHOICE_1}', '{CHOICE_2}', '{CHOICE_3}']
+ {INSTRUCTION}
 
-context_wrapper: |
-    Based on data regarding: 
-    {TABLE_TITLE}.
-    {QUESTION}
-    From the table presented in the wiki page {URL} ,
-    Return only the value, with no additional words, punctuation, or explanation.
-    If you are unsure, return the most likely value from your knowledge; do not guess or make something up.
+list_retrieval_multiple_choices_wrapper: |
+ Assume a factual table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}':
+ {QUESTION}
+ Select all that apply from the following options: {CHOICES_LIST}
+ {INSTRUCTION}
 
+open_book_wrapper: |
+ Given a factual table titled '{TABLE_TITLE}':
+ {FULL_CSV_TABLE}
+ Question: {QUESTION}.
+ {INSTRUCTION}
+
+
+
+# == Instructions ==
+single_value_retrieval_instruction: |
+ Answer with the exact value only. No sentences or punctuation.
+
+list_value_retrieval_instruction: |
+ Return the values as a comma-separated list without any additional text.
+
+multiple_return_retrieval_instruction: |
+ Answer with the exact value only. If multiple answers are possible, return only the first one. No sentences or punctuation.
+
+
+
+# == Tasks ==
+
+# Single value retrieval and list retrieval
 single_value: |
-  What is the value of '{DESIRED_COLUMN_NAME}' where '{KEY_COLUMN}' is '{KEY_VALUE}'?
+ Identify the value of the column `{DESIRED_COLUMN}` where the `{KEY_COLUMN}` column equals '{KEY_VALUE}'
 
-comparison_max: |
-  Which '{Primary_key}' has higher '{Comparison_Column}', '{Value_1}', '{Value_2}' or '{Value_3}'?
 
-comparison_min: |
-  Which '{Primary_key}' has lower '{Comparison_Column}', '{Value_1}', '{Value_2}' or '{Value_3}'?
+list_value: |
+ List all values in the `{KEY_COLUMN}` column
 
+
+# Count retrievals
+count_rows: |
+  Count the number of rows
+
+# Max and Min value retrievals
 max_value: |
-  Which '{Primary_key}' has the maximum value in the '{Comparison_Column}' column {PROVIDED_KEYS}?
-
+ Name the `{PRIMARY_COLUMN}` with the highest `{COMPARISON_COLUMN}` column
 min_value: |
-  Which '{Primary_key}' has the minimum value in the '{Comparison_Column}' column {PROVIDED_KEYS}?
+ Name the `{PRIMARY_COLUMN}` with the lowest `{COMPARISON_COLUMN}` column
 
-thinking: |
-  Which '{Primary_key}' has the second from the bottom value in the '{Comparison_Column}' column {PROVIDED_KEYS}?
+
+# Break-downs
+categorical_equals: |
+  where the `{DESIRED_COLUMN}` column equals '{DESIRED_VALUE}'
+categorical_not_equals: |
+  where the `{DESIRED_COLUMN}` column does not equal '{DESIRED_VALUE}'
+categorical_in: |
+  where the `{DESIRED_COLUMN}` column is either '{CHOICE_1}' or '{CHOICE_2}'
+
+numerical_greater_than: |
+  where the `{COMPARISON_COLUMN}` column is greater than {THRESHOLD} inclusive
+numerical_less_than: |
+  where the `{COMPARISON_COLUMN}` column is less than {THRESHOLD} inclusive
+numerical_between: |
+  where the `{COMPARISON_COLUMN}` column is between {LOWER_THRESHOLD} and {UPPER_THRESHOLD} inclusive
+numerical_equals: |
+  where the `{COMPARISON_COLUMN}` column equals {VALUE}

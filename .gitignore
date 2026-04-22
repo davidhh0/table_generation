@@ -1,4 +1,21 @@
+# Generated data
 /llm_tbls/
 /local_dbs/
 /tbls/
 /llm_cache.db/
+/utils/tbls/
+
+# Score outputs
+/llm_generation/*.csv
+
+# Environment & secrets
+/utils/.env
+
+# IDE
+.idea/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
