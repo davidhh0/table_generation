@@ -21,7 +21,7 @@ def thinking_task_given_table():
     key_model = conf['title_and_key_model']
     model = conf['llm_model']
     context = conf['context']
-    random.seed(10)
+
     working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
     parser_ins = WikiTableParser()
     with open(f'{working_dir}/llm_generation/prompts.yaml', 'r') as f:
@@ -168,6 +168,9 @@ def thinking_task_given_table():
     print(
         f'Out of {thinking_count} records for thinking: match {thinking_total_match}  , non-match {thinking_total_non_match}, non-in {thinking_total_non_in} (match means exact match, non-match means wrong answer but the response is in the key column, non-in means none)'
     )
+    import utils.utils as _uu
+    if _uu.COLLECT_MODE:
+        return
     df_thinking = pd.DataFrame(
         thinking_values_values,
         columns=[
@@ -212,5 +215,29 @@ def thinking_task_given_table():
 
 
 if __name__ == '__main__':
-    thinking_task_given_table()
+    scores_statistics = ""
+    from count import count_retrieval
+
+    scores_statistics += count_retrieval()
+    from min import min_retrieval
+    scores_statistics += min_retrieval()
+
+    from max import max_retrieval
+    scores_statistics += max_retrieval()
+
+    from single_value_retrieval import cell_retrieval
+    scores_statistics += cell_retrieval()
+
+    from list_retrieval import list_retrieval
+    scores_statistics += list_retrieval()
+
+    with open("scores_statistics.csv", "w") as file:
+        file.write(scores_statistics)
+
+
+
+
+
+
+
 

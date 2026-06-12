@@ -1,8 +1,16 @@
-llm_model: meta-llama/Llama-3.3-70B-Instruct # gpt-4.1-2025-04-14
+llm_model: gpt-5.5-2026-04-23
+rephrase_model: gpt-5.2-2025-12-11
+rephrase: false
+
+# Batch mode: when true, run.py uses the two-pass batch orchestrator
+# (collect prompts -> submit one batch per model -> score from cache).
+use_batch: true
+batch_poll_interval: 30
+batch_chunk_size: 50   # submit prompts in batches of this size, caching each chunk before the next
 title_and_key_model: gpt-4.1-2025-04-14 # gpt-4.1-2025-04-14
 context: false
 run_tables_to_fetch: 1
-
+# gpt-5.2-2025-12-11
 # Minimum table size for a table to be considered valid.
 minimum_table_size:
   rows: 8

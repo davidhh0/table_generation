@@ -1,9 +1,11 @@
 # Utilities/Help
 import re
+import time
+
 import dateutil.parser as parser
-# import requests
+import huggingface_hub
+from ast import literal_eval
 import  stealth_requests as  requests
-from anthropic import MessageStreamManager
 from bs4 import BeautifulSoup
 
 from datetime import datetime, timedelta
@@ -13,14 +15,30 @@ import json
 import diskcache
 import anthropic
 import os
-from google.genai import types
+from google.genai import types, Client
 from google.genai import Client
 from google.genai.types import Tool, GenerateContentConfig
+from google.genai.errors import ServerError
+import git
+import dotenv
 
-client = Client(api_key=os.environ.get("gemini_api_key"), http_options=types.HttpOptions(timeout=1_000_000, ))
+# .env file is expected to have the following variables:
+dotenv.load_dotenv()
+working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
+
+client = Client(api_key=os.environ.get("gemini_api_key"))
 claude_client = anthropic.Anthropic(
     api_key=os.environ.get("claude_api")
 )
+
+# --- Batch / collect mode ---------------------------------------------------
+# When COLLECT_MODE is True, get_llm_response records cache-missing prompts into
+# COLLECTED (model -> set of stripped prompt strings) and returns None instead of
+# making a live API call. A batch warmer (llm_generation/batch.py) then fills the
+# per-model diskcache so a subsequent normal pass is all cache hits.
+COLLECT_MODE = False
+COLLECTED = {}
+
 
 
 def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
@@ -280,11 +298,14 @@ def get_sample(_df, try_cast):
     return return_str
 
 
-def chatgpt(MODEL, prompt_string):
+def chatgpt(MODEL, prompt_string, retry_count=3):
     from requests.exceptions import ChunkedEncodingError
     from openai import OpenAI
+    if retry_count < 1:
+        raise "ChatGPT API request failed after multiple retries."
+
     client = OpenAI(api_key=os.environ["openai_api_key"], timeout=30)
-    from openai._exceptions import APITimeoutError, APIConnectionError, RateLimitError
+    from openai._exceptions import APITimeoutError, APIConnectionError, RateLimitError, BadRequestError
     params = {
         'model': MODEL,
         'messages': [
@@ -293,70 +314,73 @@ def chatgpt(MODEL, prompt_string):
                 "content": prompt_string,
             },
         ],
-        "temperature": 0.0,
-        "stream": True,
+        # "temperature": 0.0,
     }
     try:
-        response_str = ""
         response = client.chat.completions.create(**params)
-        for chunk in response:
-            if chunk.choices[0].delta.content is None:
-                break
-            if hasattr(chunk, 'choices') and len(chunk.choices) > 0:
-                chunk_content = chunk.choices[0].delta.content
-                response_str += chunk_content
+        return response.choices[0].message.content
     except (APITimeoutError, RateLimitError, ChunkedEncodingError) as e:
         return None
     except APIConnectionError as e:
         return None
-    return response_str
+    except BadRequestError:
+        print("ChatGPT API request failed")
+        time.sleep(3)
+        return chatgpt(MODEL, prompt_string, retry_count - 1)
 
 
-def gemini(MODEL, prompt_string, context=False):
+def gemini(MODEL, prompt_string, context=False, retry_count=3):
+    """Get response from Gemini API with retry logic and proper error handling."""
 
-    tools = []
-    if context:
-        tools = [
-            {"url_context": {}},
-        ]
-    response_str = ""
+    for attempt in range(retry_count):
+        try:
+            response = client.models.generate_content(
+                model=MODEL,
+                contents=prompt_string,
+                config=GenerateContentConfig(
+                    temperature=0.0,
+                    # max_output_tokens=512,  # Limit response length to control costs
+                ),
+            )
+            print('Received response from Gemini')
+            return response.text
+        except ServerError as e:
+            if 'Spikes in demand' in e.message:
+                print(f"Gemini API server error: {e}")
+                time.sleep(15)  # Wait before retrying
+                continue
+            print(f'Unexpected error calling Gemini: {e}')
+            return None
+    return None
 
-    for chunk in client.models.generate_content_stream(
-            model=MODEL,
-            contents=prompt_string,
-            config=GenerateContentConfig(temperature=0.0, tools=tools),
-
-    ):
-        if chunk.text is None:
-            break
-        response_str += chunk.text
-
-    print('Received response from Gemini')
-    return response_str
-
-def llama(MODEL, prompt_string):
+def general_hf(MODEL, prompt_string, retry_count=4):
     from huggingface_hub import InferenceClient
     hf_client = InferenceClient(
         model=MODEL,
         token=os.environ.get("hf_api")
     )
 
-    response = hf_client.chat_completion(
-        messages=[
-            {"role": "user",
-             "content": prompt_string}
-        ],
-        temperature=0.0,
-        stream=True,
-    )
-    response_str = ""
-    for chunk in response:
-        if chunk.choices[0].delta.content is None:
-            break
-        if hasattr(chunk, 'choices') and len(chunk.choices) > 0:
-            chunk_content = chunk.choices[0].delta.content
-            response_str += chunk_content
-    return response_str
+    try:
+        completion = hf_client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt_string
+                        }
+                    ]
+                }
+            ],
+        )
+    except huggingface_hub.errors.HfHubHTTPError as e:
+        if retry_count == 0:
+            raise e
+        print(f"Hugging Face API error: {e}")
+        return general_hf(MODEL, prompt_string, retry_count=retry_count-1)
+    return completion.choices[0].message.content
 
 def claude(MODEL, prompt_string, context=False):
     prompt_string = prompt_string.strip()
@@ -375,7 +399,7 @@ def claude(MODEL, prompt_string, context=False):
 
 
 
-def get_llm_response(
+def _get_llm_response(
         prompt_string, MODEL, use_cache=True, cache=None, context=False
 ):
     prompt_string = prompt_string.strip()
@@ -395,7 +419,7 @@ def get_llm_response(
     if 'gemini' in MODEL:
         response_str = gemini(MODEL, prompt_string, context)
     if 'llama' in MODEL.lower():
-        response_str = llama(MODEL, prompt_string)
+        response_str = general_hf(MODEL, prompt_string)
     if 'claude' in MODEL.lower():
         response_str = claude(MODEL, prompt_string, context)
     if response_str is None:
@@ -404,4 +428,55 @@ def get_llm_response(
     if use_cache:
         cache[prompt_cache_key] = prompt_response
     return prompt_response
+
+
+def get_llm_response(
+        model,
+        prompt_string,
+        answer=None,
+):
+
+    cache = diskcache.Cache(f'{working_dir}/local_dbs/cache/llm_cache/{model}.db')
+    prompt_string = prompt_string.strip()
+    if prompt_string in cache and cache[prompt_string] != '':
+        print(f"Cache hit! ({model})")
+        return cache[prompt_string]
+    if prompt_string in cache and cache[prompt_string] == '':
+        return None
+    if answer is not None and "Select one from the following options: " in prompt_string:
+        prompt_prefix = prompt_string.split("Select one from the following options: ")
+        cache_similar = [k for k in cache if k.startswith(prompt_prefix[0]) and "Select one from the following options: " in k]
+        if isinstance(answer, list):
+            for i in cache_similar:
+                # cache_answers = literal_eval(i.split("Select one from the following options: ")[-1].splitlines()[0])
+                answer_exists_in_cache = [k for k in answer if str(k) in i.split("Select one from the following options: ")[-1].splitlines()[0]]
+                if i.startswith(prompt_prefix[0]) and answer_exists_in_cache:
+                    print(f"Cache hit! ({model})")
+                    return cache[i]
+        else:
+            for i in cache_similar:
+                if str(answer) in i.split("Select one from the following options: ")[-1].splitlines()[0]:
+                    print(f"Cache hit! ({model})")
+                    return cache[i]
+
+
+
+    print(f"Cache miss... ({model})")
+    if COLLECT_MODE:
+        COLLECTED.setdefault(model, set()).add(prompt_string)
+        return None
+    if 'gpt' in model:
+        response_str = chatgpt(model, prompt_string)
+    elif 'gemini' in model:
+        response_str = gemini(model, prompt_string)
+    elif 'claude' in model.lower():
+        response_str = claude(model, prompt_string)
+    else:
+        response_str = general_hf(model, prompt_string)
+    if response_str is None:
+        return None
+    prompt_response = response_str.strip()
+    cache[prompt_string] = prompt_response
+    return prompt_response
+
 
