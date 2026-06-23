@@ -1,4 +1,45 @@
-/llm_tbls/
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+
+# --- IDE / OS ---
+.idea/
+.vscode/
+.DS_Store
+
+# --- Secrets ---
+.env
+
+# --- Local databases & caches (diskcache) ---
 /local_dbs/
-/tbls/
 /llm_cache.db/
+/article_metadata.db/
+**/llm_cache.db/
+**/article_metadata.db/
+**/generated_tables.db/
+
+# --- Fetched / generated tables (runtime artifacts) ---
+/tbls/
+/llm_tbls/
+utils/tbls/
+
+# --- Run outputs (scores, metrics, logs) ---
+scores.csv
+scores_statistics.csv
+rephrase_scores.csv
+single_value_results.csv
+raw_metrics.csv
+max_values.csv
+min_values.csv
+max_comparison_results.csv
+min_comparison_results.csv
+thinking_task.csv
+lr_kn_log.csv
+lr_chance_summary.txt
