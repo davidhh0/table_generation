@@ -40,6 +40,30 @@ COLLECT_MODE = False
 COLLECTED = {}
 
 
+# --- Output-token / reasoning caps -----------------------------------------
+# Answers in this benchmark are "exact value only" (a single value) or a short
+# comma-separated list, yet reasoning models (gpt-5*, o-series) will otherwise
+# burn hundreds-thousands of *reasoning* tokens per trivial answer at the top
+# output price. We cap max_completion_tokens (which, for reasoning models,
+# counts reasoning + visible output together) and set a low reasoning_effort.
+# Both are read from config.yaml so they can be tuned without code edits.
+_CONFIG_CACHE = None
+
+
+def _config():
+    global _CONFIG_CACHE
+    if _CONFIG_CACHE is None:
+        import yaml
+        with open(f"{working_dir}/config.yaml", "r") as f:
+            _CONFIG_CACHE = yaml.safe_load(f) or {}
+    return _CONFIG_CACHE
+
+
+def _is_openai_reasoning_model(model):
+    m = model.lower()
+    return m.startswith("gpt-5") or m.startswith(("o1", "o3", "o4"))
+
+
 
 def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
     user_agent = {
@@ -298,7 +322,7 @@ def get_sample(_df, try_cast):
     return return_str
 
 
-def chatgpt(MODEL, prompt_string, retry_count=3):
+def chatgpt(MODEL, prompt_string, retry_count=3, max_out_tokens=None):
     from requests.exceptions import ChunkedEncodingError
     from openai import OpenAI
     if retry_count < 1:
@@ -306,6 +330,9 @@ def chatgpt(MODEL, prompt_string, retry_count=3):
 
     client = OpenAI(api_key=os.environ["openai_api_key"], timeout=30)
     from openai._exceptions import APITimeoutError, APIConnectionError, RateLimitError, BadRequestError
+    conf = _config()
+    if max_out_tokens is None:
+        max_out_tokens = conf.get("max_completion_tokens", 512)
     params = {
         'model': MODEL,
         'messages': [
@@ -314,11 +341,29 @@ def chatgpt(MODEL, prompt_string, retry_count=3):
                 "content": prompt_string,
             },
         ],
-        # "temperature": 0.0,
+        # Cap total output (reasoning + visible) so trivial answers can't run up
+        # a huge reasoning-token bill. Safe because answers are a single value or
+        # a short list; pair with low reasoning_effort below.
+        'max_completion_tokens': max_out_tokens,
+        # "temperature": 0.0,  # reasoning models reject non-default temperature
     }
+    # reasoning_effort is only valid for reasoning models (gpt-5*, o-series);
+    # sending it to e.g. gpt-4.1 raises BadRequestError.
+    if _is_openai_reasoning_model(MODEL):
+        params['reasoning_effort'] = conf.get("openai_reasoning_effort", "minimal")
     try:
         response = client.chat.completions.create(**params)
-        return response.choices[0].message.content
+        choice = response.choices[0]
+        content = choice.message.content
+        # A reasoning model that exhausts max_completion_tokens during reasoning
+        # returns finish_reason="length" with empty content. Surface it loudly and
+        # return None (a cache miss) instead of caching an empty answer.
+        if not content or choice.finish_reason == "length":
+            print(f"[chatgpt] empty/truncated response from {MODEL} "
+                  f"(finish_reason={choice.finish_reason}, "
+                  f"max_completion_tokens={max_out_tokens}) -- raise the ceiling")
+            return None
+        return content
     except (APITimeoutError, RateLimitError, ChunkedEncodingError) as e:
         return None
     except APIConnectionError as e:
@@ -326,21 +371,31 @@ def chatgpt(MODEL, prompt_string, retry_count=3):
     except BadRequestError:
         print("ChatGPT API request failed")
         time.sleep(3)
-        return chatgpt(MODEL, prompt_string, retry_count - 1)
+        return chatgpt(MODEL, prompt_string, retry_count - 1, max_out_tokens=max_out_tokens)
 
 
 def gemini(MODEL, prompt_string, context=False, retry_count=3):
     """Get response from Gemini API with retry logic and proper error handling."""
 
+    # Mirror the batch path (llm_generation/batch.py): cap visible output via the
+    # shared max_completion_tokens, and optionally set a thinking budget. Gemini's
+    # max_output_tokens caps visible output only (thinking has its own budget), so a
+    # generous cap never truncates the answer.
+    conf = _config()
+    cfg_kwargs = {"temperature": 0.0}
+    cap = conf.get("max_completion_tokens")
+    if cap:
+        cfg_kwargs["max_output_tokens"] = cap
+    _budget = conf.get("gemini_thinking_budget")
+    if _budget is not None:
+        from google.genai.types import ThinkingConfig
+        cfg_kwargs["thinking_config"] = ThinkingConfig(thinking_budget=int(_budget))
     for attempt in range(retry_count):
         try:
             response = client.models.generate_content(
                 model=MODEL,
                 contents=prompt_string,
-                config=GenerateContentConfig(
-                    temperature=0.0,
-                    # max_output_tokens=512,  # Limit response length to control costs
-                ),
+                config=GenerateContentConfig(**cfg_kwargs),
             )
             print('Received response from Gemini')
             return response.text
@@ -384,18 +439,27 @@ def general_hf(MODEL, prompt_string, retry_count=4):
 
 def claude(MODEL, prompt_string, context=False):
     prompt_string = prompt_string.strip()
-    with claude_client.messages.stream(
-            max_tokens=1024,
-            messages=[
-                {"role": "user",
-                 "content": prompt_string}
-            ],
-            model=MODEL,
-    ) as stream:
+    # Mirror the batch path (llm_generation/batch.py): cap visible output via the
+    # shared max_completion_tokens, and optionally enable extended thinking (off by
+    # default; when on, its budget is added on top because Anthropic requires
+    # max_tokens > thinking budget_tokens).
+    conf = _config()
+    answer_cap = conf.get("max_completion_tokens", 1024)
+    params = {
+        "max_tokens": answer_cap,
+        "messages": [{"role": "user", "content": prompt_string}],
+        "model": MODEL,
+    }
+    if conf.get("claude_extended_thinking", False):
+        budget = int(conf.get("claude_thinking_budget", 4096))
+        params["max_tokens"] = budget + answer_cap
+        params["thinking"] = {"type": "enabled", "budget_tokens": budget}
+    with claude_client.messages.stream(**params) as stream:
         response = stream.get_final_message()
-    if len(response.content) == 0:
+    text = next((b.text for b in response.content if getattr(b, "type", None) == "text"), None)
+    if not text:
         return None
-    return response.content[0].text
+    return text
 
 
 
@@ -430,16 +494,67 @@ def _get_llm_response(
     return prompt_response
 
 
+def _describe_prompt(prompt_string):
+    """Best-effort one-line label for a prompt, derived from its content, so the
+    cache hit/miss logs say which question they refer to. Returns:
+    'Test=CB/MC/OB | Type=Count/Max/Min/LR/Single | Constraint=... | Table=...'."""
+    p = prompt_string
+    # 1. Test (CB / MC / OB)
+    if p.startswith("Given a factual table titled"):
+        test = "OB"
+    elif "Select one from the following options" in p or "Select all that apply" in p:
+        test = "MC"
+    else:
+        test = "CB"
+    # 2. Test type
+    if "Count the number of rows" in p:
+        ttype = "Count"
+    elif "with the highest" in p:
+        ttype = "Max"
+    elif "with the lowest" in p:
+        ttype = "Min"
+    elif "List all values in" in p:
+        ttype = "LR"
+    elif "Identify the value of the column" in p:
+        ttype = "Single"
+    else:
+        ttype = "?"
+    # 3. Constraint / break-down
+    if "does not equal" in p:
+        constraint = "Not Equals"
+    elif "is either" in p:
+        constraint = "In"
+    elif "is greater than" in p:
+        constraint = "Greater Than"
+    elif "is less than" in p:
+        constraint = "Less Than"
+    elif "is between" in p:
+        constraint = "Between"
+    elif "equals" in p:
+        constraint = "Equals"
+    else:
+        constraint = "-"
+    # 4. Table name. Greedy up to the structural delimiter so titles containing
+    # quotes/apostrophes aren't truncated: CB/MC end with "' with a primary key",
+    # OB ends with "':" before the CSV. Non-greedy fallback if neither is present.
+    m = (re.search(r"titled '(.*)' with a primary key", p)
+         or re.search(r"titled '(.*)':", p)
+         or re.search(r"titled '(.*?)'", p))
+    table = m.group(1) if m else "?"
+    return f"Test={test} | Type={ttype} | Constraint={constraint} | Table={table!r}"
+
+
 def get_llm_response(
         model,
         prompt_string,
         answer=None,
+        max_out_tokens=None,
 ):
 
     cache = diskcache.Cache(f'{working_dir}/local_dbs/cache/llm_cache/{model}.db')
     prompt_string = prompt_string.strip()
     if prompt_string in cache and cache[prompt_string] != '':
-        print(f"Cache hit! ({model})")
+        print(f"Cache hit! ({model}) | {_describe_prompt(prompt_string)}")
         return cache[prompt_string]
     if prompt_string in cache and cache[prompt_string] == '':
         return None
@@ -451,22 +566,22 @@ def get_llm_response(
                 # cache_answers = literal_eval(i.split("Select one from the following options: ")[-1].splitlines()[0])
                 answer_exists_in_cache = [k for k in answer if str(k) in i.split("Select one from the following options: ")[-1].splitlines()[0]]
                 if i.startswith(prompt_prefix[0]) and answer_exists_in_cache:
-                    print(f"Cache hit! ({model})")
+                    print(f"Cache hit! ({model}) | {_describe_prompt(prompt_string)}")
                     return cache[i]
         else:
             for i in cache_similar:
                 if str(answer) in i.split("Select one from the following options: ")[-1].splitlines()[0]:
-                    print(f"Cache hit! ({model})")
+                    print(f"Cache hit! ({model}) | {_describe_prompt(prompt_string)}")
                     return cache[i]
 
 
 
-    print(f"Cache miss... ({model})")
+    print(f"Cache miss... ({model}) | {_describe_prompt(prompt_string)}")
     if COLLECT_MODE:
         COLLECTED.setdefault(model, set()).add(prompt_string)
         return None
     if 'gpt' in model:
-        response_str = chatgpt(model, prompt_string)
+        response_str = chatgpt(model, prompt_string, max_out_tokens=max_out_tokens)
     elif 'gemini' in model:
         response_str = gemini(model, prompt_string)
     elif 'claude' in model.lower():

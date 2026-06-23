@@ -34,6 +34,28 @@ list_retrieval_multiple_choices_wrapper: |
  Select all that apply from the following options: {CHOICES_LIST}
  {INSTRUCTION}
 
+# == Anti-refusal wrappers (used ONLY by models in _ANTI_REFUSAL_MODELS, e.g.
+# claude-opus-4-8). These tableless closed-book / list-MC probes intentionally
+# withhold the table to measure parametric recall; some models (Opus 4.8) refuse
+# ("I don't have access to the table") instead of guessing. These variants tell
+# the model to answer from its own knowledge and never refuse. Kept as SEPARATE
+# keys so other models keep their original prompt strings (and cached answers).
+closed_book_wrapper_anti_refusal: |
+ This is a closed-book factual-recall quiz about a real table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}'. The table itself is intentionally NOT provided — answer from your own knowledge with your single best guess. Do not refuse, do not state that the data was not provided, and do not ask for the table; always commit to a concrete answer.
+ {QUESTION}
+ {INSTRUCTION}
+
+list_retrieval_multiple_choices_wrapper_anti_refusal: |
+ This is a closed-book factual-recall quiz about a real table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}'. The table itself is intentionally NOT provided — choose from the options using your own knowledge and best judgement. Always select at least one option. Do not refuse, do not state that the data was not provided, and do not ask for the table.
+ {QUESTION}
+ Select all that apply from the following options: {CHOICES_LIST}
+ {INSTRUCTION}
+
+# IMPORTANT (OpenAI prompt caching): the title + full CSV table must stay at the
+# FRONT and the per-question text (Question/instruction) at the END. All
+# open-book questions on the same table then share an identical prefix, which
+# OpenAI auto-caches (~prefixes >=1024 tokens), so the repeated table is billed
+# at the cached rate. Do NOT move {QUESTION} ahead of {FULL_CSV_TABLE}.
 open_book_wrapper: |
  Given a factual table titled '{TABLE_TITLE}':
  {FULL_CSV_TABLE}

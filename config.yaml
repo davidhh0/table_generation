@@ -6,7 +6,49 @@ rephrase: false
 # (collect prompts -> submit one batch per model -> score from cache).
 use_batch: true
 batch_poll_interval: 30
-batch_chunk_size: 50   # submit prompts in batches of this size, caching each chunk before the next
+batch_chunk_size: 80   # submit prompts in batches of this size, caching each chunk before the next
+
+# --- OpenAI output-token / reasoning caps ---------------------------------
+# Answers are a single value or a short comma-separated list, so a small output
+# budget is plenty. max_completion_tokens caps reasoning + visible output
+# together (reasoning models), preventing a hidden reasoning-token bill on
+# trivial answers. reasoning_effort is applied only to reasoning models
+# (gpt-5*, o-series); gpt-4.1 (title_and_key_model) ignores it.
+# max_completion_tokens is a SAFETY CEILING, not the cost lever: for reasoning
+# models it counts reasoning + visible output together, so a tight value (e.g.
+# 512) gets fully consumed by reasoning and returns EMPTY content
+# (finish_reason="length"). Keep it generous; control cost via reasoning_effort.
+# Bundled Open-Book prompts scale this up with the number of questions.
+max_completion_tokens: 4096
+openai_reasoning_effort: low   # minimal | low | medium | high | xhigh
+
+# --- Anthropic / Claude (e.g. Opus 4.8) -----------------------------------
+# max_completion_tokens above also governs the Claude `max_tokens` (visible-output
+# ceiling) on both live and batch calls. Extended thinking is OFF by default --
+# these answers are a single value or short list, so thinking adds cost/latency
+# without benefit (the analog of keeping openai_reasoning_effort low). When on, the
+# thinking budget is ADDED on top of the answer budget (Anthropic requires
+# max_tokens > budget_tokens). Note: open-book consolidation forces tool-use, which
+# Anthropic disallows alongside thinking, so consolidated bundles never use thinking.
+claude_extended_thinking: false
+claude_thinking_budget: 4096   # budget_tokens when claude_extended_thinking: true
+
+# --- Google / Gemini ------------------------------------------------------
+# max_completion_tokens above also governs the Gemini `max_output_tokens` (visible
+# output only -- thinking has its own budget, so a generous cap never truncates the
+# answer) on both live and batch calls. gemini_thinking_budget is optional: leave
+# unset to use the SDK default, set to 0 to disable thinking on 2.5 models, or a
+# token count to cap it. Open-book consolidation uses native JSON structured output.
+gemini_thinking_budget:   # unset = SDK default; 0 disables thinking; N = budget
+
+# --- Open-Book consolidation (OpenAI + Anthropic batch warm) --------------
+# Bundle all open-book questions for one table into a single structured-output
+# call (CSV sent once, N requests -> 1), then split answers back to each
+# question's cache key. OpenAI uses response_format json_schema; Anthropic uses
+# forced tool-use (same schema). Closed-Book/MC are never bundled (would
+# contaminate parametric-recall measurement). Set false to disable.
+consolidate_open_book: true
+open_book_bundle_size: 15   # max questions per consolidated prompt; >this is chunked
 title_and_key_model: gpt-4.1-2025-04-14 # gpt-4.1-2025-04-14
 context: false
 run_tables_to_fetch: 1

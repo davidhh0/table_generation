@@ -39,7 +39,7 @@ def main():
     print("=== Pass 1: collecting prompts ===")
     U.COLLECT_MODE = True
     U.COLLECTED = {}
-    for task in TASKS[:1]:
+    for task in TASKS:
         print(f"--- collecting: {task.__name__} ---")
         task()
     U.COLLECT_MODE = False
@@ -48,6 +48,9 @@ def main():
     print(f"=== Collected {total} unique prompt(s) across {len(U.COLLECTED)} model(s) ===")
 
     # --- Warm: batch per model ---------------------------------------------
+    # sorted() groups open-book prompts by their shared title->CSV prefix, so
+    # same-table prompts sit adjacent in the batch -> better OpenAI prompt-cache
+    # locality (the repeated table prefix is billed at the cached rate). Keep it.
     for model, prompts in U.COLLECTED.items():
         warm_cache(model, sorted(prompts), poll_interval=poll_interval, chunk_size=chunk_size)
 

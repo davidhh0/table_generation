@@ -12,6 +12,31 @@ random.seed(0)
 choices_cache = diskcache.Cache(f'{working_dir}/local_dbs/cache/choices_cache.db')
 prompts_cache = diskcache.Cache(f'{working_dir}/local_dbs/cache/prompts_cache.db')
 
+# Models that refuse tableless closed-book / list-MC probes ("I don't have access
+# to the table") instead of guessing from parametric memory. For these, swap in the
+# dedicated *_anti_refusal wrappers (prompts.yaml). Keyed per-model so every other
+# model keeps its exact original prompt string -> existing cached answers are reused
+# untouched; only these models recompute the affected prompts.
+_ANTI_REFUSAL_MODELS = ("claude-opus-4-8",)
+
+
+def _is_anti_refusal_model(model):
+    return any(m in str(model).lower() for m in _ANTI_REFUSAL_MODELS)
+
+
+def _wrapper_key(base_key, model):
+    """Return the anti-refusal variant of ``base_key`` for refusal-prone models,
+    else the base key unchanged (so cached prompts for other models stay valid)."""
+    return f"{base_key}_anti_refusal" if _is_anti_refusal_model(model) else base_key
+
+
+def _pc_key(subkey, model):
+    """Per-URL prompts_cache sub-key. For anti-refusal models the closed-book /
+    list-MC prompts differ, so they live under a SEPARATE ``*_anti_refusal`` sub-key
+    -- the shared base sub-key (and every other model's cached prompt+answer) is
+    left untouched, and only these prompts are rebuilt+recomputed for Opus."""
+    return f"{subkey}_anti_refusal" if _is_anti_refusal_model(model) else subkey
+
 # K/N logging for List Retrieval — used to compute the LR random-baseline F1
 LR_KN_LOG_PATH = f'{working_dir}/llm_generation/lr_kn_log.csv'
 if not os.path.exists(LR_KN_LOG_PATH):
@@ -176,7 +201,7 @@ def prompt_generation(
     # Closed book
 
     closed_book_prompt = (
-        prompts["closed_book_wrapper"]
+        prompts[_wrapper_key("closed_book_wrapper", model)]
         .format(
             TABLE_TITLE=table_desc,
             QUESTION=based_prompt,
@@ -186,12 +211,12 @@ def prompt_generation(
         .strip()
     )
 
-    if 'single_value_closed_book' in prompt_cache:
-        closed_book_prompt = prompt_cache['single_value_closed_book']['q']
-        real_value = prompt_cache['single_value_closed_book']['a']
+    if _pc_key('single_value_closed_book', model) in prompt_cache:
+        closed_book_prompt = prompt_cache[_pc_key('single_value_closed_book', model)]['q']
+        real_value = prompt_cache[_pc_key('single_value_closed_book', model)]['a']
     else:
         print("Caching prompt")
-        prompt_cache['single_value_closed_book'] = {'q': closed_book_prompt, 'a': real_value}
+        prompt_cache[_pc_key('single_value_closed_book', model)] = {'q': closed_book_prompt, 'a': real_value}
 
     if not rephrase:
         closed_book_response = parser_ins.try_cast(
@@ -349,7 +374,7 @@ def prompt_generation_list_categorical(
             answer_value = df[df[col].isin([col_value_1, col_value_2])][pk_column].tolist()
         # Closed book
         closed_book_prompt = (
-            prompts["closed_book_wrapper"]
+            prompts[_wrapper_key("closed_book_wrapper", model)]
             .format(
                 TABLE_TITLE=table_desc,
                 QUESTION=_based_prompt,
@@ -359,12 +384,12 @@ def prompt_generation_list_categorical(
             .strip()
         )
 
-        if f'list_categorical_{bd}_closed_book' in prompt_cache:
-            closed_book_prompt = prompt_cache[f'list_categorical_{bd}_closed_book']['q']
-            answer_value = prompt_cache[f'list_categorical_{bd}_closed_book']['a']
+        if _pc_key(f'list_categorical_{bd}_closed_book', model) in prompt_cache:
+            closed_book_prompt = prompt_cache[_pc_key(f'list_categorical_{bd}_closed_book', model)]['q']
+            answer_value = prompt_cache[_pc_key(f'list_categorical_{bd}_closed_book', model)]['a']
         else:
             print("Caching prompt")
-            prompt_cache[f'list_categorical_{bd}_closed_book'] = {'q': closed_book_prompt, 'a': answer_value}
+            prompt_cache[_pc_key(f'list_categorical_{bd}_closed_book', model)] = {'q': closed_book_prompt, 'a': answer_value}
 
         if not rephrase:
             closed_book_response = parser_ins.try_cast(
@@ -393,7 +418,7 @@ def prompt_generation_list_categorical(
 
         # Multiple choices
         multiple_choices_single_value_prompt = (
-            prompts["list_retrieval_multiple_choices_wrapper"]
+            prompts[_wrapper_key("list_retrieval_multiple_choices_wrapper", model)]
             .format(
                 TABLE_TITLE=table_desc,
                 QUESTION=_based_prompt,
@@ -404,12 +429,12 @@ def prompt_generation_list_categorical(
             .strip()
         )
 
-        if f'list_categorical_{bd}_multiple_choices' in prompt_cache:
-            multiple_choices_single_value_prompt = prompt_cache[f'list_categorical_{bd}_multiple_choices']['q']
-            answer_value = prompt_cache[f'list_categorical_{bd}_multiple_choices']['a']
+        if _pc_key(f'list_categorical_{bd}_multiple_choices', model) in prompt_cache:
+            multiple_choices_single_value_prompt = prompt_cache[_pc_key(f'list_categorical_{bd}_multiple_choices', model)]['q']
+            answer_value = prompt_cache[_pc_key(f'list_categorical_{bd}_multiple_choices', model)]['a']
         else:
             print("Caching prompt")
-            prompt_cache[f'list_categorical_{bd}_multiple_choices'] = {'q': multiple_choices_single_value_prompt, 'a': answer_value}
+            prompt_cache[_pc_key(f'list_categorical_{bd}_multiple_choices', model)] = {'q': multiple_choices_single_value_prompt, 'a': answer_value}
 
         multiple_choices_response = parser_ins.try_cast(
             get_llm_response(
@@ -522,7 +547,7 @@ def prompt_generation_count_categorical(
             answer_value = real_value_1 + real_value_2
         # Closed book
         closed_book_prompt = (
-            prompts["closed_book_wrapper"]
+            prompts[_wrapper_key("closed_book_wrapper", model)]
             .format(
                 TABLE_TITLE=table_desc,
                 QUESTION=_based_prompt,
@@ -532,12 +557,12 @@ def prompt_generation_count_categorical(
             .strip()
         )
 
-        if f'count_categorical_{bd}_closed_book' in prompt_cache:
-            closed_book_prompt = prompt_cache[f'count_categorical_{bd}_closed_book']['q']
-            answer_value = prompt_cache[f'count_categorical_{bd}_closed_book']['a']
+        if _pc_key(f'count_categorical_{bd}_closed_book', model) in prompt_cache:
+            closed_book_prompt = prompt_cache[_pc_key(f'count_categorical_{bd}_closed_book', model)]['q']
+            answer_value = prompt_cache[_pc_key(f'count_categorical_{bd}_closed_book', model)]['a']
         else:
             print("Caching prompt")
-            prompt_cache[f'count_categorical_{bd}_closed_book'] = {'q': closed_book_prompt, 'a': answer_value}
+            prompt_cache[_pc_key(f'count_categorical_{bd}_closed_book', model)] = {'q': closed_book_prompt, 'a': answer_value}
 
 
         if not rephrase:
@@ -714,7 +739,7 @@ def prompt_generation_count_numerical(
             answer_value = equals_answer
         # Closed book
         closed_book_prompt = (
-            prompts["closed_book_wrapper"]
+            prompts[_wrapper_key("closed_book_wrapper", model)]
             .format(
                 TABLE_TITLE=table_desc,
                 QUESTION=_based_prompt,
@@ -724,12 +749,12 @@ def prompt_generation_count_numerical(
             .strip()
         )
 
-        if f'count_numerical_{bd}_closed_book' in prompt_cache:
-            closed_book_prompt = prompt_cache[f'count_numerical_{bd}_closed_book']['q']
-            answer_value = prompt_cache[f'count_numerical_{bd}_closed_book']['a']
+        if _pc_key(f'count_numerical_{bd}_closed_book', model) in prompt_cache:
+            closed_book_prompt = prompt_cache[_pc_key(f'count_numerical_{bd}_closed_book', model)]['q']
+            answer_value = prompt_cache[_pc_key(f'count_numerical_{bd}_closed_book', model)]['a']
         else:
             print("Caching prompt")
-            prompt_cache[f'count_numerical_{bd}_closed_book'] = {'q': closed_book_prompt, 'a': answer_value}
+            prompt_cache[_pc_key(f'count_numerical_{bd}_closed_book', model)] = {'q': closed_book_prompt, 'a': answer_value}
 
         if not rephrase:
             closed_book_response = parser_ins.try_cast(
@@ -912,7 +937,7 @@ def prompt_generation_max_categorical(
             continue
         # Closed book
         closed_book_prompt = (
-            prompts["closed_book_wrapper"]
+            prompts[_wrapper_key("closed_book_wrapper", model)]
             .format(
                 TABLE_TITLE=table_desc,
                 QUESTION=_based_prompt,
@@ -922,12 +947,12 @@ def prompt_generation_max_categorical(
             .strip()
         )
 
-        if f'max_categorical_{bd}_closed_book' in prompt_cache:
-            closed_book_prompt = prompt_cache[f'max_categorical_{bd}_closed_book']['q']
-            answer_value = prompt_cache[f'max_categorical_{bd}_closed_book']['a']
+        if _pc_key(f'max_categorical_{bd}_closed_book', model) in prompt_cache:
+            closed_book_prompt = prompt_cache[_pc_key(f'max_categorical_{bd}_closed_book', model)]['q']
+            answer_value = prompt_cache[_pc_key(f'max_categorical_{bd}_closed_book', model)]['a']
         else:
             print("Caching prompt")
-            prompt_cache[f'max_categorical_{bd}_closed_book'] = {'q': closed_book_prompt, 'a': answer_value}
+            prompt_cache[_pc_key(f'max_categorical_{bd}_closed_book', model)] = {'q': closed_book_prompt, 'a': answer_value}
 
         if not rephrase:
             closed_book_response = parser_ins.try_cast(
@@ -1112,7 +1137,7 @@ def prompt_generation_max_numerical(
             continue
         # Closed book
         closed_book_prompt = (
-            prompts["closed_book_wrapper"]
+            prompts[_wrapper_key("closed_book_wrapper", model)]
             .format(
                 TABLE_TITLE=table_desc,
                 QUESTION=_based_prompt,
@@ -1122,12 +1147,12 @@ def prompt_generation_max_numerical(
             .strip()
         )
 
-        if f'max_numerical_{bd}_closed_book' in prompt_cache:
-            closed_book_prompt = prompt_cache[f'max_numerical_{bd}_closed_book']['q']
-            answer_value = prompt_cache[f'max_numerical_{bd}_closed_book']['a']
+        if _pc_key(f'max_numerical_{bd}_closed_book', model) in prompt_cache:
+            closed_book_prompt = prompt_cache[_pc_key(f'max_numerical_{bd}_closed_book', model)]['q']
+            answer_value = prompt_cache[_pc_key(f'max_numerical_{bd}_closed_book', model)]['a']
         else:
             print("Caching prompt")
-            prompt_cache[f'max_numerical_{bd}_closed_book'] = {'q': closed_book_prompt, 'a': answer_value}
+            prompt_cache[_pc_key(f'max_numerical_{bd}_closed_book', model)] = {'q': closed_book_prompt, 'a': answer_value}
 
         if not rephrase:
             closed_book_response = parser_ins.try_cast(
@@ -1297,7 +1322,7 @@ rephrase=False
             b = 5
         # Closed book
         closed_book_prompt = (
-            prompts["closed_book_wrapper"]
+            prompts[_wrapper_key("closed_book_wrapper", model)]
             .format(
                 TABLE_TITLE=table_desc,
                 QUESTION=_based_prompt,
@@ -1307,12 +1332,12 @@ rephrase=False
             .strip()
         )
 
-        if f'min_categorical_{bd}_closed_book' in prompt_cache:
-            closed_book_prompt = prompt_cache[f'min_categorical_{bd}_closed_book']['q']
-            answer_value = prompt_cache[f'min_categorical_{bd}_closed_book']['a']
+        if _pc_key(f'min_categorical_{bd}_closed_book', model) in prompt_cache:
+            closed_book_prompt = prompt_cache[_pc_key(f'min_categorical_{bd}_closed_book', model)]['q']
+            answer_value = prompt_cache[_pc_key(f'min_categorical_{bd}_closed_book', model)]['a']
         else:
             print("Caching prompt")
-            prompt_cache[f'min_categorical_{bd}_closed_book'] = {'q': closed_book_prompt, 'a': answer_value}
+            prompt_cache[_pc_key(f'min_categorical_{bd}_closed_book', model)] = {'q': closed_book_prompt, 'a': answer_value}
 
         if not rephrase:
             closed_book_response = parser_ins.try_cast(
@@ -1486,7 +1511,7 @@ def prompt_generation_min_numerical(
             continue
         # Closed book
         closed_book_prompt = (
-            prompts["closed_book_wrapper"]
+            prompts[_wrapper_key("closed_book_wrapper", model)]
             .format(
                 TABLE_TITLE=table_desc,
                 QUESTION=_based_prompt,
@@ -1496,12 +1521,12 @@ def prompt_generation_min_numerical(
             .strip()
         )
 
-        if f'min_numerical_{bd}_closed_book' in prompt_cache:
-            closed_book_prompt = prompt_cache[f'min_numerical_{bd}_closed_book']['q']
-            answer_value = prompt_cache[f'min_numerical_{bd}_closed_book']['a']
+        if _pc_key(f'min_numerical_{bd}_closed_book', model) in prompt_cache:
+            closed_book_prompt = prompt_cache[_pc_key(f'min_numerical_{bd}_closed_book', model)]['q']
+            answer_value = prompt_cache[_pc_key(f'min_numerical_{bd}_closed_book', model)]['a']
         else:
             print("Caching prompt")
-            prompt_cache[f'min_numerical_{bd}_closed_book'] = {'q': closed_book_prompt, 'a': answer_value}
+            prompt_cache[_pc_key(f'min_numerical_{bd}_closed_book', model)] = {'q': closed_book_prompt, 'a': answer_value}
 
         if not rephrase:
             closed_book_response = parser_ins.try_cast(
