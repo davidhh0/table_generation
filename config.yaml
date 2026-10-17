@@ -1,4 +1,4 @@
-llm_model: gpt-5.5-2026-04-23
+llm_model: Qwen/Qwen3.8-2.4T-A95B
 rephrase_model: gpt-5.2-2025-12-11
 rephrase: false
 
@@ -19,8 +19,44 @@ batch_chunk_size: 80   # submit prompts in batches of this size, caching each ch
 # 512) gets fully consumed by reasoning and returns EMPTY content
 # (finish_reason="length"). Keep it generous; control cost via reasoning_effort.
 # Bundled Open-Book prompts scale this up with the number of questions.
-max_completion_tokens: 4096
+max_completion_tokens: 16000
 openai_reasoning_effort: low   # minimal | low | medium | high | xhigh
+
+# --- HuggingFace ------------------------------------------------------------
+# hf_disable_thinking: try to skip the <think> block on vLLM-served HF models
+# (chat_template_kwargs.enable_thinking=False). Only relevant if the model
+# actually supports it -- Qwen3.8-2.4T-A95B burned the full max_completion_tokens
+# budget (4096, then 16000) on hidden reasoning with zero visible output both
+# times, so raising the cap further wasn't converging on an answer.
+hf_disable_thinking: true
+
+# hf_ob_disable_thinking: overrides hf_disable_thinking for open-book prompts
+# only (both the consolidated bundle call and its per-prompt fallback).
+# CB/MC showed no measurable benefit from thinking (they're pure recall/choice,
+# nothing to reason over) but OB's aggregation tasks (Count/Max/Min/List) still
+# lagged Qwen3.5 by a large, significant margin even after fixing scoring bugs
+# and adding consolidation -- e.g. a live Switzerland-demographics case where
+# suppressing thinking made the model skip a "row has no value, use the next
+# one" check it visibly did when allowed to reason. Unset falls back to
+# hf_disable_thinking (no OB-specific behavior). Re-enabling thinking means the
+# cap must cover hidden reasoning too, not just the visible answer -- see the
+# raised ceilings in _hf_consolidated/_hf_parallel (batch.py).
+hf_ob_disable_thinking: false
+
+# hf_chunk_size: prompts per warm_cache chunk for HF models specifically,
+# overriding batch_chunk_size (80, tuned for OpenAI/Anthropic/Gemini's batch
+# submission overhead). _hf_parallel already writes each answer to the cache as
+# soon as it completes (not at chunk end), so a kill mid-run loses at most the
+# handful of calls in flight (bounded by hf_max_workers below) regardless of
+# this value. Kept small anyway so progress ("chunk N cached") reports more often.
+hf_chunk_size: 24
+
+# hf_max_workers: concurrent threads _hf_parallel runs against the HF inference
+# endpoint (there's no true batch API, so this is the actual parallelism, not a
+# submission-size knob). Higher = faster but more likely to trip provider rate
+# limits (general_hf's retry has no backoff, so sustained 429s degrade into a
+# slow serial crawl); lower = slower but gentler. 12 was the prior hardcoded value.
+hf_max_workers: 4
 
 # --- Anthropic / Claude (e.g. Opus 4.8) -----------------------------------
 # max_completion_tokens above also governs the Claude `max_tokens` (visible-output
@@ -41,12 +77,14 @@ claude_thinking_budget: 4096   # budget_tokens when claude_extended_thinking: tr
 # token count to cap it. Open-book consolidation uses native JSON structured output.
 gemini_thinking_budget:   # unset = SDK default; 0 disables thinking; N = budget
 
-# --- Open-Book consolidation (OpenAI + Anthropic batch warm) --------------
-# Bundle all open-book questions for one table into a single structured-output
-# call (CSV sent once, N requests -> 1), then split answers back to each
-# question's cache key. OpenAI uses response_format json_schema; Anthropic uses
-# forced tool-use (same schema). Closed-Book/MC are never bundled (would
-# contaminate parametric-recall measurement). Set false to disable.
+# --- Open-Book consolidation (OpenAI + Anthropic + Gemini + HuggingFace) ---
+# Bundle all open-book questions for one table into a single call (CSV sent
+# once, N requests -> 1), then split answers back to each question's cache key.
+# OpenAI uses response_format json_schema; Anthropic uses forced tool-use;
+# Gemini uses response_schema; HuggingFace just asks for the same JSON shape
+# in-prompt and parses leniently (no schema enforcement on a generic vLLM
+# endpoint). Closed-Book/MC are never bundled (would contaminate
+# parametric-recall measurement). Set false to disable.
 consolidate_open_book: true
 open_book_bundle_size: 15   # max questions per consolidated prompt; >this is chunked
 title_and_key_model: gpt-4.1-2025-04-14 # gpt-4.1-2025-04-14

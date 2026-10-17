@@ -51,6 +51,29 @@ list_retrieval_multiple_choices_wrapper_anti_refusal: |
  Select all that apply from the following options: {CHOICES_LIST}
  {INSTRUCTION}
 
+# == No-SQL wrappers (used ONLY by models in _NO_SQL_MODELS, e.g. Llama-3.3-70B).
+# With the table withheld, the closed-book framing ("a table titled X with a
+# primary key column named Y: List all values in `K` where `C` equals 'V'") reads
+# as a text-to-SQL task, and these models answer with a SELECT statement instead
+# of the recalled values -- an automatic 0 (93% of Llama's List-Retrieval
+# closed-book answers, 21-29% of Max/Min). These variants forbid queries and
+# demand literal values. The no-SQL directive sits AFTER {QUESTION} on purpose:
+# the SQL-triggering vocabulary is inside the question, so the correction has to
+# come last to override it. Kept as SEPARATE keys so other models keep their
+# original prompt strings (and cached answers).
+closed_book_wrapper_no_sql: |
+ Assume a factual table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}':
+ {QUESTION}
+ Answer with the actual data values, recalled from your own knowledge. Do NOT write a SQL query, code, or any description of how the answer could be looked up — a query is not an answer.
+ {INSTRUCTION}
+
+list_retrieval_multiple_choices_wrapper_no_sql: |
+ Assume a factual table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}':
+ {QUESTION}
+ Select all that apply from the following options: {CHOICES_LIST}
+ Answer by copying the matching option values verbatim. Do NOT write a SQL query, code, or any description of how the answer could be looked up — a query is not an answer.
+ {INSTRUCTION}
+
 # IMPORTANT (OpenAI prompt caching): the title + full CSV table must stay at the
 # FRONT and the per-question text (Question/instruction) at the END. All
 # open-book questions on the same table then share an identical prefix, which

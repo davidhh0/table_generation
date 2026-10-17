@@ -408,16 +408,43 @@ def gemini(MODEL, prompt_string, context=False, retry_count=3):
             return None
     return None
 
-def general_hf(MODEL, prompt_string, retry_count=4):
+def general_hf(MODEL, prompt_string, retry_count=4, max_out_tokens=None, disable_thinking=None):
     from huggingface_hub import InferenceClient
     hf_client = InferenceClient(
         model=MODEL,
         token=os.environ.get("hf_api")
     )
 
+    # Cap visible output via the same shared max_completion_tokens the OpenAI,
+    # Gemini and Claude paths already honour. Without it HF requests were the only
+    # ones sent uncapped, which is a real cost risk on a thinking model: cached
+    # Qwen3-32B answers average 4,335 chars (p50 3,879) of visible chain-of-thought
+    # versus 10 chars for non-thinking Qwen3.5-397B -- a ~400x spread in output
+    # tokens over a full 12k-prompt run, with nothing to stop the tail.
+    # max_out_tokens overrides the config default (mirrors chatgpt's parameter),
+    # used by open-book consolidation to scale the cap with bundle size.
+    conf = _config()
+    answer_cap = max_out_tokens if max_out_tokens is not None else conf.get("max_completion_tokens", 1024)
+
+    # disable_thinking overrides the config default per-call (used to re-enable
+    # thinking for open-book specifically after CB/MC showed no benefit from it,
+    # while OB's multi-row aggregation seems to actually need the scratchpad --
+    # see hf_disable_thinking's config comment). None means "use config default".
+    should_disable = conf.get("hf_disable_thinking", False) if disable_thinking is None else disable_thinking
+
+    create_kwargs = {}
+    if should_disable:
+        # vLLM/HF-router switch some served models expose to skip the <think>
+        # block entirely. Opt-in and off by default: not every HF model serves
+        # via vLLM or honours this, so it must not silently change behavior for
+        # models that don't need it.
+        create_kwargs["extra_body"] = {"chat_template_kwargs": {"enable_thinking": False}}
+
     try:
         completion = hf_client.chat.completions.create(
             model=MODEL,
+            max_tokens=answer_cap,
+            **create_kwargs,
             messages=[
                 {
                     "role": "user",

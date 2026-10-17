@@ -194,6 +194,17 @@ def max_retrieval():
             numerical_tbls_processed += 1
             if not rephrase:
                 single_value_scores[tbl]["numerical"][col] = three_variants
+                # This branch runs once per table, outside the categorical col/cat_col
+                # loops, so tbl_statistics[...][-1] would belong to some other table --
+                # compute popularity / ratio locally instead.
+                if isinstance(cfg['article_metadata'], str):
+                    popularity = json.loads(cfg['article_metadata'])['popularity']
+                else:
+                    popularity = cfg['article_metadata']['popularity']
+                num_ratio = len(comparable_columns) / len(df.columns)
+                for bd in three_variants:
+                    for _type, score in three_variants[bd].items():
+                        scores_statistics += f"{model},Max,Numerical,{bd},{_type},{df.shape[0]},{df.shape[1]},{popularity},{num_ratio},{score}\n"
             else:
                 tmp_json = cfg.copy()
                 previous_tasks = tmp_json.get("tasks", {}).get('max', {})

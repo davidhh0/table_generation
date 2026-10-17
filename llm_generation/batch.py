@@ -280,7 +280,9 @@ def _consolidated_prompt(unit):
         "using ONLY the table above. Treat each question separately and follow "
         "its own answer-format instruction. Return a JSON object with an "
         '"answers" array containing one {"id", "answer"} entry per question id '
-        "below; \"answer\" is the exact answer value as a string.",
+        "below; \"answer\" is the exact answer value as a string. Output ONLY "
+        "the JSON object -- no explanation, no reasoning, no markdown, no text "
+        "before or after it.",
         "",
     ]
     for idx, q in enumerate(unit["questions"], start=1):
@@ -363,6 +365,158 @@ def _parse_consolidated_records(records, items):
     return results
 
 
+def _extract_json_obj(text):
+    """Best-effort JSON object extraction from a free-form HF completion.
+
+    Unlike OpenAI/Gemini structured output, a vLLM-served chat endpoint gives no
+    schema enforcement, so the model may wrap the JSON in prose/a code fence, or
+    -- observed live -- emit a complete valid JSON object and then keep going
+    with trailing prose ("Wait, let me recount carefully...") despite being told
+    to output ONLY the JSON. A naive first-'{'-to-last-'}' span breaks on that:
+    any brace character anywhere in the trailing prose extends the slice past
+    the real object into non-JSON text. Instead, walk from the first '{' and
+    track brace depth (skipping braces inside string literals) to find exactly
+    where that first top-level object closes, and parse only that span --
+    whatever comes after is ignored, not included.
+    """
+    text = text.strip()
+    try:
+        return json.loads(text)
+    except (ValueError, TypeError):
+        pass
+    start = text.find('{')
+    if start == -1:
+        return None
+    depth = 0
+    in_str = False
+    escape = False
+    for i in range(start, len(text)):
+        ch = text[i]
+        if in_str:
+            if escape:
+                escape = False
+            elif ch == '\\':
+                escape = True
+            elif ch == '"':
+                in_str = False
+            continue
+        if ch == '"':
+            in_str = True
+        elif ch == '{':
+            depth += 1
+        elif ch == '}':
+            depth -= 1
+            if depth == 0:
+                try:
+                    return json.loads(text[start:i + 1])
+                except (ValueError, TypeError):
+                    return None
+    return None
+
+
+def _parse_hf_consolidated(text, originals):
+    """Map one HF bundle's free-form response -> {original_prompt: answer_string}.
+
+    Mirrors ``_parse_gemini_consolidated``/``_parse_consolidated_records`` but
+    tolerant of un-schema'd output (see ``_extract_json_obj``). Returns {} on
+    empty/unparseable text, which the caller treats as a full-bundle miss (its
+    questions fall back to the per-prompt path).
+    """
+    if not text or not text.strip():
+        return {}
+    parsed = _extract_json_obj(text)
+    if parsed is None:
+        return {}
+    out = {}
+    for item in parsed.get("answers", []):
+        qid = item.get("id")
+        ans = item.get("answer")
+        # No schema enforcement on a generic HF/vLLM endpoint (unlike OpenAI's
+        # strict json_schema or Gemini's typed response_schema), so the model is
+        # free to emit id as a numeric string ("1") instead of an int -- coerce
+        # before validating, or every answer in an otherwise-valid bundle is
+        # silently dropped as "unparseable" (observed live: 12-question bundles
+        # from Qwen3.8 returning {"id": "1", ...}).
+        if isinstance(qid, str) and qid.strip().lstrip('-').isdigit():
+            qid = int(qid.strip())
+        if not isinstance(qid, int) or not (1 <= qid <= len(originals)):
+            continue
+        out[originals[qid - 1]] = ans
+    return out
+
+
+def _hf_consolidated(model, units, poll_interval, conf):
+    """Resolve open-book ``units`` via one HF chat call per table-bundle.
+
+    HF has no batch endpoint, so this is the concurrency analog of
+    ``_openai_consolidated``/``_gemini_consolidated``: each bundle (one table's
+    CSV + N questions) is a single ``general_hf`` call instead of N separate
+    calls that each resend the CSV -- the actual cost/latency win for a huge
+    model like Qwen3.8, since HF gets no async batch discount to offset resending
+    the table N times. Bounded by ``hf_max_workers`` like ``_hf_parallel``, and
+    writes to cache per-completion for the same crash-resilience reason (a kill
+    mid-run loses at most the in-flight bundles, not the whole unit list); the
+    caller's redundant write from the returned dict is harmless.
+
+    Any bundle that errors, comes back empty, or fails to parse is simply absent
+    from the result, so its questions fall through to the per-prompt HF path
+    below (unchanged live-call semantics, just slower/pricier for that bundle).
+    """
+    if not units:
+        return {}
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    from utils.utils import general_hf
+
+    cache = _cache_for(model)
+    base_cap = conf.get("max_completion_tokens", 1024)
+    max_workers = conf.get("hf_max_workers", 12)
+
+    # hf_ob_disable_thinking overrides hf_disable_thinking for open-book only:
+    # CB/MC showed no benefit from re-enabling thinking, but OB's multi-row
+    # aggregation (Count/Max/Min/List) does -- see the config comment. Falls
+    # back to the global hf_disable_thinking when unset (same behavior either way).
+    ob_disable_thinking = conf.get("hf_ob_disable_thinking", conf.get("hf_disable_thinking", False))
+
+    def _resolve(unit):
+        # Scale the ceiling with bundle size (reasoning + N visible answers),
+        # same formula as the OpenAI/Anthropic/Gemini consolidators, but with a
+        # larger per-question allowance and ceiling: with thinking enabled the
+        # cap must cover hidden reasoning too, not just the visible answer.
+        cap = min(base_cap + 512 * len(unit["questions"]), 48000)
+        return general_hf(model, _consolidated_prompt(unit), max_out_tokens=cap,
+                           disable_thinking=ob_disable_thinking)
+
+    results = {}
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        futures = {pool.submit(_resolve, u): u for u in units}
+        done = 0
+        for fut in as_completed(futures):
+            unit = futures[fut]
+            originals = unit["originals"]
+            done += 1
+            try:
+                text = fut.result()
+            except Exception as e:  # noqa: BLE001 -- skip; falls back to per-prompt
+                print(f"[batch][hf][consolidate] error: {e} -- "
+                      f"{len(originals)} q(s) fall back to per-prompt")
+                continue
+            resolved = _parse_hf_consolidated(text, originals)
+            if not resolved:
+                snippet = repr((text or "")[:300])
+                print(f"[batch][hf][consolidate] empty/unparseable bundle "
+                      f"({len(originals)} q(s), raw len={len(text or '')}) -- "
+                      f"fall back to per-prompt. raw[:300]={snippet}")
+                continue
+            for orig, ans in resolved.items():
+                if ans is None or not str(ans).strip():
+                    continue
+                results[orig] = ans
+                cache[orig] = str(ans).strip()
+            if done % 10 == 0 or done == len(units):
+                print(f"[batch][hf][consolidate] {done}/{len(units)} bundles")
+    return results
+
+
 def warm_cache(model, prompts, poll_interval=POLL_INTERVAL, chunk_size=CHUNK_SIZE):
     """Batch-resolve ``prompts`` for ``model`` and write them into the cache.
 
@@ -417,12 +571,15 @@ def warm_cache(model, prompts, poll_interval=POLL_INTERVAL, chunk_size=CHUNK_SIZ
                   "(all recovered from in-flight batches)")
             return all_results
 
-    # --- Open-Book consolidation (OpenAI + Anthropic + Gemini) -------------
+    # --- Open-Book consolidation (OpenAI + Anthropic + Gemini + HuggingFace) ---
     # All open-book questions on the same table share one CSV. Bundle them into a
-    # single structured-JSON call per table (CSV sent once, N requests -> 1), then
-    # split the answers back to each question's own cache key. Closed-Book / MC
+    # single structured/JSON-asking call per table (CSV sent once, N requests -> 1),
+    # then split the answers back to each question's own cache key. Closed-Book / MC
     # carry no table and are NOT bundled (would contaminate parametric-recall).
     # Methodologically sound because open-book already gives the model the full table.
+    # HF gets no schema enforcement (_hf_consolidated parses leniently) and no async
+    # batch discount, but still wins by sending each table's CSV once instead of once
+    # per question -- the dominant cost for a huge model like Qwen3.8.
     conf = _load_conf()
     consolidator = None
     if conf.get("consolidate_open_book", True):
@@ -432,6 +589,8 @@ def warm_cache(model, prompts, poll_interval=POLL_INTERVAL, chunk_size=CHUNK_SIZ
             consolidator = _anthropic_consolidated
         elif 'gemini' in model:
             consolidator = _gemini_consolidated
+        else:
+            consolidator = _hf_consolidated
     if consolidator is not None:
         ob = [p for p in prompts if p.startswith(_OB_PREFIX)]
         if ob:
@@ -475,17 +634,24 @@ def warm_cache(model, prompts, poll_interval=POLL_INTERVAL, chunk_size=CHUNK_SIZ
     else:
         provider = _hf_parallel
 
+    # HF has no batch endpoint (no async discount, no batch-level restart journal
+    # like OpenAI/Anthropic/Gemini get from _drain_in_flight), so a kill loses
+    # real money if a chunk is large. hf_chunk_size lets it default smaller than
+    # the provider-batch chunk_size without changing the latter for everyone else.
+    effective_chunk_size = conf.get("hf_chunk_size", chunk_size) if provider is _hf_parallel else chunk_size
+
     total = len(prompts)
-    n_chunks = (total + chunk_size - 1) // chunk_size
+    n_chunks = (total + effective_chunk_size - 1) // effective_chunk_size
     print(f"[batch] warming {total} per-prompt request(s) for model {model} "
-          f"in {n_chunks} chunk(s) of up to {chunk_size}")
+          f"in {n_chunks} chunk(s) of up to {effective_chunk_size}")
 
     for ci in range(n_chunks):
-        chunk = prompts[ci * chunk_size:(ci + 1) * chunk_size]
+        chunk = prompts[ci * effective_chunk_size:(ci + 1) * effective_chunk_size]
         print(f"[batch] {model}: chunk {ci + 1}/{n_chunks} ({len(chunk)} prompt(s))")
-        # _hf_parallel has no poll_interval argument.
+        # _hf_parallel has no poll_interval argument; it writes to cache
+        # per-completion instead (see its docstring), so pass cache through.
         if provider is _hf_parallel:
-            results = provider(model, chunk)
+            results = provider(model, chunk, cache=cache, max_workers=conf.get("hf_max_workers", 12))
         else:
             results = provider(model, chunk, poll_interval)
         for prompt, response in results.items():
@@ -915,20 +1081,54 @@ def _parse_gemini_consolidated(texts, items):
 # HuggingFace / DeepSeek -- NO batch endpoint; use bounded concurrency.
 # This is parallelism, not a true Batch API: no async discount.
 # --------------------------------------------------------------------------- #
-def _hf_parallel(model, prompts, max_workers=12):
+def _hf_parallel(model, prompts, cache=None, max_workers=12):
+    """Resolve ``prompts`` for ``model`` with bounded concurrency.
+
+    ``cache``, if given, is written to as each future completes -- not batched
+    up and written after the whole prompt list finishes. With no true batch API,
+    a paid-for answer only exists in memory until it's flushed; without this, a
+    kill (e.g. running out of budget) mid-chunk would silently discard every
+    already-answered prompt still sitting in ``results``. Writing per-completion
+    bounds the loss to whatever's in flight at the moment of the kill -- at most
+    ``max_workers`` calls, not the whole chunk. The caller (``warm_cache``) still
+    also writes from the returned dict, which is a harmless re-write of the same
+    already-cached entries -- keeps this function's contract (return every
+    resolved prompt) unchanged for callers that don't pass a cache.
+    """
     from concurrent.futures import ThreadPoolExecutor, as_completed
     from utils.utils import general_hf
 
+    # Open-book prompts (identifiable by _OB_PREFIX, same check warm_cache uses
+    # to route to consolidation) get the hf_ob_disable_thinking override and a
+    # higher cap, same rationale as _hf_consolidated: this is the path OB
+    # questions fall back to when their bundle fails, so it must match the
+    # thinking setting the bundle attempt used, not silently revert to CB/MC's.
+    conf = _load_conf()
+    global_disable = conf.get("hf_disable_thinking", False)
+    ob_disable = conf.get("hf_ob_disable_thinking", global_disable)
+    base_cap = conf.get("max_completion_tokens", 1024)
+    ob_cap = min(base_cap * 2, 48000) if not ob_disable else base_cap
+
+    def _resolve(p):
+        if p.startswith(_OB_PREFIX):
+            return general_hf(model, p, max_out_tokens=ob_cap, disable_thinking=ob_disable)
+        return general_hf(model, p)
+
     results = {}
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        futures = {pool.submit(general_hf, model, p): p for p in prompts}
+        futures = {pool.submit(_resolve, p): p for p in prompts}
         done = 0
         for fut in as_completed(futures):
             prompt = futures[fut]
             try:
-                results[prompt] = fut.result()
+                ans = fut.result()
             except Exception as e:  # noqa: BLE001 -- skip; falls back to live call
                 print(f"[batch][hf] error: {e}")
+                done += 1
+                continue
+            results[prompt] = ans
+            if cache is not None and ans is not None and str(ans).strip():
+                cache[prompt] = str(ans).strip()
             done += 1
             if done % 25 == 0:
                 print(f"[batch][hf] {done}/{len(prompts)}")
