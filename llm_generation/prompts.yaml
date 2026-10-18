@@ -1,40 +1,139 @@
-wrapper: |
-  Based on data regarding: 
-  {TABLE_TITLE}.
-  {QUESTION}
-  Return only the value, with no additional words, punctuation, or explanation.
-  If you are unsure, return the most likely value from your knowledge; do not guess or make something up.
+rephrasing: |
+  Transform the structured task below into a single, natural language question.
+  The task describes a query on a specific table.
+  Your goal is to write a question that sounds natural and implies the context of the table (from the title) without explicitly stating "Assume a table...".
+  Guidelines:
+  1.  **Context**: Incorporate the table's specific topic (e.g., from the title "1990 Ben Hogan Tour") so the question makes sense on its own.
+  2.  **Phrasing**: Convert technical conditions into natural language:
+      - "equals 'X'" → "in X", "of X", or "is X"
+      - "does not equal 'X'" → "outside of X", "other than X", or "excluding X"
+      - "is either 'X' or 'Y'" → "in X or Y"
+  3.  **Cleanliness**: Remove technical terms like "rows", "columns", "primary key", or instructions about the output format (e.g., "exact value").
+  Task:
+  """
+  {STRUCTURED_TASK}
+  """
+  Natural Question:
 
-rephrase_wrapper: |
-    Given the following template-based question: 
-    Based on data regarding: 
-    ```
-    {TABLE_TITLE}.
-    {QUESTION}
-    ```
-    Regarding the table from wiki page {URL}, rephrase the question to be more natural and human-like, while keeping the same meaning.
-    For you guidance, the answer to the question is '{ANSWER}'.
-    Answer only with the rephrased question.
+# == Wrapper templates ==
+closed_book_wrapper: |
+ Assume a factual table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}':
+ {QUESTION}
+ {INSTRUCTION}
 
-context_wrapper: |
-    Based on data regarding: 
-    {TABLE_TITLE}.
-    {QUESTION}
-    From the table presented in the wiki page {URL} ,
-    Return only the value, with no additional words, punctuation, or explanation.
-    If you are unsure, return the most likely value from your knowledge; do not guess or make something up.
 
+multiple_choice_wrapper: |
+ Assume a factual table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}':
+ {QUESTION}
+ Select one from the following options: ['{CHOICE_1}', '{CHOICE_2}', '{CHOICE_3}']
+ {INSTRUCTION}
+
+list_retrieval_multiple_choices_wrapper: |
+ Assume a factual table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}':
+ {QUESTION}
+ Select all that apply from the following options: {CHOICES_LIST}
+ {INSTRUCTION}
+
+# == Anti-refusal wrappers (used ONLY by models in _ANTI_REFUSAL_MODELS, e.g.
+# claude-opus-4-8). These tableless closed-book / list-MC probes intentionally
+# withhold the table to measure parametric recall; some models (Opus 4.8) refuse
+# ("I don't have access to the table") instead of guessing. These variants tell
+# the model to answer from its own knowledge and never refuse. Kept as SEPARATE
+# keys so other models keep their original prompt strings (and cached answers).
+closed_book_wrapper_anti_refusal: |
+ This is a closed-book factual-recall quiz about a real table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}'. The table itself is intentionally NOT provided — answer from your own knowledge with your single best guess. Do not refuse, do not state that the data was not provided, and do not ask for the table; always commit to a concrete answer.
+ {QUESTION}
+ {INSTRUCTION}
+
+list_retrieval_multiple_choices_wrapper_anti_refusal: |
+ This is a closed-book factual-recall quiz about a real table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}'. The table itself is intentionally NOT provided — choose from the options using your own knowledge and best judgement. Always select at least one option. Do not refuse, do not state that the data was not provided, and do not ask for the table.
+ {QUESTION}
+ Select all that apply from the following options: {CHOICES_LIST}
+ {INSTRUCTION}
+
+# == No-SQL wrappers (used ONLY by models in _NO_SQL_MODELS, e.g. Llama-3.3-70B).
+# With the table withheld, the closed-book framing ("a table titled X with a
+# primary key column named Y: List all values in `K` where `C` equals 'V'") reads
+# as a text-to-SQL task, and these models answer with a SELECT statement instead
+# of the recalled values -- an automatic 0 (93% of Llama's List-Retrieval
+# closed-book answers, 21-29% of Max/Min). These variants forbid queries and
+# demand literal values. The no-SQL directive sits AFTER {QUESTION} on purpose:
+# the SQL-triggering vocabulary is inside the question, so the correction has to
+# come last to override it. Kept as SEPARATE keys so other models keep their
+# original prompt strings (and cached answers).
+closed_book_wrapper_no_sql: |
+ Assume a factual table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}':
+ {QUESTION}
+ Answer with the actual data values, recalled from your own knowledge. Do NOT write a SQL query, code, or any description of how the answer could be looked up — a query is not an answer.
+ {INSTRUCTION}
+
+list_retrieval_multiple_choices_wrapper_no_sql: |
+ Assume a factual table titled '{TABLE_TITLE}' with a primary key column named '{PRIMARY_KEY_COLUMN}':
+ {QUESTION}
+ Select all that apply from the following options: {CHOICES_LIST}
+ Answer by copying the matching option values verbatim. Do NOT write a SQL query, code, or any description of how the answer could be looked up — a query is not an answer.
+ {INSTRUCTION}
+
+# IMPORTANT (OpenAI prompt caching): the title + full CSV table must stay at the
+# FRONT and the per-question text (Question/instruction) at the END. All
+# open-book questions on the same table then share an identical prefix, which
+# OpenAI auto-caches (~prefixes >=1024 tokens), so the repeated table is billed
+# at the cached rate. Do NOT move {QUESTION} ahead of {FULL_CSV_TABLE}.
+open_book_wrapper: |
+ Given a factual table titled '{TABLE_TITLE}':
+ {FULL_CSV_TABLE}
+ Question: {QUESTION}.
+ {INSTRUCTION}
+
+
+
+# == Instructions ==
+single_value_retrieval_instruction: |
+ Answer with the exact value only. No sentences or punctuation.
+
+list_value_retrieval_instruction: |
+ Return the values as a comma-separated list without any additional text.
+
+multiple_return_retrieval_instruction: |
+ Answer with the exact value only. If multiple answers are possible, return only the first one. No sentences or punctuation.
+
+
+
+# == Tasks ==
+
+# Single value retrieval and list retrieval
 single_value: |
-  What is the value of '{DESIRED_COLUMN_NAME}' where '{KEY_COLUMN}' is '{KEY_VALUE}'?
+ Identify the value of the column `{DESIRED_COLUMN}` where the `{KEY_COLUMN}` column equals '{KEY_VALUE}'
 
-comparison_max: |
-  Which '{Primary_key}' has higher '{Comparison_Column}', '{Value_1}', '{Value_2}' or '{Value_3}'?
 
-comparison_min: |
-  Which '{Primary_key}' has lower '{Comparison_Column}', '{Value_1}', '{Value_2}' or '{Value_3}'?
+list_value: |
+ List all values in the `{KEY_COLUMN}` column
 
+
+# Count retrievals
+count_rows: |
+  Count the number of rows
+
+# Max and Min value retrievals
 max_value: |
-  Which '{Primary_key}' has the maximum value in the '{Comparison_Column}' column {PROVIDED_KEYS}?
-
+ Name the `{PRIMARY_COLUMN}` with the highest `{COMPARISON_COLUMN}` column
 min_value: |
-  Which '{Primary_key}' has the minimum value in the '{Comparison_Column}' column {PROVIDED_KEYS}?
+ Name the `{PRIMARY_COLUMN}` with the lowest `{COMPARISON_COLUMN}` column
+
+
+# Break-downs
+categorical_equals: |
+  where the `{DESIRED_COLUMN}` column equals '{DESIRED_VALUE}'
+categorical_not_equals: |
+  where the `{DESIRED_COLUMN}` column does not equal '{DESIRED_VALUE}'
+categorical_in: |
+  where the `{DESIRED_COLUMN}` column is either '{CHOICE_1}' or '{CHOICE_2}'
+
+numerical_greater_than: |
+  where the `{COMPARISON_COLUMN}` column is greater than {THRESHOLD} inclusive
+numerical_less_than: |
+  where the `{COMPARISON_COLUMN}` column is less than {THRESHOLD} inclusive
+numerical_between: |
+  where the `{COMPARISON_COLUMN}` column is between {LOWER_THRESHOLD} and {UPPER_THRESHOLD} inclusive
+numerical_equals: |
+  where the `{COMPARISON_COLUMN}` column equals {VALUE}

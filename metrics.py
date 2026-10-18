@@ -1,5 +1,5 @@
 import statistics
-
+import seaborn as sns
 import numpy as np
 from collections import defaultdict
 import pandas as pd
@@ -35,8 +35,10 @@ def get_metrics(model):
         numeric_ratio = len(
             [k for k in record['columns'].values() if k in ['int64', 'float64']]
         ) / len(record['columns'])
-
-        popularity = record['article_metadata']['popularity']
+        try:
+            popularity = record['article_metadata']['popularity']
+        except:
+            b=5
 
         num_of_cells = record['shape'][0] * record['shape'][1]
         histogram_dict['numeric_ratio'].append(numeric_ratio)
@@ -118,6 +120,8 @@ def get_metrics(model):
         plt.tight_layout()
         plt.show()
 
+    # ================================
+
     # By data type
     dtype_avg_f1_scores = {
         dtype: statistics.mean(scores['f1_score']) if scores else 0
@@ -143,8 +147,25 @@ def get_metrics(model):
     plt.tight_layout()
     plt.show()
 
+    # ================================
 
     # By number of cells
+
+    data = {'x': np.log([k['cells'] for k in raw_csv]), 'y': [k['f1_score'] for k in raw_csv]}
+    df = pd.DataFrame(data)
+    # Create the regression plot
+    sns.regplot(x='x', y='y', data=df)
+
+    # Add title and labels
+    plt.title('Number of cells Regression Plot')
+    plt.xlabel('Number of cells (log scale)')
+    plt.ylabel('F1 score')
+
+    # Show the plot
+    plt.show()
+
+
+
     cells_avg_f1_scores = [
         sum(scores) / len(scores) if scores else 0
         for scores in cells_f1_scores_per_range
@@ -206,6 +227,20 @@ def get_metrics(model):
 
 
     # By popularity
+
+    data = {'x': np.log([k['popularity'] for k in raw_csv]), 'y': [k['f1_score'] for k in raw_csv]}
+    df = pd.DataFrame(data)
+    # Create the regression plot
+    sns.regplot(x='x', y='y', data=df)
+
+    # Add title and labels
+    plt.title('Log Popularity Regression Plot')
+    plt.xlabel('Popularity (log scale)')
+    plt.ylabel('F1 score')
+
+    # Show the plot
+    plt.show()
+
     popularity_avg_f1_scores = [
         sum(scores) / len(scores) if scores else 0
         for scores in popularity_f1_scores_per_range

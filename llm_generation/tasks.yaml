@@ -1,0 +1,34 @@
+single_value:
+  - no_bd
+
+list_value:
+  - bd_equals
+  - bd_not_equals
+  - bd_in
+  - bd_gte
+  - bd_lte
+  - bd_between
+
+count_rows:
+  - bd_equals
+  - bd_not_equals
+  - bd_in
+  - bd_gte
+  - bd_lte
+  - bd_between
+
+max_value:
+  - bd_equals
+  - bd_not_equals
+  - bd_in
+  - bd_gte
+  - bd_lte
+  - bd_between
+
+min_value:
+  - bd_equals
+  - bd_not_equals
+  - bd_in
+  - bd_gte
+  - bd_lte
+  - bd_between

@@ -1,7 +1,11 @@
 # Utilities/Help
 import re
+import time
+
 import dateutil.parser as parser
-# import requests
+import huggingface_hub
+from ast import literal_eval
+import  stealth_requests as  requests
 from bs4 import BeautifulSoup
 
 from datetime import datetime, timedelta
@@ -11,15 +15,76 @@ import json
 import diskcache
 import anthropic
 import os
-from google.genai import types
+from google.genai import types, Client
 from google.genai import Client
-from google.genai.errors import ServerError
 from google.genai.types import Tool, GenerateContentConfig
+from google.genai.errors import ServerError
+import git
+import dotenv
 
-client = Client(api_key=os.environ["gemini_api_key"], http_options=types.HttpOptions(timeout=1_000_000, ))
-claude_client = anthropic.Anthropic(
-    api_key=os.environ.get("claude_api_key")
-)
+# .env file is expected to have the following variables:
+dotenv.load_dotenv()
+working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
+
+_gemini_client = None
+_claude_client = None
+
+
+def get_gemini_client():
+    global _gemini_client
+    if _gemini_client is None:
+        key = os.environ.get("gemini_api_key")
+        if not key:
+            raise ValueError(
+                "Environment variable 'gemini_api_key' is required to call Google Gemini."
+            )
+        _gemini_client = Client(api_key=key)
+    return _gemini_client
+
+
+def get_claude_client():
+    global _claude_client
+    if _claude_client is None:
+        key = os.environ.get("claude_api")
+        if not key:
+            raise ValueError(
+                "Environment variable 'claude_api' is required to call Anthropic Claude."
+            )
+        _claude_client = anthropic.Anthropic(api_key=key)
+    return _claude_client
+
+# --- Batch / collect mode ---------------------------------------------------
+# When COLLECT_MODE is True, get_llm_response records cache-missing prompts into
+# COLLECTED (model -> set of stripped prompt strings) and returns None instead of
+# making a live API call. A batch warmer (llm_generation/batch.py) then fills the
+# per-model diskcache so a subsequent normal pass is all cache hits.
+COLLECT_MODE = False
+COLLECTED = {}
+
+
+# --- Output-token / reasoning caps -----------------------------------------
+# Answers in this benchmark are "exact value only" (a single value) or a short
+# comma-separated list, yet reasoning models (gpt-5*, o-series) will otherwise
+# burn hundreds-thousands of *reasoning* tokens per trivial answer at the top
+# output price. We cap max_completion_tokens (which, for reasoning models,
+# counts reasoning + visible output together) and set a low reasoning_effort.
+# Both are read from config.yaml so they can be tuned without code edits.
+_CONFIG_CACHE = None
+
+
+def _config():
+    global _CONFIG_CACHE
+    if _CONFIG_CACHE is None:
+        import yaml
+        with open(f"{working_dir}/config.yaml", "r") as f:
+            _CONFIG_CACHE = yaml.safe_load(f) or {}
+    return _CONFIG_CACHE
+
+
+def _is_openai_reasoning_model(model):
+    m = model.lower()
+    return m.startswith("gpt-5") or m.startswith(("o1", "o3", "o4"))
+
 
 
 def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
@@ -84,7 +149,6 @@ def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
 
 def get_articles_to_parse(conf, ts):
     import string
-    import  stealth_requests as  requests
     import random
     import git
     from collections import OrderedDict
@@ -114,7 +178,7 @@ def get_articles_to_parse(conf, ts):
                     if is_tbl_consistent == 'match':
                         article_metadata = page_details(
                             f'https://en.wikipedia.org/wiki/{j["title"]}',
-                            str(j["pageid"]),
+                            page_id,
                         )
                         if 'minimum_popularity' in conf and conf.get('minimum_popularity'):
                             if conf.get('minimum_popularity') > article_metadata['popularity']:
@@ -215,7 +279,6 @@ def is_consistent(url, tbl_idx, years_ago=1):
 
 
 def page_details(url, page_id):
-    import requests
     import statistics
     from datetime import datetime, timedelta
 
@@ -278,11 +341,17 @@ def get_sample(_df, try_cast):
     return return_str
 
 
-def chatgpt(MODEL, prompt_string):
+def chatgpt(MODEL, prompt_string, retry_count=3, max_out_tokens=None):
     from requests.exceptions import ChunkedEncodingError
     from openai import OpenAI
+    if retry_count < 1:
+        raise "ChatGPT API request failed after multiple retries."
+
     client = OpenAI(api_key=os.environ["openai_api_key"], timeout=30)
-    from openai._exceptions import APITimeoutError, APIConnectionError, RateLimitError
+    from openai._exceptions import APITimeoutError, APIConnectionError, RateLimitError, BadRequestError
+    conf = _config()
+    if max_out_tokens is None:
+        max_out_tokens = conf.get("max_completion_tokens", 512)
     params = {
         'model': MODEL,
         'messages': [
@@ -291,62 +360,158 @@ def chatgpt(MODEL, prompt_string):
                 "content": prompt_string,
             },
         ],
-        "temperature": 0.0,
-        "stream": True,
+        # Cap total output (reasoning + visible) so trivial answers can't run up
+        # a huge reasoning-token bill. Safe because answers are a single value or
+        # a short list; pair with low reasoning_effort below.
+        'max_completion_tokens': max_out_tokens,
+        # "temperature": 0.0,  # reasoning models reject non-default temperature
     }
+    # reasoning_effort is only valid for reasoning models (gpt-5*, o-series);
+    # sending it to e.g. gpt-4.1 raises BadRequestError.
+    if _is_openai_reasoning_model(MODEL):
+        params['reasoning_effort'] = conf.get("openai_reasoning_effort", "minimal")
     try:
-        response_str = ""
         response = client.chat.completions.create(**params)
-        for chunk in response:
-            if chunk.choices[0].delta.content is None:
-                break
-            if hasattr(chunk, 'choices') and len(chunk.choices) > 0:
-                chunk_content = chunk.choices[0].delta.content
-                response_str += chunk_content
+        choice = response.choices[0]
+        content = choice.message.content
+        # A reasoning model that exhausts max_completion_tokens during reasoning
+        # returns finish_reason="length" with empty content. Surface it loudly and
+        # return None (a cache miss) instead of caching an empty answer.
+        if not content or choice.finish_reason == "length":
+            print(f"[chatgpt] empty/truncated response from {MODEL} "
+                  f"(finish_reason={choice.finish_reason}, "
+                  f"max_completion_tokens={max_out_tokens}) -- raise the ceiling")
+            return None
+        return content
     except (APITimeoutError, RateLimitError, ChunkedEncodingError) as e:
         return None
     except APIConnectionError as e:
         return None
-    return response_str
+    except BadRequestError:
+        print("ChatGPT API request failed")
+        time.sleep(3)
+        return chatgpt(MODEL, prompt_string, retry_count - 1, max_out_tokens=max_out_tokens)
 
 
-def gemini(MODEL, prompt_string, context=False):
+def gemini(MODEL, prompt_string, context=False, retry_count=3):
+    """Get response from Gemini API with retry logic and proper error handling."""
 
-    tools = []
-    if context:
-        tools = [
-            {"url_context": {}},
-        ]
-    response_str = ""
+    # Mirror the batch path (llm_generation/batch.py): cap visible output via the
+    # shared max_completion_tokens, and optionally set a thinking budget. Gemini's
+    # max_output_tokens caps visible output only (thinking has its own budget), so a
+    # generous cap never truncates the answer.
+    conf = _config()
+    cfg_kwargs = {"temperature": 0.0}
+    cap = conf.get("max_completion_tokens")
+    if cap:
+        cfg_kwargs["max_output_tokens"] = cap
+    _budget = conf.get("gemini_thinking_budget")
+    if _budget is not None:
+        from google.genai.types import ThinkingConfig
+        cfg_kwargs["thinking_config"] = ThinkingConfig(thinking_budget=int(_budget))
+    for attempt in range(retry_count):
+        try:
+            gem_client = get_gemini_client()
+            response = gem_client.models.generate_content(
+                model=MODEL,
+                contents=prompt_string,
+                config=GenerateContentConfig(**cfg_kwargs),
+            )
+            print('Received response from Gemini')
+            return response.text
+        except ServerError as e:
+            if 'Spikes in demand' in e.message:
+                print(f"Gemini API server error: {e}")
+                time.sleep(15)  # Wait before retrying
+                continue
+            print(f'Unexpected error calling Gemini: {e}')
+            return None
+    return None
 
-    for chunk in client.models.generate_content_stream(
+def general_hf(MODEL, prompt_string, retry_count=4, max_out_tokens=None, disable_thinking=None):
+    from huggingface_hub import InferenceClient
+    hf_client = InferenceClient(
+        model=MODEL,
+        token=os.environ.get("hf_api")
+    )
+
+    # Cap visible output via the same shared max_completion_tokens the OpenAI,
+    # Gemini and Claude paths already honour. Without it HF requests were the only
+    # ones sent uncapped, which is a real cost risk on a thinking model: cached
+    # Qwen3-32B answers average 4,335 chars (p50 3,879) of visible chain-of-thought
+    # versus 10 chars for non-thinking Qwen3.5-397B -- a ~400x spread in output
+    # tokens over a full 12k-prompt run, with nothing to stop the tail.
+    # max_out_tokens overrides the config default (mirrors chatgpt's parameter),
+    # used by open-book consolidation to scale the cap with bundle size.
+    conf = _config()
+    answer_cap = max_out_tokens if max_out_tokens is not None else conf.get("max_completion_tokens", 1024)
+
+    # disable_thinking overrides the config default per-call (used to re-enable
+    # thinking for open-book specifically after CB/MC showed no benefit from it,
+    # while OB's multi-row aggregation seems to actually need the scratchpad --
+    # see hf_disable_thinking's config comment). None means "use config default".
+    should_disable = conf.get("hf_disable_thinking", False) if disable_thinking is None else disable_thinking
+
+    create_kwargs = {}
+    if should_disable:
+        # vLLM/HF-router switch some served models expose to skip the <think>
+        # block entirely. Opt-in and off by default: not every HF model serves
+        # via vLLM or honours this, so it must not silently change behavior for
+        # models that don't need it.
+        create_kwargs["extra_body"] = {"chat_template_kwargs": {"enable_thinking": False}}
+
+    try:
+        completion = hf_client.chat.completions.create(
             model=MODEL,
-            contents=prompt_string,
-            config=GenerateContentConfig(temperature=0.0, tools=tools),
-
-    ):
-        if chunk.text is None:
-            break
-        response_str += chunk.text
-
-    print('Received response from Gemini')
-    return response_str
-
+            max_tokens=answer_cap,
+            **create_kwargs,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt_string
+                        }
+                    ]
+                }
+            ],
+        )
+    except huggingface_hub.errors.HfHubHTTPError as e:
+        if retry_count == 0:
+            raise e
+        print(f"Hugging Face API error: {e}")
+        return general_hf(MODEL, prompt_string, retry_count=retry_count-1)
+    return completion.choices[0].message.content
 
 def claude(MODEL, prompt_string, context=False):
     prompt_string = prompt_string.strip()
-    with claude_client.messages.stream(
-            max_tokens=1024,
-            messages=[
-                {"role": "user", "content": prompt_string}
-            ],
-            model="claude-sonnet-4-20250514",
-    ) as stream:
-        for text in stream.text_stream:
-            print(text, end="", flush=True)
+    # Mirror the batch path (llm_generation/batch.py): cap visible output via the
+    # shared max_completion_tokens, and optionally enable extended thinking (off by
+    # default; when on, its budget is added on top because Anthropic requires
+    # max_tokens > thinking budget_tokens).
+    conf = _config()
+    answer_cap = conf.get("max_completion_tokens", 1024)
+    params = {
+        "max_tokens": answer_cap,
+        "messages": [{"role": "user", "content": prompt_string}],
+        "model": MODEL,
+    }
+    if conf.get("claude_extended_thinking", False):
+        budget = int(conf.get("claude_thinking_budget", 4096))
+        params["max_tokens"] = budget + answer_cap
+        params["thinking"] = {"type": "enabled", "budget_tokens": budget}
+    c_client = get_claude_client()
+    with c_client.messages.stream(**params) as stream:
+        response = stream.get_final_message()
+    text = next((b.text for b in response.content if getattr(b, "type", None) == "text"), None)
+    if not text:
+        return None
+    return text
 
 
-def get_llm_response(
+
+def _get_llm_response(
         prompt_string, MODEL, use_cache=True, cache=None, context=False
 ):
     prompt_string = prompt_string.strip()
@@ -356,21 +521,125 @@ def get_llm_response(
         cache = diskcache.Cache(f'{working_dir}/local_dbs/cache/llm_cache.db')
     context_key = "Context" if context else "NoContext"
     prompt_cache_key = f"{context_key}_{MODEL}_{prompt_string}"
-    if f"{context_key}_{MODEL}_\n{prompt_string}" in cache:
-        cache[prompt_cache_key] = cache[f"{context_key}_{MODEL}_\n{prompt_string}"]
-        cache.delete(f"{context_key}_{MODEL}_\n{prompt_string}")
 
     if use_cache and prompt_cache_key in cache and cache[prompt_cache_key] != '':
         return cache[prompt_cache_key]
+    if use_cache and f"{context_key}_{MODEL}_\n{prompt_string}" in cache and cache[f"{context_key}_{MODEL}_\n{prompt_string}"] != '':
+        return cache[f"{context_key}_{MODEL}_\n{prompt_string}"]
     if 'gpt' in MODEL:
         response_str = chatgpt(MODEL, prompt_string)
     if 'gemini' in MODEL:
         response_str = gemini(MODEL, prompt_string, context)
+    if 'llama' in MODEL.lower():
+        response_str = general_hf(MODEL, prompt_string)
+    if 'claude' in MODEL.lower():
+        response_str = claude(MODEL, prompt_string, context)
     if response_str is None:
         return None
     prompt_response = response_str.strip()
     if use_cache:
         cache[prompt_cache_key] = prompt_response
+    return prompt_response
+
+
+def _describe_prompt(prompt_string):
+    """Best-effort one-line label for a prompt, derived from its content, so the
+    cache hit/miss logs say which question they refer to. Returns:
+    'Test=CB/MC/OB | Type=Count/Max/Min/LR/Single | Constraint=... | Table=...'."""
+    p = prompt_string
+    # 1. Test (CB / MC / OB)
+    if p.startswith("Given a factual table titled"):
+        test = "OB"
+    elif "Select one from the following options" in p or "Select all that apply" in p:
+        test = "MC"
+    else:
+        test = "CB"
+    # 2. Test type
+    if "Count the number of rows" in p:
+        ttype = "Count"
+    elif "with the highest" in p:
+        ttype = "Max"
+    elif "with the lowest" in p:
+        ttype = "Min"
+    elif "List all values in" in p:
+        ttype = "LR"
+    elif "Identify the value of the column" in p:
+        ttype = "Single"
+    else:
+        ttype = "?"
+    # 3. Constraint / break-down
+    if "does not equal" in p:
+        constraint = "Not Equals"
+    elif "is either" in p:
+        constraint = "In"
+    elif "is greater than" in p:
+        constraint = "Greater Than"
+    elif "is less than" in p:
+        constraint = "Less Than"
+    elif "is between" in p:
+        constraint = "Between"
+    elif "equals" in p:
+        constraint = "Equals"
+    else:
+        constraint = "-"
+    # 4. Table name. Greedy up to the structural delimiter so titles containing
+    # quotes/apostrophes aren't truncated: CB/MC end with "' with a primary key",
+    # OB ends with "':" before the CSV. Non-greedy fallback if neither is present.
+    m = (re.search(r"titled '(.*)' with a primary key", p)
+         or re.search(r"titled '(.*)':", p)
+         or re.search(r"titled '(.*?)'", p))
+    table = m.group(1) if m else "?"
+    return f"Test={test} | Type={ttype} | Constraint={constraint} | Table={table!r}"
+
+
+def get_llm_response(
+        model,
+        prompt_string,
+        answer=None,
+        max_out_tokens=None,
+):
+
+    cache = diskcache.Cache(f'{working_dir}/local_dbs/cache/llm_cache/{model}.db')
+    prompt_string = prompt_string.strip()
+    if prompt_string in cache and cache[prompt_string] != '':
+        print(f"Cache hit! ({model}) | {_describe_prompt(prompt_string)}")
+        return cache[prompt_string]
+    if prompt_string in cache and cache[prompt_string] == '':
+        return None
+    if answer is not None and "Select one from the following options: " in prompt_string:
+        prompt_prefix = prompt_string.split("Select one from the following options: ")
+        cache_similar = [k for k in cache if k.startswith(prompt_prefix[0]) and "Select one from the following options: " in k]
+        if isinstance(answer, list):
+            for i in cache_similar:
+                # cache_answers = literal_eval(i.split("Select one from the following options: ")[-1].splitlines()[0])
+                answer_exists_in_cache = [k for k in answer if str(k) in i.split("Select one from the following options: ")[-1].splitlines()[0]]
+                if i.startswith(prompt_prefix[0]) and answer_exists_in_cache:
+                    print(f"Cache hit! ({model}) | {_describe_prompt(prompt_string)}")
+                    return cache[i]
+        else:
+            for i in cache_similar:
+                if str(answer) in i.split("Select one from the following options: ")[-1].splitlines()[0]:
+                    print(f"Cache hit! ({model}) | {_describe_prompt(prompt_string)}")
+                    return cache[i]
+
+
+
+    print(f"Cache miss... ({model}) | {_describe_prompt(prompt_string)}")
+    if COLLECT_MODE:
+        COLLECTED.setdefault(model, set()).add(prompt_string)
+        return None
+    if 'gpt' in model:
+        response_str = chatgpt(model, prompt_string, max_out_tokens=max_out_tokens)
+    elif 'gemini' in model:
+        response_str = gemini(model, prompt_string)
+    elif 'claude' in model.lower():
+        response_str = claude(model, prompt_string)
+    else:
+        response_str = general_hf(model, prompt_string)
+    if response_str is None:
+        return None
+    prompt_response = response_str.strip()
+    cache[prompt_string] = prompt_response
     return prompt_response
 
 
