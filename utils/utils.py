@@ -26,10 +26,32 @@ import dotenv
 dotenv.load_dotenv()
 working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
 
-client = Client(api_key=os.environ.get("gemini_api_key"))
-claude_client = anthropic.Anthropic(
-    api_key=os.environ.get("claude_api")
-)
+_gemini_client = None
+_claude_client = None
+
+
+def get_gemini_client():
+    global _gemini_client
+    if _gemini_client is None:
+        key = os.environ.get("gemini_api_key")
+        if not key:
+            raise ValueError(
+                "Environment variable 'gemini_api_key' is required to call Google Gemini."
+            )
+        _gemini_client = Client(api_key=key)
+    return _gemini_client
+
+
+def get_claude_client():
+    global _claude_client
+    if _claude_client is None:
+        key = os.environ.get("claude_api")
+        if not key:
+            raise ValueError(
+                "Environment variable 'claude_api' is required to call Anthropic Claude."
+            )
+        _claude_client = anthropic.Anthropic(api_key=key)
+    return _claude_client
 
 # --- Batch / collect mode ---------------------------------------------------
 # When COLLECT_MODE is True, get_llm_response records cache-missing prompts into
@@ -147,18 +169,15 @@ def get_articles_to_parse(conf, ts):
         for j in [k for k in response["query"]["search"] if k['title'].isascii()]:
             try:
                 df, idx, msg, dates, paragraph = wiki_obj.run(
-                    # f'https://en.wikipedia.org/?curid={j["pageid"]}', j['title']
-                    "https://en.wikipedia.org/wiki/2018_Korean_Tour", "2018_Korean_Tour"
+                    f'https://en.wikipedia.org/?curid={j["pageid"]}', j['title']
                 )
                 if df is not None:
                     is_tbl_consistent, page_id, article_name = is_consistent(
-                        # f'https://en.wikipedia.org/wiki/{j["title"]}', idx
-                        "https://en.wikipedia.org/wiki/2018_Korean_Tour", idx
+                        f'https://en.wikipedia.org/wiki/{j["title"]}', idx
                     )
                     if is_tbl_consistent == 'match':
                         article_metadata = page_details(
-                            # f'https://en.wikipedia.org/wiki/{j["title"]}',
-                            f'https://en.wikipedia.org/wiki/2018_Korean_Tour',
+                            f'https://en.wikipedia.org/wiki/{j["title"]}',
                             page_id,
                         )
                         if 'minimum_popularity' in conf and conf.get('minimum_popularity'):
@@ -392,7 +411,8 @@ def gemini(MODEL, prompt_string, context=False, retry_count=3):
         cfg_kwargs["thinking_config"] = ThinkingConfig(thinking_budget=int(_budget))
     for attempt in range(retry_count):
         try:
-            response = client.models.generate_content(
+            gem_client = get_gemini_client()
+            response = gem_client.models.generate_content(
                 model=MODEL,
                 contents=prompt_string,
                 config=GenerateContentConfig(**cfg_kwargs),
@@ -481,7 +501,8 @@ def claude(MODEL, prompt_string, context=False):
         budget = int(conf.get("claude_thinking_budget", 4096))
         params["max_tokens"] = budget + answer_cap
         params["thinking"] = {"type": "enabled", "budget_tokens": budget}
-    with claude_client.messages.stream(**params) as stream:
+    c_client = get_claude_client()
+    with c_client.messages.stream(**params) as stream:
         response = stream.get_final_message()
     text = next((b.text for b in response.content if getattr(b, "type", None) == "text"), None)
     if not text:

@@ -435,17 +435,18 @@ class WikiTableParser:
                 )
             if self.cfg['header_manipulations']['remove_data_inside_parentheses']:
                 if re.search(r"\(.+?\)", self.clean_string(col).__str__()):
-                    self.logger.debug(
-                        f"Removing data inside parentheses for {col} column [{self.url}]"
-                    )
-                    self.df.rename(
-                        columns={
-                            col: re.sub(
-                                r"\(.+?\)", '', self.clean_string(col).__str__()
-                            ).strip()
-                        },
-                        inplace=True,
-                    )
+                    cleaned_col = re.sub(
+                        r"\(.+?\)", '', self.clean_string(col).__str__()
+                    ).strip()
+                    other_cols = [c for c in self.df.columns if c != col]
+                    if cleaned_col and cleaned_col not in other_cols:
+                        self.logger.debug(
+                            f"Removing data inside parentheses for {col} column [{self.url}]"
+                        )
+                        self.df.rename(
+                            columns={col: cleaned_col},
+                            inplace=True,
+                        )
             if self.cfg['header_manipulations']['remove_data_inside_square_brackets']:
                 if re.search(r"\[.+?\]", self.clean_string(col).__str__()):
                     self.logger.debug(

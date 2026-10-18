@@ -50,3 +50,6 @@ lxml==6.0.2
 Unidecode==1.4.0
 urllib3==2.5.0
 websockets==15.0.1
+curl_cffi==0.15.0
+python-dotenv==1.2.2
+stealth-requests==2.0.6

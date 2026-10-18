@@ -43,3 +43,7 @@ min_comparison_results.csv
 thinking_task.csv
 lr_kn_log.csv
 lr_chance_summary.txt
+scores_statistics_all.csv
+list_rescored.csv
+local_dbs/
+**/local_dbs/
