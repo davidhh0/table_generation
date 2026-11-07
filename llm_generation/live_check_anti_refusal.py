@@ -7,7 +7,7 @@ For each sampled closed-book question we:
   3. call Opus LIVE with the new prompt (no cache),
 and print refusal/answer/correctness side by side.
 
-Run from llm_generation/:  python test_anti_refusal.py
+Run from llm_generation/:  python live_check_anti_refusal.py
 Makes 5 live API calls (needs claude_api in env).
 """
 import re

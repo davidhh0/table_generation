@@ -1,7 +1,6 @@
 import stealth_requests as requests
 from stealth_requests import StealthResponse
 import yaml
-from bs4 import BeautifulSoup
 from io import StringIO
 import re
 from pandas import read_html, MultiIndex, DataFrame, isna, to_numeric, read_csv
@@ -10,6 +9,72 @@ from datetime import datetime
 import numpy as np
 
 unicode_dict = {'\xa0': ' '}
+
+
+# ---- unit annotations in headers -------------------------------------------------------------------------------
+# A header such as "Budget (US$)" or "Area (km2)" carries its unit in parentheses. Stripping every parenthesis
+# (as the cleaner used to) loses the unit, and the question generator can no longer ask for it. A parenthetical is
+# kept only when it is recognised as a unit annotation from the header text itself (no LLM, nothing inferred from
+# outside the source); notes such as "(2020)", "(s)", "(age)" or "(Greatest)" are still removed.
+_UNIT_WORDS = {
+    # scale and rate words
+    'million', 'millions', 'billion', 'billions', 'thousand', 'thousands', 'trillion', 'mil', 'mill', 'bil', 'mn', 'bn',
+    'm', 'percent', 'percentage', 'per', 'pct', 'ago', 'x',
+    # length, area, volume, mass, pressure, speed, energy, time, information and other measures
+    'km', 'km2', 'km²', 'm2', 'm²', 'mi', 'mi2', 'sq', 'ha', 'acres', 'acre', 'ft', 'cm', 'mm', 'yd', 'nmi', 'miles',
+    'kilometres', 'kilometers', 'metres', 'meters', 'feet', 'inch', 'inches', 'au', 'kg', 'g', 'mg', 'lb', 'lbs', 'tonnes',
+    'tons', 'metric', 'l', 'ml', 'atm', 'pa', 'kpa', 'bar', 'mph', 'kph', 'km/h', 'kn', 'kw', 'mw', 'mwac', 'gw', 'kwh',
+    'mwh', 'gwh', 'twh', 'hp', 'kj', 'hz', 'khz', 'mhz', 'ghz', 'db', 'mah', 'mb', 'gb', 'tb', 'kb', 'bit', 'mbit', 'bp',
+    'aa', 'aas', 'amino', 'acids', 'bits', 'tonne', 'mbar', 'mwp', 'kda', 'mya', 'ma', 'msv', 'mt', 'co2', 'pax', 'k', '°c', '°f', 'ppm', 'rpm', 'bpm', 'h', 'hr', 'hrs',
+    'min', 'mins', 'sec', 'secs', 'ms', 'hh', 'seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years', 'yr', 'yrs',
+}
+_UNIT_STOP = {'in', 'of', 'the', 'and', 'to', 'above', 'sea', 'level', 'nominal', 'real', 'ppp', 'est', 'approx', 'about',
+              'cases', 'equiv', 'equivalent', 'gdp'}
+_CURRENCY_CODES = {
+    'usd', 'eur', 'gbp', 'jpy', 'cny', 'cad', 'aud', 'nzd', 'chf', 'inr', 'rub', 'brl', 'zar', 'mxn', 'krw', 'sek',
+    'nok', 'dkk', 'pln', 'try', 'ils', 'sgd', 'hkd', 'thb', 'idr', 'php', 'myr', 'czk', 'huf', 'aed', 'sar',
+    'baht', 'hrk', 'isk', 'ron', 'bgn', 'uah', 'rsd', 'kzt', 'egp', 'ngn', 'pkr', 'vnd', 'twd', 'clp', 'cop', 'ars',
+    'pen', 'rm', 'pounds', 'dollars', 'euros', 'yen',
+}
+_UNIT_PART = {'s', 'a', 'v', 't', 'h', 'd'}          # single letters that are units only inside a ratio
+_CURRENCY_SYMBOLS = "$€£¥₹₩₽₺₪₫"
+_CURRENCY_RE = re.compile(r"^(?:[a-z]{0,3}[" + _CURRENCY_SYMBOLS + r"]+|%|‰)$")
+
+
+def _is_unit_token(tok):
+    if _CURRENCY_RE.match(tok) or tok in _CURRENCY_CODES or tok in _UNIT_WORDS:
+        return True
+    if tok[0] in _CURRENCY_SYMBOLS and tok[1:] in _UNIT_WORDS:          # "$bn", "$m"
+        return True
+    if '/' in tok or ':' in tok or '*' in tok:                           # "km/h", "l/s/km2", "min:sec", "km*pax"
+        return all(_is_unit_token(part) or part in _UNIT_PART for part in re.split(r"[/:*]", tok) if part)
+    return False
+
+
+def is_unit_annotation(text):
+    """True if the text inside a header's parentheses is a unit annotation (currency, %, measure, scale, rate)."""
+    t = text.strip().strip('.').lower()
+    if not t or t in ('s', 'es', 'ies'):                                 # "Winner(s)": a plural marker, not a unit
+        return False
+    tokens = [x.strip('.') for x in re.split(r"[\s,;()]+", t) if x.strip('.')]
+    if 'per' in tokens:                                                  # a rate: "per 1000", "per student"
+        return True
+    units = 0
+    for tok in tokens:
+        if _is_unit_token(tok):
+            units += 1
+        elif tok in _UNIT_STOP or re.fullmatch(r"'?\d[\d,]*[a-z]*", tok):   # "in", "to", "1000", "1,000", "100g"
+            continue
+        else:
+            return False                                                 # a word that is not a unit: a note, not a unit
+    return units > 0
+
+
+def strip_header_parentheses(header, keep_units=True):
+    """Remove parenthesised notes from a header, keeping unit annotations when keep_units is set."""
+    def repl(m):
+        return m.group(0) if keep_units and is_unit_annotation(m.group(0)[1:-1]) else ''
+    return re.sub(r"\s+", ' ', re.sub(r"\((?:[^()]|\([^()]*\))*\)", repl, header)).strip()
 
 
 def get_type(obj, is_dtype=False):
@@ -77,13 +142,6 @@ class WikiTableParser:
         if s in [self.style_char, self.link_char]:
             return True
         return all(ord(c) < 128 or c in [self.style_char, self.nulls_char] for c in s)
-
-    def is_null(self, obj):
-        if isinstance(obj, (float, int)):
-            return isna(obj)
-        if isinstance(obj, str):
-            return obj in self.nulls_char or obj == ''
-        return False
 
     def clean_style_string(self, string):
         if isinstance(string, (float, int)) or string is None:
@@ -189,31 +247,6 @@ class WikiTableParser:
             string = string.replace(self.style_char, '')
             return self.try_cast(string.strip(f' {self.link_char}'), col)
         return string
-
-    def different_style(self, _df):
-        for col in _df.columns:
-            if _df[col].dtype == 'object':
-                if any(
-                    [
-                        re.search(f'{self.style_char}(.+){self.style_char}', k)
-                        for k in self.df[col].tolist()
-                        if k and not isinstance(k, (float, int))
-                    ]
-                ):
-                    _df[col] = _df[col].apply(self.clean_style_string)
-                    self.logger.debug(
-                        f"Transforming rows in {self.url} as it has different style"
-                    )
-                _df[col] = self.df[col].apply(
-                    lambda x: (
-                        x.replace(f'{self.link_char}', '') if isinstance(x, str) else x
-                    )
-                )
-                _df[col] = self.df[col].apply(
-                    lambda x: (
-                        x.replace(f'{self.style_char}', '') if isinstance(x, str) else x
-                    )
-                )
 
     def run(self, url, tbl_id=None, tbl_idx=None):
         def get_previous_paragraph(tbl):
@@ -435,9 +468,10 @@ class WikiTableParser:
                 )
             if self.cfg['header_manipulations']['remove_data_inside_parentheses']:
                 if re.search(r"\(.+?\)", self.clean_string(col).__str__()):
-                    cleaned_col = re.sub(
-                        r"\(.+?\)", '', self.clean_string(col).__str__()
-                    ).strip()
+                    cleaned_col = strip_header_parentheses(
+                        self.clean_string(col).__str__(),
+                        self.cfg['header_manipulations'].get('keep_unit_parentheses', True),
+                    )
                     other_cols = [c for c in self.df.columns if c != col]
                     if cleaned_col and cleaned_col not in other_cols:
                         self.logger.debug(
@@ -582,7 +616,6 @@ class WikiTableParser:
     def nulls_check(self):
         if self.df is None:
             return None
-        maximum_row_null_values = self.cfg['maximum_row_null_values']['value']
         maximum_column_null_values = self.cfg['maximum_column_null_values']['value']
 
         for col in self.df.columns:
@@ -606,22 +639,12 @@ class WikiTableParser:
                         f"Dropping {self.url} as it has more than {maximum_column_null_values} null values in column {col}"
                     )
                     self.df.drop(col, axis=1, inplace=True)
-        for row in self.df.index:
-            if self.cfg['maximum_row_null_values']['type'] == 'percent':
-                if (
-                    self.df.loc[row].isna().sum() / self.df.shape[1]
-                    > maximum_row_null_values
-                ):
-                    self.logger.error(
-                        f"Dropping {self.url} as it has more than {maximum_row_null_values} percent null values in row {row}"
-                    )
-                    self.df.drop(row, inplace=True)
-            else:
-                if self.df.loc[row].isna().sum() > maximum_row_null_values:
-                    self.logger.error(
-                        f"Dropping {self.url} as it has more than {maximum_row_null_values} null values in row {row}"
-                    )
-                    self.df.drop(row, inplace=True)
+        # Rows are entities: a row is kept even when some of its values are missing (NULL thresholds apply to
+        # columns only). Only a row with no value at all is a non-data row and is removed.
+        all_null_rows = self.df.index[self.df.isna().all(axis=1)]
+        if len(all_null_rows):
+            self.logger.debug(f"Dropping {len(all_null_rows)} all-NULL row(s) ({self.url})")
+            self.df.drop(all_null_rows, inplace=True)
 
         pass
 

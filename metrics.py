@@ -38,7 +38,7 @@ def get_metrics(model):
         try:
             popularity = record['article_metadata']['popularity']
         except:
-            b=5
+            pass
 
         num_of_cells = record['shape'][0] * record['shape'][1]
         histogram_dict['numeric_ratio'].append(numeric_ratio)

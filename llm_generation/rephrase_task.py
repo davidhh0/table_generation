@@ -133,7 +133,6 @@ def count_retrieval():
 
 
 if __name__ == "__main__":
-    import time
 
     idx = 0
     count_retrieval()

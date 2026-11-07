@@ -4,7 +4,6 @@ import time
 
 import dateutil.parser as parser
 import huggingface_hub
-from ast import literal_eval
 import  stealth_requests as  requests
 from bs4 import BeautifulSoup
 
@@ -15,9 +14,8 @@ import json
 import diskcache
 import anthropic
 import os
-from google.genai import types, Client
 from google.genai import Client
-from google.genai.types import Tool, GenerateContentConfig
+from google.genai.types import GenerateContentConfig
 from google.genai.errors import ServerError
 import git
 import dotenv
@@ -53,6 +51,7 @@ def get_claude_client():
         _claude_client = anthropic.Anthropic(api_key=key)
     return _claude_client
 
+
 # --- Batch / collect mode ---------------------------------------------------
 # When COLLECT_MODE is True, get_llm_response records cache-missing prompts into
 # COLLECTED (model -> set of stripped prompt strings) and returns None instead of
@@ -60,6 +59,12 @@ def get_claude_client():
 # per-model diskcache so a subsequent normal pass is all cache hits.
 COLLECT_MODE = False
 COLLECTED = {}
+
+# When SCORE_ONLY is True (rescore.py), get_llm_response answers from the cache
+# only -- a miss returns None (scored as wrong) and is tallied in MISSES instead
+# of triggering a live API call.
+SCORE_ONLY = False
+MISSES = {}
 
 
 # --- Output-token / reasoning caps -----------------------------------------
@@ -181,8 +186,9 @@ def get_articles_to_parse(conf, ts):
                             page_id,
                         )
                         if 'minimum_popularity' in conf and conf.get('minimum_popularity'):
-                            if conf.get('minimum_popularity') > article_metadata['popularity']:
+                            if article_metadata['popularity'] < conf.get('minimum_popularity'):
                                 print(f"Dropping article: {j['title']} as it doesn't have enough popularity")
+                                continue
                         article_title = get_revid(page_id)
                         url = f'https://en.wikipedia.org/wiki/{article_title["e_title"]}'
                         # Writing the DataFrame to CSV as it passed all checks - rules and consistency
@@ -301,7 +307,8 @@ def page_details(url, page_id):
         f"https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia.org/all-access/user/{page_title}/monthly/{two_years_ago}/{today}",
         headers=user_agent,
     ).json()
-    popularity = int(statistics.mean([value['views'] for value in popularity['items']]))
+    views = [value['views'] for value in popularity.get('items', [])]
+    popularity = int(statistics.mean(views)) if views else 0   # no page-view series -> 0 views
     return_obj = json.dumps(
         {
             'first_changed': first_changed,
@@ -432,7 +439,8 @@ def general_hf(MODEL, prompt_string, retry_count=4, max_out_tokens=None, disable
     from huggingface_hub import InferenceClient
     hf_client = InferenceClient(
         model=MODEL,
-        token=os.environ.get("hf_api")
+        token=os.environ.get("hf_api"),
+        timeout=float(os.environ["HF_TIMEOUT"]) if os.environ.get("HF_TIMEOUT") else None,   # opt-in: a silent connection otherwise hangs forever
     )
 
     # Cap visible output via the same shared max_completion_tokens the OpenAI,
@@ -460,6 +468,11 @@ def general_hf(MODEL, prompt_string, retry_count=4, max_out_tokens=None, disable
         # models that don't need it.
         create_kwargs["extra_body"] = {"chat_template_kwargs": {"enable_thinking": False}}
 
+    # Opt-in (HF_STREAM=1): stream the response so the HF router's gateway timeout
+    # (504 on long generations) doesn't fire; the concatenated content is identical.
+    if os.environ.get("HF_STREAM") == "1":
+        create_kwargs["stream"] = True
+
     try:
         completion = hf_client.chat.completions.create(
             model=MODEL,
@@ -477,11 +490,32 @@ def general_hf(MODEL, prompt_string, retry_count=4, max_out_tokens=None, disable
                 }
             ],
         )
-    except huggingface_hub.errors.HfHubHTTPError as e:
+    except Exception as e:
+        if "Timeout" in type(e).__name__ and retry_count > 0:
+            print(f"Hugging Face request timed out, retrying ({retry_count} left)")
+            return general_hf(MODEL, prompt_string, retry_count=retry_count-1, max_out_tokens=max_out_tokens, disable_thinking=disable_thinking)
+        if not isinstance(e, huggingface_hub.errors.HfHubHTTPError):
+            raise
+        resp_text = getattr(getattr(e, "response", None), "text", "")
+        # If the HF endpoint rejects max_tokens / max_completion_tokens because it exceeds model limit, clamp and retry
+        limit_match = (re.search(r'(?:max_completion_tokens|max_tokens) is limited to (\d+)', resp_text)
+                       or re.search(r'max_tokens \(current value: \d+\) must be between 0 and (\d+)', resp_text))
+        if limit_match:
+            clamped_cap = int(limit_match.group(1))
+            return general_hf(MODEL, prompt_string, retry_count=retry_count, max_out_tokens=clamped_cap, disable_thinking=disable_thinking)
+        # If the HF endpoint does not support extra_body (chat_template_kwargs), retry without it
+        if should_disable and ("chat_template_kwargs" in resp_text or "extra arguments" in resp_text):
+            return general_hf(MODEL, prompt_string, retry_count=retry_count, max_out_tokens=max_out_tokens, disable_thinking=False)
         if retry_count == 0:
             raise e
-        print(f"Hugging Face API error: {e}")
-        return general_hf(MODEL, prompt_string, retry_count=retry_count-1)
+        status_code = getattr(getattr(e, "response", None), "status_code", None)
+        print(f"Hugging Face API error (status={status_code}): {e}")
+        # On 504 Gateway Timeout or 503 Service Unavailable, back off before retrying to let the backend recover
+        if status_code in (502, 503, 504):
+            time.sleep(5 * (5 - retry_count))
+        return general_hf(MODEL, prompt_string, retry_count=retry_count-1, max_out_tokens=max_out_tokens, disable_thinking=disable_thinking)
+    if create_kwargs.get("stream"):
+        return "".join((c.choices[0].delta.content or "") for c in completion if c.choices)
     return completion.choices[0].message.content
 
 def claude(MODEL, prompt_string, context=False):
@@ -509,37 +543,6 @@ def claude(MODEL, prompt_string, context=False):
         return None
     return text
 
-
-
-def _get_llm_response(
-        prompt_string, MODEL, use_cache=True, cache=None, context=False
-):
-    prompt_string = prompt_string.strip()
-    if cache is None:
-        import git
-        working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
-        cache = diskcache.Cache(f'{working_dir}/local_dbs/cache/llm_cache.db')
-    context_key = "Context" if context else "NoContext"
-    prompt_cache_key = f"{context_key}_{MODEL}_{prompt_string}"
-
-    if use_cache and prompt_cache_key in cache and cache[prompt_cache_key] != '':
-        return cache[prompt_cache_key]
-    if use_cache and f"{context_key}_{MODEL}_\n{prompt_string}" in cache and cache[f"{context_key}_{MODEL}_\n{prompt_string}"] != '':
-        return cache[f"{context_key}_{MODEL}_\n{prompt_string}"]
-    if 'gpt' in MODEL:
-        response_str = chatgpt(MODEL, prompt_string)
-    if 'gemini' in MODEL:
-        response_str = gemini(MODEL, prompt_string, context)
-    if 'llama' in MODEL.lower():
-        response_str = general_hf(MODEL, prompt_string)
-    if 'claude' in MODEL.lower():
-        response_str = claude(MODEL, prompt_string, context)
-    if response_str is None:
-        return None
-    prompt_response = response_str.strip()
-    if use_cache:
-        cache[prompt_cache_key] = prompt_response
-    return prompt_response
 
 
 def _describe_prompt(prompt_string):
@@ -625,6 +628,10 @@ def get_llm_response(
 
 
     print(f"Cache miss... ({model}) | {_describe_prompt(prompt_string)}")
+    if SCORE_ONLY:
+        # Re-scoring from cache: never call a provider, just count what is missing.
+        MISSES[model] = MISSES.get(model, 0) + 1
+        return None
     if COLLECT_MODE:
         COLLECTED.setdefault(model, set()).add(prompt_string)
         return None

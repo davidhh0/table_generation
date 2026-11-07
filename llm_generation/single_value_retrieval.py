@@ -1,5 +1,4 @@
 import json
-from utils.utils import get_llm_response
 from prompts_generation import prompt_generation
 import random
 import os
@@ -19,9 +18,7 @@ def cell_retrieval():
             'CHOICE_2': random_two_choices[1],
             'CHOICE_3': random_two_choices[2],
         }
-    import matplotlib.pyplot as plt
     from wikiparser import WikiTableParser
-    import seaborn as sns
     import git
     import pandas as pd
     import diskcache
@@ -31,7 +28,7 @@ def cell_retrieval():
     with open('../config.yaml', 'r') as f:
         conf = yaml.load(f, Loader=yaml.FullLoader)
     key_model =  conf['title_and_key_model']
-    model = conf['llm_model']
+    model = os.environ.get("EVAL_MODEL") or conf['llm_model']
     rephrase = conf['rephrase']
     random.seed(10)
     tbl_statistics = {
@@ -96,8 +93,6 @@ def cell_retrieval():
                     continue
                 if pd.isna(real_value):
                     continue
-                if count == 416:
-                    b=5
                 three_variants = prompt_generation(
                     table_desc=table_description,
                     col=col,
@@ -111,8 +106,6 @@ def cell_retrieval():
                     url=cfg['url'],
                     rephrase=rephrase
                 )
-                if not three_variants['open_book']:
-                    b=5
                 if not rephrase:
                     single_value_scores[tbl] = three_variants
                 else:
@@ -146,7 +139,7 @@ def cell_retrieval():
 
 
     score = {
-        "closed_book": 0, "multiple_choices": 0, "open_book": 0
+        "closed_book": 0, "multiple_choices": 0, "open_book": 0, "open_book_multiple_choices": 0
     }
     for record in single_value_scores.items():
         url = record[0]
@@ -176,16 +169,16 @@ def cell_retrieval():
     if _uu.COLLECT_MODE:
         return scores_statistics
     with open("scores.csv","a") as f:
-        f.write(f"{model},Single-retrieval,N/A,N/A,closed_book,={score["closed_book"]}/{tbls_processed}\n")
-        f.write(f"{model},Single-retrieval,N/A,N/A,multiple_choices,={score["multiple_choices"]}/{tbls_processed}\n")
-        f.write(f"{model},Single-retrieval,N/A,N/A,open_book,={score["open_book"]}/{tbls_processed}\n")
+        f.write(f"{model},Single-retrieval,N/A,N/A,closed_book,={score['closed_book']}/{tbls_processed}\n")
+        f.write(f"{model},Single-retrieval,N/A,N/A,multiple_choices,={score['multiple_choices']}/{tbls_processed}\n")
+        f.write(f"{model},Single-retrieval,N/A,N/A,open_book,={score['open_book']}/{tbls_processed}\n")
+        f.write(f"{model},Single-retrieval,N/A,N/A,open_book_multiple_choices,={score['open_book_multiple_choices']}/{tbls_processed}\n")
     return scores_statistics
 
 
 
 
 if __name__ == '__main__':
-    import time
     idx = 0
     cell_retrieval()
 

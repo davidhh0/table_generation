@@ -8,54 +8,6 @@ from wikiparser import WikiTableParser
 import warnings
 warnings.filterwarnings('ignore')
 wikiparser_obj = WikiTableParser()
-def normalize_value(value, is_date=False):
-    if value != value:
-        return ''
-
-    if is_date:
-        try:
-            return date_parser.parse(value)
-        except:
-            try:
-                return pd.to_datetime(value)
-            except:
-                pass
-
-    if type(value).__module__ == 'numpy':
-        value = value.item()
-
-    if isinstance(value, str):
-        if value.startswith('-') and value.replace('-', '').replace(',', '').isdigit():
-            return int(value.replace(',', ''))
-        if value.replace(',', '').isdigit():
-            return int(value.replace(',', ''))
-        if value.startswith('=') and value.isdigit():
-            return int(value.replace('=', ''))
-        if (
-            value.startswith('-')
-            and value.replace('-', '').replace(',', '').replace('.', '').isdigit()
-        ):
-            return float(value.replace(',', ''))
-        if value.replace(',', '').replace('.', '').isdigit():
-            return float(value.replace(',', ''))
-
-        value = value.strip().lower()
-
-        if value in ('none', 'n/a', 'nan', '-'):
-            return ''
-
-        value = value.replace('&', 'and')
-
-        if value == 'united states':
-            return 'usa'
-        if value == 'united kingdom':
-            return 'uk'
-
-        value = unidecode(value)
-        value = ''.join(c for c in value if c.isalnum())
-        return value
-
-    return value
 
 
 def normalize_key(value, is_date=False):

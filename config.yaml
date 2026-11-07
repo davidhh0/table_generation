@@ -1,12 +1,12 @@
-llm_model: Qwen/Qwen3.8-2.4T-A95B
+llm_model: meta-llama/Llama-3.3-70B-Instruct
 rephrase_model: gpt-5.2-2025-12-11
 rephrase: false
 
 # Batch mode: when true, run.py uses the two-pass batch orchestrator
 # (collect prompts -> submit one batch per model -> score from cache).
 use_batch: true
-batch_poll_interval: 30
-batch_chunk_size: 80   # submit prompts in batches of this size, caching each chunk before the next
+batch_poll_interval: 90
+batch_chunk_size: 20   # submit prompts in batches of this size, caching each chunk before the next
 
 # --- OpenAI output-token / reasoning caps ---------------------------------
 # Answers are a single value or a short comma-separated list, so a small output
@@ -49,14 +49,21 @@ hf_ob_disable_thinking: false
 # soon as it completes (not at chunk end), so a kill mid-run loses at most the
 # handful of calls in flight (bounded by hf_max_workers below) regardless of
 # this value. Kept small anyway so progress ("chunk N cached") reports more often.
-hf_chunk_size: 24
+hf_chunk_size: 16
 
 # hf_max_workers: concurrent threads _hf_parallel runs against the HF inference
 # endpoint (there's no true batch API, so this is the actual parallelism, not a
 # submission-size knob). Higher = faster but more likely to trip provider rate
 # limits (general_hf's retry has no backoff, so sustained 429s degrade into a
 # slow serial crawl); lower = slower but gentler. 12 was the prior hardcoded value.
-hf_max_workers: 4
+hf_max_workers: 1
+
+# hf_consolidate_open_book: whether to bundle multiple open-book questions into
+# one prompt for Hugging Face. False by default because HF has no asynchronous
+# batch API and CloudFront enforces a strict 60s gateway timeout: bundling 15
+# questions on large tables causes 504 timeouts. Running per-prompt finishes in
+# 1-5s each without timeouts.
+hf_consolidate_open_book: false
 
 # --- Anthropic / Claude (e.g. Opus 4.8) -----------------------------------
 # max_completion_tokens above also governs the Claude `max_tokens` (visible-output
@@ -96,7 +103,8 @@ minimum_table_size:
   rows: 8
   columns: 2
 
-minimum_popularity:
+# Minimum average monthly page views (inclusive) over the last two years; a page below it is dropped.
+minimum_popularity: 1
 
 
 maximum_cell_length: 108
@@ -135,12 +143,8 @@ null_chars:
 # Whether to drop the table if the program finds a column to be removed. (Not including the columns in the `drop_columns_blacklist` list)
 drop_table_on_column_removal: false
 
-# Maximum number of NULL values allowed in a single row.
-# If a row has more than this number of NULL values, it will be considered invalid and will be dropped.
-# Example: A row with 3 NULL values will be considered invalid if this value is set to 2.
-maximum_row_null_values:
-  type: percent # Can be 'abs' or 'percent'
-  value: 0.8 # 3 NULL values in a row.
+# There is no row-level NULL threshold: rows represent entities and are kept even when some values are
+# missing (otherwise Count questions would silently under-count). Only all-NULL rows are removed.
 
 # Maximum number of NULL values allowed in a single column.
 # If a column has more than this number of NULL values, it will be considered invalid and will be dropped.
@@ -181,6 +185,9 @@ known_dates_format:
 header_manipulations:
   # Example: https://en.wikipedia.org/wiki/List_of_cities_in_Yamanashi_Prefecture_by_population - Rank (2020) -> Rank
   remove_data_inside_parentheses: true
+  # Keep parentheses that hold a unit annotation (e.g. "Budget (US$)", "Area (km2)", "Duration (min:sec)") so the
+  # unit reaches the question generator; notes such as "(2020)" or "(s)" are still removed. No LLM, header text only.
+  keep_unit_parentheses: true
   # Example: https://en.wikipedia.org/wiki/Latin_American_migration_to_the_United_Kingdom#Official_statistics_on_Latin_American-born_residents - Population (2021/22 census)[14][15][16] -> Population (2021/22 census)
   remove_data_inside_square_brackets: true
 

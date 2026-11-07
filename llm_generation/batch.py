@@ -482,7 +482,8 @@ def _hf_consolidated(model, units, poll_interval, conf):
         # same formula as the OpenAI/Anthropic/Gemini consolidators, but with a
         # larger per-question allowance and ceiling: with thinking enabled the
         # cap must cover hidden reasoning too, not just the visible answer.
-        cap = min(base_cap + 512 * len(unit["questions"]), 48000)
+        # Clamped to 16384 (Hugging Face serverless endpoint limit).
+        cap = min(base_cap + 512 * len(unit["questions"]), 16384)
         return general_hf(model, _consolidated_prompt(unit), max_out_tokens=cap,
                            disable_thinking=ob_disable_thinking)
 
@@ -589,7 +590,7 @@ def warm_cache(model, prompts, poll_interval=POLL_INTERVAL, chunk_size=CHUNK_SIZ
             consolidator = _anthropic_consolidated
         elif 'gemini' in model:
             consolidator = _gemini_consolidated
-        else:
+        elif conf.get("hf_consolidate_open_book", False):
             consolidator = _hf_consolidated
     if consolidator is not None:
         ob = [p for p in prompts if p.startswith(_OB_PREFIX)]
@@ -696,7 +697,8 @@ def _anthropic_fetch_completed(batch_id, poll_interval, label):
     Mirrors ``_fetch_completed`` (OpenAI). The batch ends regardless of per-request
     success; success/error is decided per result in the parse helpers.
     """
-    from utils.utils import claude_client
+    from utils.utils import get_claude_client
+    claude_client = get_claude_client()
     while True:
         batch = claude_client.messages.batches.retrieve(batch_id)
         if batch.processing_status == "ended":
@@ -715,7 +717,8 @@ def _anthropic_run_batch(model, kind, items, requests, poll_interval, label):
     written right after create -- so a crash mid-poll is recoverable by
     ``_drain_in_flight`` -- and removed once the batch reaches ``ended``.
     """
-    from utils.utils import claude_client
+    from utils.utils import get_claude_client
+    claude_client = get_claude_client()
     batch = claude_client.messages.batches.create(requests=requests)
     batch_id = batch.id
     with _journal() as jr:
@@ -824,7 +827,18 @@ def _parse_anthropic_consolidated(results, items):
         if block is None:
             print(f"[batch][consolidate] {result.custom_id}: no tool_use block")
             continue
-        for item in (block.input or {}).get("answers", []):
+        answers = (block.input or {}).get("answers", [])
+        if isinstance(answers, str):  # model sometimes returns the array as a (sloppy) JSON string
+            import json as _json
+            import re as _re
+            try:
+                answers = _json.loads(_re.sub(r",\s*([\]}])", r"\1", answers))
+            except ValueError:
+                print(f"[batch][consolidate] {result.custom_id}: unparseable answers string")
+                continue
+        for item in answers:
+            if not isinstance(item, dict):
+                continue
             qid = item.get("id")
             ans = item.get("answer")
             if not isinstance(qid, int) or not (1 <= qid <= len(originals)):
@@ -955,7 +969,8 @@ def _gemini_fetch_completed(job_name, poll_interval, label):
 
     Gemini has no custom_id, so callers map results back to prompts by index via
     the journaled ``items`` list -- order is what makes reattach work."""
-    from utils.utils import client as gemini_client
+    from utils.utils import get_gemini_client
+    gemini_client = get_gemini_client()
     while True:
         job = gemini_client.batches.get(name=job_name)
         state = job.state.name if hasattr(job.state, "name") else str(job.state)
@@ -986,7 +1001,8 @@ def _gemini_run_batch(model, kind, items, src, poll_interval, label):
     written right after create -- so a crash mid-poll is recoverable by
     ``_drain_in_flight`` -- and removed once the job reaches a terminal state.
     Returns ``(texts, items)`` where texts is submission-ordered."""
-    from utils.utils import client as gemini_client
+    from utils.utils import get_gemini_client
+    gemini_client = get_gemini_client()
     job = gemini_client.batches.create(model=model, src=src)
     job_name = job.name
     with _journal() as jr:
@@ -1107,7 +1123,8 @@ def _hf_parallel(model, prompts, cache=None, max_workers=12):
     global_disable = conf.get("hf_disable_thinking", False)
     ob_disable = conf.get("hf_ob_disable_thinking", global_disable)
     base_cap = conf.get("max_completion_tokens", 1024)
-    ob_cap = min(base_cap * 2, 48000) if not ob_disable else base_cap
+    # Clamped to 16384 (Hugging Face serverless endpoint limit).
+    ob_cap = min(base_cap * 2, 16384) if not ob_disable else min(base_cap, 16384)
 
     def _resolve(p):
         if p.startswith(_OB_PREFIX):
