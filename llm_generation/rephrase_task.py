@@ -2,7 +2,7 @@ import json
 import random
 import os
 import sys
-sys.path.append('/Users/david.harroch/PycharmProjects/table_generation')
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root
 from utils.utils import get_llm_response
 from prompts_generation import f1_score_sets
 from pprint import pprint

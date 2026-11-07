@@ -1,9 +1,8 @@
-# WikiFacTables (WikiFactual)
+# Clover
 
 **A clean, updatable benchmark of factual Wikipedia tables for tabular inference.**
 
-WikiFacTables (referenced in the accompanying research paper as **WikiFactual**)
-is a framework that builds a tabular-reasoning benchmark directly from **live
+**Clover** (earlier names: WikiFactual, WikiFacTables) is a framework that builds a tabular-reasoning benchmark directly from **live
 Wikipedia** rather than from a frozen data dump. It fetches structured Wikipedia
 tables, curates them into clean type-consistent relational data, enriches them with
 primary keys and descriptive titles, and automatically generates reasoning tasks
@@ -15,7 +14,7 @@ benchmarks (WTQ, WikiSQL, FeTaQA, …), where edits to Wikipedia silently turn
 correct model answers into "wrong" ones.
 
 This repository contains the reference implementation accompanying the paper
-*"WikiFactual: Benchmarking Closed-book Relational Reasoning over Always-True Wikipedia Facts."*
+*"Clover: Benchmarking Closed-book Relational Reasoning over Durable (Always-True) Wikipedia Facts."*
 
 ---
 
@@ -265,3 +264,25 @@ read it before changing behavior.
 - `quality_check/tables/` ships a curated sample of ground-truth tables so the
   quality-check harness can run offline without re-fetching from Wikipedia.
 - `legacy/` holds superseded experiments and is not part of the active pipeline.
+
+---
+
+## License
+
+The code is released under the [MIT License](LICENSE). Tables derived from
+Wikipedia (including the samples in `quality_check/tables/`) are licensed under
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+
+## Citation
+
+If you use this code or the benchmark, please cite the paper (see also
+[`CITATION.cff`](CITATION.cff)):
+
+```bibtex
+@article{harroch2026clover,
+  title  = {Clover: Benchmarking Closed-book Relational Reasoning over Durable (Always-True) Wikipedia Facts},
+  author = {Harroch, David and Glickman, Oren and Somech, Amit},
+  year   = {2026},
+  note   = {Under review}
+}
+```

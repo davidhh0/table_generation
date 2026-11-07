@@ -4,7 +4,7 @@ import time
 
 import dateutil.parser as parser
 import huggingface_hub
-import  stealth_requests as  requests
+from wikiparser import wiki_get
 from bs4 import BeautifulSoup
 
 from datetime import datetime, timedelta
@@ -93,13 +93,8 @@ def _is_openai_reasoning_model(model):
 
 
 def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
-    user_agent = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
-    }
-
-    page_title_response = requests.get(
-        f"https://en.wikipedia.org/w/api.php?action=query&prop=info&{by}={page_id}&inprop=url&format=json",
-        headers=user_agent,
+    page_title_response = wiki_get(
+        f"https://en.wikipedia.org/w/api.php?action=query&prop=info&{by}={page_id}&inprop=url&format=json"
     ).json()
     page_id = next(iter(page_title_response['query']['pages']))
     if 'missing' in page_title_response['query']['pages'][page_id.__str__()]:
@@ -115,10 +110,7 @@ def get_revid(page_id=None, by='pageids', starting=datetime(2013, 11, 1)):
         if 'None' in _continue_token:
             rev_id = None
             break
-        page_edits = requests.get(
-            page_revs + _continue_token,
-            headers=user_agent,
-        ).json()
+        page_edits = wiki_get(page_revs + _continue_token).json()
         revisions = page_edits['query']['pages'][page_id.__str__()]['revisions']
         if parser.parse(revisions[0]['timestamp']).timestamp() < starting.timestamp():
             rev_id = revisions[0]['revid']
@@ -160,6 +152,8 @@ def get_articles_to_parse(conf, ts):
     from wikiparser import WikiTableParser
     fetched_tbls = 0
     working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
+    os.makedirs(f'{working_dir}/tbls', exist_ok=True)
+    os.makedirs(f'{working_dir}/local_dbs', exist_ok=True)
     wiki_obj = WikiTableParser()
     basic_url = "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=insource:%22wikitable%22%20intitle:{TITLE}*&format=json&srlimit=500&sroffset={OFFSET}"
     tbl_metadata_db = diskcache.Cache(f'{working_dir}/local_dbs/tbl_metadata.db')
@@ -168,9 +162,7 @@ def get_articles_to_parse(conf, ts):
             string.ascii_lowercase
         )
         offset_rand = random.randint(0, 9500)
-        response = requests.get(
-            basic_url.format(TITLE=title, OFFSET=offset_rand)
-        ).json()
+        response = wiki_get(basic_url.format(TITLE=title, OFFSET=offset_rand)).json()
         for j in [k for k in response["query"]["search"] if k['title'].isascii()]:
             try:
                 df, idx, msg, dates, paragraph = wiki_obj.run(
@@ -181,10 +173,10 @@ def get_articles_to_parse(conf, ts):
                         f'https://en.wikipedia.org/wiki/{j["title"]}', idx
                     )
                     if is_tbl_consistent == 'match':
-                        article_metadata = page_details(
+                        article_metadata = json.loads(page_details(
                             f'https://en.wikipedia.org/wiki/{j["title"]}',
                             page_id,
-                        )
+                        ))
                         if 'minimum_popularity' in conf and conf.get('minimum_popularity'):
                             if article_metadata['popularity'] < conf.get('minimum_popularity'):
                                 print(f"Dropping article: {j['title']} as it doesn't have enough popularity")
@@ -192,7 +184,7 @@ def get_articles_to_parse(conf, ts):
                         article_title = get_revid(page_id)
                         url = f'https://en.wikipedia.org/wiki/{article_title["e_title"]}'
                         # Writing the DataFrame to CSV as it passed all checks - rules and consistency
-                        df.to_csv(f'tbls/{page_id}_{idx}.csv', index=False)
+                        df.to_csv(f'{working_dir}/tbls/{page_id}_{idx}.csv', index=False)
                         tbl_details = {
                             'url': url,
                             'page_id': page_id,
@@ -218,7 +210,8 @@ def get_articles_to_parse(conf, ts):
                         if fetched_tbls == conf['run_tables_to_fetch']:
                             return
 
-            except:
+            except Exception as e:
+                print(f"Skipping {j['title']}: {type(e).__name__}: {e}")
                 continue
 
 
@@ -233,16 +226,12 @@ def is_consistent(url, tbl_idx, years_ago=1):
         print('No old page for:', url)
         return 'noOldPage', None, None
     try:
-        html_current = requests.get(url, headers={
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
-        })
+        html_current = wiki_get(url)
         page_content = BeautifulSoup(html_current.text, 'html.parser')
         current_tbls = page_content.select('table[class*=wikitable]')[tbl_idx]
         current_df = read_html(StringIO(current_tbls.__str__()))[0]
 
-        html_old = requests.get(previous_id['url'], headers={
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
-        })
+        html_old = wiki_get(previous_id['url'])
         page_content = BeautifulSoup(html_old.text, 'html.parser')
         old_tbls = page_content.select('table[class*=wikitable]')[tbl_idx]
         old_df = read_html(StringIO(old_tbls.__str__()))[0]
@@ -254,6 +243,8 @@ def is_consistent(url, tbl_idx, years_ago=1):
         return 'Error_parsing', None, None
     if current_df.columns.tolist() != old_df.columns.tolist():
         return 'misMatchHeaders', None, None
+    if current_df.shape != old_df.shape:   # rows added or removed (zip below would only compare the overlap)
+        return 'misMatchShape', None, None
     for idx, (old, new) in enumerate(zip(old_df.to_numpy(), current_df.to_numpy())):
         if not (old.astype(str) == new.astype(str)).all():
             if False in list(old == new):
@@ -289,12 +280,8 @@ def page_details(url, page_id):
     from datetime import datetime, timedelta
 
     page_title = url.split('/')[-1]
-    user_agent = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
-    }
-    page_edits = requests.get(
-        f"https://en.wikipedia.org/w/api.php?format=json&action=query&titles={page_title}&prop=revisions&rvprop=ids|timestamp|size&rvlimit=max",
-        headers=user_agent,
+    page_edits = wiki_get(
+        f"https://en.wikipedia.org/w/api.php?format=json&action=query&titles={page_title}&prop=revisions&rvprop=ids|timestamp|size&rvlimit=max"
     ).json()
     first_changed = min(
         page_edits['query']['pages'][page_id]['revisions'],
@@ -303,9 +290,8 @@ def page_details(url, page_id):
     num_of_changes = len(page_edits['query']['pages'][page_id]['revisions'])
     today = datetime.now().date().strftime('%Y%m%d')
     two_years_ago = (datetime.now() - timedelta(days=730)).date().strftime('%Y%m%d')
-    popularity = requests.get(
-        f"https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia.org/all-access/user/{page_title}/monthly/{two_years_ago}/{today}",
-        headers=user_agent,
+    popularity = wiki_get(
+        f"https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia.org/all-access/user/{page_title}/monthly/{two_years_ago}/{today}"
     ).json()
     views = [value['views'] for value in popularity.get('items', [])]
     popularity = int(statistics.mean(views)) if views else 0   # no page-view series -> 0 views

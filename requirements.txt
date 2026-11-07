@@ -22,6 +22,7 @@ idna==3.11
 jiter==0.11.1
 kiwisolver==1.4.9
 matplotlib==3.10.7
+seaborn==0.13.2
 numpy==2.3.4
 openai==2.7.1
 packaging==25.0
@@ -53,3 +54,4 @@ websockets==15.0.1
 curl_cffi==0.15.0
 python-dotenv==1.2.2
 stealth-requests==2.0.6
+pytest==9.2.0

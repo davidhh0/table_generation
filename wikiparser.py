@@ -6,9 +6,25 @@ import re
 from pandas import read_html, MultiIndex, DataFrame, isna, to_numeric, read_csv
 from collections import Counter
 from datetime import datetime
+import time
 import numpy as np
 
 unicode_dict = {'\xa0': ' '}
+
+# Wikimedia asks automated clients for a descriptive User-Agent (https://w.wiki/4wJS).
+WIKI_HEADERS = {'User-Agent': 'CloverBenchmark/1.0 (research; https://github.com/davidhh0/table_generation)'}
+
+
+def wiki_get(url, retries=6):
+    """GET a Wikipedia / Wikimedia URL, waiting and retrying on rate limits (429) and server errors (5xx)."""
+    for attempt in range(retries):
+        resp = requests.get(url, headers=WIKI_HEADERS)
+        if resp.status_code != 429 and resp.status_code < 500:
+            return resp
+        retry_after = resp.headers.get('Retry-After', '')
+        time.sleep(int(retry_after) if retry_after.isdigit() else min(2 ** attempt, 60))
+    resp.raise_for_status()
+    return resp
 
 
 # ---- unit annotations in headers -------------------------------------------------------------------------------
@@ -268,7 +284,7 @@ class WikiTableParser:
                 tbls, key=lambda tbl: tbl['df'].count(axis=1).sum(), reverse=True
             )
 
-        page: StealthResponse = requests.get(url)
+        page: StealthResponse = wiki_get(url)
         page_content = page.soup()
         tbls = page_content.select('table[class*=wikitable]')
         self.date_cols.clear()
@@ -293,14 +309,14 @@ class WikiTableParser:
             ]
         except Exception as e:
             self.logger.error(f"Error reading tables from {url}: {str(e)}")
-            return None, None, 'general_error', None
+            return None, None, 'general_error', None, None
 
         if tbl_idx is not None:
             if len(tbls) < tbl_idx or tbl_idx <= 0:
                 self.logger.error(
                     f"Table index {tbl_idx} out of range for {url}. Total tables: {len(tbls)}"
                 )
-                return None, None, 'general_error', None
+                return None, None, 'general_error', None, None
             fetched_tbls = [tbls[tbl_idx - 1]]
         else:
             fetched_tbls = get_table_from_html([k for k in tbls])
@@ -418,6 +434,13 @@ class WikiTableParser:
             self.df = fetched_tbl['df']
             self.url = url
             self.clean_df()
+            # Cleaning drops divider / all-NULL rows and columns, so the size floor is checked again.
+            if self.df is not None and (self.df.shape[0] < min_rows or self.df.shape[1] < min_cols):
+                self.logger.error(
+                    f"Dropping {url} as it has less than {min_rows} rows or {min_cols} columns after cleaning"
+                )
+                self.error_msg = f"less than {min_rows} rows or {min_cols} columns"
+                self.df = None
             if self.df is not None:
                 self.logger.ok(
                     f'Passed: {url} ({[f"{k}:{self.df[k].dtype}" for k in self.df.columns]}) [{fetched_tbl["df"].shape}] ({idx})'

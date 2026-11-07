@@ -90,7 +90,10 @@ def test_distractors():
 # ---------- real tables ----------
 @pytest.fixture(scope="module")
 def real():
-    return list(lrn.iter_numeric_list_tables())
+    rows = list(lrn.iter_numeric_list_tables())
+    if not rows:
+        pytest.skip("needs the local table data (local_dbs/ and tbls/), which is not in the repo")
+    return rows
 
 
 def test_enough_real_questions(real):

@@ -4,7 +4,7 @@ import yaml
 
 def main():
     parser = argparse.ArgumentParser(
-        description="WikiFacTables benchmark construction and evaluation"
+        description="Clover benchmark construction and evaluation"
     )
     parser.add_argument(
         "--mode",
