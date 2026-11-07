@@ -11,7 +11,9 @@ Run from llm_generation/:
 import os
 import sys
 
-import utils.utils as U
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root
+
+import utils.utils as U  # noqa: E402
 from count import count_retrieval
 from min import min_retrieval
 from max import max_retrieval

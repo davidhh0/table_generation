@@ -67,8 +67,8 @@ the CSV is sent once per table instead of once per question.
 
 Each task/test pair is scored against deterministic ground truth (exact match,
 or F1 for List Retrieval). An optional **natural-language rephrasing** step
-(`rephrase_task.py`, `prompts.yaml: rephrasing`) tests robustness to
-conversational phrasing.
+(`rephrase: true` in `config.yaml`, prompt `prompts.yaml: rephrasing`) rewrites
+each question in conversational phrasing.
 
 ---
 
@@ -81,12 +81,11 @@ conversational phrasing.
 ├── wikiparser.py              # Wikipedia HTML table fetching + cleaning
 ├── llm_tbl_generate.py        # LLM primary-key + title metadata extraction
 ├── compared_tbls.py           # Table comparison / scoring library
-├── metrics.py                 # Analysis & matplotlib plots over results
 ├── requirements.txt
 ├── utils/
 │   └── utils.py               # Multi-provider LLM dispatch, caching, MediaWiki API
 ├── llm_generation/            # Task generation + EVALUATION
-│   ├── run.py                 # Entry point (dispatches to batch or legacy flow)
+│   ├── run.py                 # Entry point (dispatches to batch or direct flow)
 │   ├── run_batch.py           # Two-pass batch orchestrator (collect → warm → score)
 │   ├── batch.py               # Provider Batch-API submission & polling
 │   ├── prompts_generation.py  # Builds CB / MC / OB prompts for every task
@@ -103,15 +102,13 @@ conversational phrasing.
 │   ├── new_tables_tasks.py    # Single K=1 and Max/Min-with-ties questions on unused tables
 │   ├── run_new_tables.py      # Collect → warm → score for those questions
 │   ├── rescore.py             # Re-score every model from its cache (no provider calls)
-│   ├── rephrase_task.py       # Natural-language rephrasing evaluation
-│   ├── test_list_numeric.py   # Offline pytest suite for the numerical List builder
-│   └── live_check_*.py        # Manual smoke tests that make LIVE API calls (not pytest)
+│   └── test_list_numeric.py   # Offline pytest suite for the numerical List builder
 ├── results/new_tables/        # Question set + per-model results for the new-table tasks
 ├── quality_check/             # Curation-quality validation harness
 │   ├── benchmark_quality_check.py
 │   ├── benchmark_tbls.json    # Registry of curated sample tables
 │   └── tables/                # ~100 curated ground-truth CSVs (sample data)
-└── legacy/                    # Archived / superseded code (see legacy/README.md)
+└── test_wikiparser_rules.py   # Offline tests of the table-cleaning rules
 ```
 
 Runtime artifacts (the diskcache databases under `local_dbs/`, fetched tables,
@@ -200,12 +197,7 @@ python llm_generation/run.py
   cache via each provider's Batch API → **score** from cache.
 - With `use_batch: false`, it runs the direct single-call flow across all tasks.
 
-Results are appended to `scores.csv` / `scores_statistics.csv`. Use
-`metrics.py` to aggregate and plot them:
-
-```bash
-python metrics.py
-```
+Results are appended to `scores.csv` / `scores_statistics.csv`.
 
 To evaluate a model other than `llm_model`, set `EVAL_MODEL` (read by every task
 module and the numerical-List runner), e.g. `EVAL_MODEL=gpt-5.2-2025-12-11 python llm_generation/run.py`.
@@ -263,7 +255,6 @@ read it before changing behavior.
   when requested, allowing offline operations and single-provider runs without dummy keys.
 - `quality_check/tables/` ships a curated sample of ground-truth tables so the
   quality-check harness can run offline without re-fetching from Wikipedia.
-- `legacy/` holds superseded experiments and is not part of the active pipeline.
 
 ---
 
