@@ -1,9 +1,6 @@
 import json
 
 from llm_generation.prompts_generation import (
-    prompt_generation,
-    prompt_generation_count_categorical,
-    prompt_generation_count_numerical,
     prompt_generation_max_categorical,
     prompt_generation_max_numerical
 )
@@ -40,7 +37,7 @@ def max_retrieval():
     with open("../config.yaml", "r") as f:
         conf = yaml.load(f, Loader=yaml.FullLoader)
     key_model = conf["title_and_key_model"]
-    model = conf["llm_model"]
+    model = os.environ.get("EVAL_MODEL") or conf["llm_model"]
     rephrase = conf["rephrase"]
     working_dir = git.Repo(".", search_parent_directories=True).working_tree_dir
     parser_ins = WikiTableParser()
@@ -220,15 +217,15 @@ def max_retrieval():
 
     single_value_list = []
     categorical_score = {
-        "categorical_equals": {"closed_book": 0, "multiple_choices": 0, "open_book": 0},
-        "categorical_not_equals": {"closed_book": 0, "multiple_choices": 0, "open_book": 0},
-        "categorical_in": {"closed_book": 0, "multiple_choices": 0, "open_book": 0},
+        "categorical_equals": {"closed_book": 0, "multiple_choices": 0, "open_book": 0, "open_book_multiple_choices": 0},
+        "categorical_not_equals": {"closed_book": 0, "multiple_choices": 0, "open_book": 0, "open_book_multiple_choices": 0},
+        "categorical_in": {"closed_book": 0, "multiple_choices": 0, "open_book": 0, "open_book_multiple_choices": 0},
     }
     numerical_score = {
-        'numerical_greater_than': {"closed_book": 0, "multiple_choices": 0, "open_book": 0},
-        'numerical_less_than': {"closed_book": 0, "multiple_choices": 0, "open_book": 0},
-        'numerical_between': {"closed_book": 0, "multiple_choices": 0, "open_book": 0},
-        'numerical_equals': {"closed_book": 0, "multiple_choices": 0, "open_book": 0},
+        'numerical_greater_than': {"closed_book": 0, "multiple_choices": 0, "open_book": 0, "open_book_multiple_choices": 0},
+        'numerical_less_than': {"closed_book": 0, "multiple_choices": 0, "open_book": 0, "open_book_multiple_choices": 0},
+        'numerical_between': {"closed_book": 0, "multiple_choices": 0, "open_book": 0, "open_book_multiple_choices": 0},
+        'numerical_equals': {"closed_book": 0, "multiple_choices": 0, "open_book": 0, "open_book_multiple_choices": 0},
     }
     categorical_count = 0
     numerical_count = 0
@@ -332,7 +329,6 @@ def max_retrieval():
 
 
 if __name__ == "__main__":
-    import time
 
     idx = 0
     max_retrieval()

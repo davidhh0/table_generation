@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this code or benchmark, please cite the paper below."
+title: "Clover: benchmark construction and evaluation code"
+type: software
+license: MIT
+repository-code: "https://github.com/davidhh0/table_generation"
+authors:
+  - family-names: Harroch
+    given-names: David
+    affiliation: Bar-Ilan University
+  - family-names: Glickman
+    given-names: Oren
+    affiliation: Bar-Ilan University
+  - family-names: Somech
+    given-names: Amit
+    affiliation: Bar-Ilan University
+preferred-citation:
+  type: article
+  title: "Clover: Benchmarking Closed-book Relational Reasoning over Durable (Always-True) Wikipedia Facts"
+  authors:
+    - family-names: Harroch
+      given-names: David
+    - family-names: Glickman
+      given-names: Oren
+    - family-names: Somech
+      given-names: Amit
+  year: 2026
+  notes: "Under review."

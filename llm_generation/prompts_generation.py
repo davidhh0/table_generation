@@ -57,6 +57,13 @@ def _wrapper_key(base_key, model):
     return f"{base_key}{_variant_suffix(model)}"
 
 
+def _ob_key(base_key, model):
+    """Open-book wrapper key. Only the no-SQL tier has open-book variants (Llama answers
+    numerical List open-book prompts with a SQL / tool call); every other model, the
+    anti-refusal tier included, keeps the base wrapper."""
+    return f"{base_key}_no_sql" if _is_no_sql_model(model) else base_key
+
+
 def _pc_key(subkey, model):
     """Per-URL prompts_cache sub-key. For models on a variant tier the closed-book /
     list-MC prompts differ, so they live under a SEPARATE ``*_anti_refusal`` /
@@ -265,8 +272,6 @@ def prompt_generation(
                 "CHOICE_3": str(cached_choices[2]),
             }
         unique_choices = set(_df[_desired_column].dropna().tolist()).difference({_answer_value})
-        if any([isna(k) for k in unique_choices]):
-            b=5
         sorted_choices = sorted(list(unique_choices))
         random_two_choices = random.sample(sorted_choices, 2) + [_answer_value]
 
@@ -379,11 +384,40 @@ def prompt_generation(
         model=model,
     )
     open_book_response = parser_ins.try_cast(_open_book_raw)
+
+    # Open book multiple choices
+    open_book_multiple_choices_prompt = (
+        prompts["open_book_multiple_choice_wrapper"]
+        .format(
+            TABLE_TITLE=table_desc,
+            QUESTION=based_prompt,
+            INSTRUCTION=prompts[instruction],
+            FULL_CSV_TABLE=df.to_csv(index=False),
+            **get_choices(_df=df, _answer_value=real_value, _desired_column=col),
+        )
+        .strip()
+    )
+
+    if 'single_value_open_book_multiple_choices' in prompt_cache:
+        open_book_multiple_choices_prompt = prompt_cache['single_value_open_book_multiple_choices']['q']
+        real_value = prompt_cache['single_value_open_book_multiple_choices']['a']
+    else:
+        print("Caching prompt")
+        prompt_cache['single_value_open_book_multiple_choices'] = {'q': open_book_multiple_choices_prompt, 'a': real_value}
+
+    _open_book_mc_raw = get_llm_response(
+        prompt_string=open_book_multiple_choices_prompt,
+        model=model,
+        answer=real_value,
+    )
+    open_book_mc_response = parser_ins.try_cast(_open_book_mc_raw)
+
     prompts_cache[url] = prompt_cache
     return {
         "closed_book": _match_exact(_closed_book_raw, closed_book_response, real_value, parser_ins),
         "multiple_choices": _match_exact(_multiple_choices_raw, multiple_choices_response, real_value, parser_ins),
         "open_book": _match_exact(_open_book_raw, open_book_response, real_value, parser_ins),
+        "open_book_multiple_choices": _match_exact(_open_book_mc_raw, open_book_mc_response, real_value, parser_ins),
     }
 
 
@@ -552,11 +586,118 @@ def prompt_generation_list_categorical(
             ),
             parser_ins,
         )
+
+        # Open book multiple choices
+        open_book_multiple_choices_prompt = (
+            prompts["open_book_list_retrieval_multiple_choices_wrapper"]
+            .format(
+                TABLE_TITLE=table_desc,
+                QUESTION=_based_prompt,
+                INSTRUCTION=prompts[instruction],
+                FULL_CSV_TABLE=df.to_csv(index=False),
+                **get_choices(_answer_value=answer_value, _df=df, _pk_column=pk_column),
+            )
+            .strip()
+        )
+
+        if f'list_categorical_{bd}_open_book_multiple_choices' in prompt_cache:
+            open_book_multiple_choices_prompt = prompt_cache[f'list_categorical_{bd}_open_book_multiple_choices']['q']
+            answer_value = prompt_cache[f'list_categorical_{bd}_open_book_multiple_choices']['a']
+        else:
+            print("Caching prompt")
+            prompt_cache[f'list_categorical_{bd}_open_book_multiple_choices'] = {'q': open_book_multiple_choices_prompt, 'a': answer_value}
+
+        open_book_mc_response = _parse_list_response(
+            get_llm_response(
+                prompt_string=open_book_multiple_choices_prompt,
+                model=model,
+                answer=answer_value,
+            ),
+            parser_ins,
+        )
+
         response_dict[bd] = {
             "closed_book": f1_score_sets(answer_value, closed_book_response)[-1],
             "multiple_choices": f1_score_sets(answer_value, multiple_choices_response)[-1],
             "open_book": f1_score_sets(answer_value, open_book_response)[-1],
+            "open_book_multiple_choices": f1_score_sets(answer_value, open_book_mc_response)[-1],
         }
+
+    prompts_cache[url] = prompt_cache
+    return response_dict
+
+
+def prompt_generation_list_numerical(
+        table_desc,
+        col,
+        df,
+        parser_ins,
+        model,
+        instruction,
+        pk_column,
+        url,
+        variants,
+):
+    """Numerical-constraint List Retrieval (=, >=, <=, between); templated question
+    (no LLM rephrasing). ``variants`` comes from list_numeric.build_list_numeric:
+    {bd: {'format_args': {...}, 'answer': [...]}}. Returns {bd: {setting: F1}} and, for
+    inspection, nothing else -- scoring is identical to the categorical List task."""
+    try:
+        from llm_generation import list_numeric as _ln
+    except ImportError:
+        import list_numeric as _ln
+
+    working_dir = git.Repo(".", search_parent_directories=True).working_tree_dir
+    with open(f"{working_dir}/llm_generation/prompts.yaml", "r") as f:
+        prompts = yaml.safe_load(f)
+    based_prompt = prompts["list_value"].format(KEY_COLUMN=pk_column).strip()
+    prompt_cache = prompts_cache.get(url, {})
+    response_dict = {}
+
+    for bd, spec in variants.items():
+        answer_value = spec["answer"]
+        _based_prompt = (
+            based_prompt + " "
+            + prompts[bd].format(COLUMN=col, COMPARISON_COLUMN=col, **spec["format_args"]).strip()
+        )
+
+        # Distractors: persisted so every model sees the identical option list.
+        ckey = f"{url}_{col}_{bd}_list_numerical"
+        if ckey in choices_cache:
+            choices = choices_cache[ckey]
+        else:
+            choices = _ln.make_distractors(df, pk_column, answer_value, random.Random(ckey))
+            choices_cache[ckey] = choices
+        _log_lr_kn(url=url, bd=bd, K=len(answer_value), N=len(choices))
+        _record_lr_question(url=url, bd=bd, answer_value=answer_value, options=choices)
+
+        prompts_by_setting = {
+            "closed_book": prompts[_wrapper_key("closed_book_wrapper", model)].format(
+                TABLE_TITLE=table_desc, QUESTION=_based_prompt,
+                INSTRUCTION=prompts[instruction], PRIMARY_KEY_COLUMN=pk_column).strip(),
+            "multiple_choices": prompts[_wrapper_key("list_retrieval_multiple_choices_wrapper", model)].format(
+                TABLE_TITLE=table_desc, QUESTION=_based_prompt,
+                INSTRUCTION=prompts[instruction], CHOICES_LIST=choices,
+                PRIMARY_KEY_COLUMN=pk_column).strip(),
+            "open_book": prompts[_ob_key("open_book_wrapper", model)].format(
+                TABLE_TITLE=table_desc, QUESTION=_based_prompt,
+                INSTRUCTION=prompts[instruction], FULL_CSV_TABLE=df.to_csv(index=False)),
+            "open_book_multiple_choices": prompts[_ob_key("open_book_list_retrieval_multiple_choices_wrapper", model)].format(
+                TABLE_TITLE=table_desc, QUESTION=_based_prompt,
+                INSTRUCTION=prompts[instruction], FULL_CSV_TABLE=df.to_csv(index=False),
+                CHOICES_LIST=choices).strip(),
+        }
+        scores = {}
+        for setting, prompt in prompts_by_setting.items():
+            pk = f"list_numerical_{col}_{bd}_{setting}"
+            if setting in ("closed_book", "multiple_choices") or _is_no_sql_model(model):
+                pk = _pc_key(pk, model)
+            prompt_cache[pk] = {"q": prompt, "a": answer_value}
+            raw = get_llm_response(
+                prompt_string=prompt, model=model,
+            )
+            scores[setting] = f1_score_sets(answer_value, _parse_list_response(raw, parser_ins))[-1]
+        response_dict[bd] = scores
 
     prompts_cache[url] = prompt_cache
     return response_dict
@@ -720,12 +861,39 @@ def prompt_generation_count_categorical(
             )
             open_book_response = parser_ins.try_cast(_open_book_raw)
 
+            # Open book multiple choices
+            open_book_multiple_choices_prompt = (
+                prompts["open_book_multiple_choice_wrapper"]
+                .format(
+                    TABLE_TITLE=table_desc,
+                    QUESTION=_based_prompt,
+                    INSTRUCTION=prompts[instruction],
+                    FULL_CSV_TABLE=df.to_csv(index=False),
+                    **get_choices(_answer_value=answer_value),
+                )
+                .strip()
+            )
+
+            if f'count_categorical_{bd}_open_book_multiple_choices' in prompt_cache:
+                open_book_multiple_choices_prompt = prompt_cache[f'count_categorical_{bd}_open_book_multiple_choices']['q']
+                answer_value = prompt_cache[f'count_categorical_{bd}_open_book_multiple_choices']['a']
+            else:
+                print("Caching prompt")
+                prompt_cache[f'count_categorical_{bd}_open_book_multiple_choices'] = {'q': open_book_multiple_choices_prompt, 'a': answer_value}
+
+            _open_book_mc_raw = get_llm_response(
+                prompt_string=open_book_multiple_choices_prompt,
+                model=model,
+                answer=answer_value,
+            )
+            open_book_mc_response = parser_ins.try_cast(_open_book_mc_raw)
 
         if not rephrase:
             response_dict[bd] = {
                 "closed_book": _match_exact(_closed_book_raw, closed_book_response, answer_value, parser_ins),
                 "multiple_choices": _match_exact(_multiple_choices_raw, multiple_choices_response, answer_value, parser_ins),
                 "open_book": _match_exact(_open_book_raw, open_book_response, answer_value, parser_ins),
+                "open_book_multiple_choices": _match_exact(_open_book_mc_raw, open_book_mc_response, answer_value, parser_ins),
             }
         else:
             response_dict[bd] = {
@@ -909,11 +1077,39 @@ def prompt_generation_count_numerical(
             )
             open_book_response = parser_ins.try_cast(_open_book_raw)
 
+            # Open book multiple choices
+            open_book_multiple_choices_prompt = (
+                prompts["open_book_multiple_choice_wrapper"]
+                .format(
+                    TABLE_TITLE=table_desc,
+                    QUESTION=_based_prompt,
+                    INSTRUCTION=prompts[instruction],
+                    FULL_CSV_TABLE=df.to_csv(index=True),
+                    **get_choices(_answer_value=answer_value),
+                )
+                .strip()
+            )
+
+            if f'count_numerical_{bd}_open_book_multiple_choices' in prompt_cache:
+                open_book_multiple_choices_prompt = prompt_cache[f'count_numerical_{bd}_open_book_multiple_choices']['q']
+                answer_value = prompt_cache[f'count_numerical_{bd}_open_book_multiple_choices']['a']
+            else:
+                print("Caching prompt")
+                prompt_cache[f'count_numerical_{bd}_open_book_multiple_choices'] = {'q': open_book_multiple_choices_prompt, 'a': answer_value}
+
+            _open_book_mc_raw = get_llm_response(
+                prompt_string=open_book_multiple_choices_prompt,
+                model=model,
+                answer=answer_value,
+            )
+            open_book_mc_response = parser_ins.try_cast(_open_book_mc_raw)
+
         if not rephrase:
             response_dict[bd] = {
                 "closed_book": _match_exact(_closed_book_raw, closed_book_response, answer_value, parser_ins),
                 "multiple_choices": _match_exact(_multiple_choices_raw, multiple_choices_response, answer_value, parser_ins),
                 "open_book": _match_exact(_open_book_raw, open_book_response, answer_value, parser_ins),
+                "open_book_multiple_choices": _match_exact(_open_book_mc_raw, open_book_mc_response, answer_value, parser_ins),
             }
         else:
             response_dict[bd] = {
@@ -999,13 +1195,13 @@ def prompt_generation_max_categorical(
         if bd == "categorical_equals":
             answer_value = real_value_1
         elif bd == "categorical_not_equals":
-            max_val = df[df[categorical_col] != cat_col_value_1][comparable_col].max()
-            answer_value = df[df[comparable_col] == max_val][key_column].tolist()
+            _sub = df[df[categorical_col] != cat_col_value_1]
+            max_val = _sub[comparable_col].max()
+            answer_value = _sub[_sub[comparable_col] == max_val][key_column].tolist()
         elif bd == "categorical_in":
-            max_val = df[df[categorical_col].isin([cat_col_value_1, cat_col_value_2])][
-                comparable_col
-            ].max()
-            answer_value = df[df[comparable_col] == max_val][key_column].tolist()
+            _sub = df[df[categorical_col].isin([cat_col_value_1, cat_col_value_2])]
+            max_val = _sub[comparable_col].max()
+            answer_value = _sub[_sub[comparable_col] == max_val][key_column].tolist()
         if answer_value == []:
             continue
         # Closed book
@@ -1104,11 +1300,42 @@ def prompt_generation_max_categorical(
             model=model,
         )
         open_book_response = parser_ins.try_cast(_open_book_raw)
+
+        # Open book multiple choices
+        open_book_multiple_choices_prompt = (
+            prompts["open_book_multiple_choice_wrapper"]
+            .format(
+                TABLE_TITLE=table_desc,
+                QUESTION=_based_prompt,
+                INSTRUCTION=prompts[instruction],
+                FULL_CSV_TABLE=df.to_csv(index=False),
+                **get_choices(
+                    _answer_value=answer_value, _desired_column=key_column, _df=df
+                ),
+            )
+            .strip()
+        )
+
+        if f'max_categorical_{bd}_open_book_multiple_choices' in prompt_cache:
+            open_book_multiple_choices_prompt = prompt_cache[f'max_categorical_{bd}_open_book_multiple_choices']['q']
+            answer_value = prompt_cache[f'max_categorical_{bd}_open_book_multiple_choices']['a']
+        else:
+            print("Caching prompt")
+            prompt_cache[f'max_categorical_{bd}_open_book_multiple_choices'] = {'q': open_book_multiple_choices_prompt, 'a': answer_value}
+
+        _open_book_mc_raw = get_llm_response(
+            prompt_string=open_book_multiple_choices_prompt,
+            model=model,
+            answer=answer_value,
+        )
+        open_book_mc_response = parser_ins.try_cast(_open_book_mc_raw)
+
         if not rephrase:
             response_dict[bd] = {
                 "closed_book": _match_extreme(_closed_book_raw, closed_book_response, answer_value, parser_ins),
                 "multiple_choices": _match_extreme(_multiple_choices_raw, multiple_choices_response, answer_value, parser_ins),
                 "open_book": _match_extreme(_open_book_raw, open_book_response, answer_value, parser_ins),
+                "open_book_multiple_choices": _match_extreme(_open_book_mc_raw, open_book_mc_response, answer_value, parser_ins),
             }
         else:
             response_dict[bd] = {
@@ -1291,10 +1518,39 @@ def prompt_generation_max_numerical(
             model=model,
         )
         open_book_response = parser_ins.try_cast(_open_book_raw)
+
+        # Open book multiple choices
+        open_book_multiple_choices_prompt = (
+            prompts["open_book_multiple_choice_wrapper"]
+            .format(
+                TABLE_TITLE=table_desc,
+                QUESTION=_based_prompt,
+                INSTRUCTION=prompts[instruction],
+                FULL_CSV_TABLE=df.to_csv(index=True),
+                **get_choices(_answer_value=answer_value, _df=df, _desired_column=pk_column),
+            )
+            .strip()
+        )
+
+        if f'max_numerical_{bd}_open_book_multiple_choices' in prompt_cache:
+            open_book_multiple_choices_prompt = prompt_cache[f'max_numerical_{bd}_open_book_multiple_choices']['q']
+            answer_value = prompt_cache[f'max_numerical_{bd}_open_book_multiple_choices']['a']
+        else:
+            print("Caching prompt")
+            prompt_cache[f'max_numerical_{bd}_open_book_multiple_choices'] = {'q': open_book_multiple_choices_prompt, 'a': answer_value}
+
+        _open_book_mc_raw = get_llm_response(
+            prompt_string=open_book_multiple_choices_prompt,
+            model=model,
+            answer=answer_value,
+        )
+        open_book_mc_response = parser_ins.try_cast(_open_book_mc_raw)
+
         response_dict[bd] = {
             "closed_book": _match_extreme(_closed_book_raw, closed_book_response, answer_value, parser_ins),
             "multiple_choices": _match_extreme(_multiple_choices_raw, multiple_choices_response, answer_value, parser_ins),
             "open_book": _match_extreme(_open_book_raw, open_book_response, answer_value, parser_ins),
+            "open_book_multiple_choices": _match_extreme(_open_book_mc_raw, open_book_mc_response, answer_value, parser_ins),
         }
 
     prompts_cache[url] = prompt_cache
@@ -1378,15 +1634,13 @@ rephrase=False
         if bd == "categorical_equals":
             answer_value = real_value_1
         elif bd == "categorical_not_equals":
-            min_val = df[df[categorical_col] != cat_col_value_1][comparable_col].min()
-            answer_value = df[df[comparable_col] == min_val][key_column].tolist()
+            _sub = df[df[categorical_col] != cat_col_value_1]
+            min_val = _sub[comparable_col].min()
+            answer_value = _sub[_sub[comparable_col] == min_val][key_column].tolist()
         elif bd == "categorical_in":
-            min_val = df[df[categorical_col].isin([cat_col_value_1, cat_col_value_2])][
-                comparable_col
-            ].min()
-            answer_value = df[df[comparable_col] == min_val][key_column].tolist()
-        if answer_value == []:
-            b = 5
+            _sub = df[df[categorical_col].isin([cat_col_value_1, cat_col_value_2])]
+            min_val = _sub[comparable_col].min()
+            answer_value = _sub[_sub[comparable_col] == min_val][key_column].tolist()
         # Closed book
         closed_book_prompt = (
             prompts[_wrapper_key("closed_book_wrapper", model)]
@@ -1477,10 +1731,41 @@ rephrase=False
             model=model,
         )
         open_book_response = parser_ins.try_cast(_open_book_raw)
+
+        # Open book multiple choices
+        open_book_multiple_choices_prompt = (
+            prompts["open_book_multiple_choice_wrapper"]
+            .format(
+                TABLE_TITLE=table_desc,
+                QUESTION=_based_prompt,
+                INSTRUCTION=prompts[instruction],
+                FULL_CSV_TABLE=df.to_csv(index=False),
+                **get_choices(
+                    _answer_value=answer_value, _desired_column=key_column, _df=df, url=url
+                ),
+            )
+            .strip()
+        )
+
+        if f'min_categorical_{bd}_open_book_multiple_choices' in prompt_cache:
+            open_book_multiple_choices_prompt = prompt_cache[f'min_categorical_{bd}_open_book_multiple_choices']['q']
+            answer_value = prompt_cache[f'min_categorical_{bd}_open_book_multiple_choices']['a']
+        else:
+            print("Caching prompt")
+            prompt_cache[f'min_categorical_{bd}_open_book_multiple_choices'] = {'q': open_book_multiple_choices_prompt, 'a': answer_value}
+
+        _open_book_mc_raw = get_llm_response(
+            prompt_string=open_book_multiple_choices_prompt,
+            model=model,
+            answer=answer_value,
+        )
+        open_book_mc_response = parser_ins.try_cast(_open_book_mc_raw)
+
         response_dict[bd] = {
             "closed_book": _match_extreme(_closed_book_raw, closed_book_response, answer_value, parser_ins),
             "multiple_choices": _match_extreme(_multiple_choices_raw, multiple_choices_response, answer_value, parser_ins),
             "open_book": _match_extreme(_open_book_raw, open_book_response, answer_value, parser_ins),
+            "open_book_multiple_choices": _match_extreme(_open_book_mc_raw, open_book_mc_response, answer_value, parser_ins),
         }
 
     prompts_cache[url] = prompt_cache
@@ -1657,10 +1942,39 @@ def prompt_generation_min_numerical(
             model=model,
         )
         open_book_response = parser_ins.try_cast(_open_book_raw)
+
+        # Open book multiple choices
+        open_book_multiple_choices_prompt = (
+            prompts["open_book_multiple_choice_wrapper"]
+            .format(
+                TABLE_TITLE=table_desc,
+                QUESTION=_based_prompt,
+                INSTRUCTION=prompts[instruction],
+                FULL_CSV_TABLE=df.to_csv(index=True),
+                **get_choices(_answer_value=answer_value, _df=df, _desired_column=pk_column),
+            )
+            .strip()
+        )
+
+        if f'min_numerical_{bd}_open_book_multiple_choices' in prompt_cache:
+            open_book_multiple_choices_prompt = prompt_cache[f'min_numerical_{bd}_open_book_multiple_choices']['q']
+            answer_value = prompt_cache[f'min_numerical_{bd}_open_book_multiple_choices']['a']
+        else:
+            print("Caching prompt")
+            prompt_cache[f'min_numerical_{bd}_open_book_multiple_choices'] = {'q': open_book_multiple_choices_prompt, 'a': answer_value}
+
+        _open_book_mc_raw = get_llm_response(
+            prompt_string=open_book_multiple_choices_prompt,
+            model=model,
+            answer=answer_value,
+        )
+        open_book_mc_response = parser_ins.try_cast(_open_book_mc_raw)
+
         response_dict[bd] = {
             "closed_book": _match_extreme(_closed_book_raw, closed_book_response, answer_value, parser_ins),
             "multiple_choices": _match_extreme(_multiple_choices_raw, multiple_choices_response, answer_value, parser_ins),
             "open_book": _match_extreme(_open_book_raw, open_book_response, answer_value, parser_ins),
+            "open_book_multiple_choices": _match_extreme(_open_book_mc_raw, open_book_mc_response, answer_value, parser_ins),
         }
 
     prompts_cache[url] = prompt_cache

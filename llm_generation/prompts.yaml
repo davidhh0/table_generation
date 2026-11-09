@@ -85,6 +85,41 @@ open_book_wrapper: |
  Question: {QUESTION}.
  {INSTRUCTION}
 
+open_book_multiple_choice_wrapper: |
+ Given a factual table titled '{TABLE_TITLE}':
+ {FULL_CSV_TABLE}
+ Question: {QUESTION}.
+ Select one from the following options: ['{CHOICE_1}', '{CHOICE_2}', '{CHOICE_3}']
+ {INSTRUCTION}
+
+open_book_list_retrieval_multiple_choices_wrapper: |
+ Given a factual table titled '{TABLE_TITLE}':
+ {FULL_CSV_TABLE}
+ Question: {QUESTION}.
+ Select all that apply from the following options: {CHOICES_LIST}
+ {INSTRUCTION}
+
+# Open-book no-SQL variants (Llama). On numerical List Retrieval the model answers
+# with a SQL statement or a tool call (`tool_call list_values_from_column(...)`,
+# `{"type": "function", "name": "filter_csv"...}`) instead of reading the table
+# it was given. The title + CSV stay at the FRONT (prompt-caching note above); the
+# directive follows the question, as in the closed-book variants. Separate keys so
+# no other model's prompt string or cached answers change.
+open_book_wrapper_no_sql: |
+ Given a factual table titled '{TABLE_TITLE}':
+ {FULL_CSV_TABLE}
+ Question: {QUESTION}.
+ Read the answer directly from the table above. Do NOT write a SQL query, a tool or function call, code, or any description of how the answer could be looked up — that is not an answer.
+ {INSTRUCTION}
+
+open_book_list_retrieval_multiple_choices_wrapper_no_sql: |
+ Given a factual table titled '{TABLE_TITLE}':
+ {FULL_CSV_TABLE}
+ Question: {QUESTION}.
+ Select all that apply from the following options: {CHOICES_LIST}
+ Answer by copying the matching option values verbatim. Do NOT write a SQL query, a tool or function call, code, or any description of how the answer could be looked up — that is not an answer.
+ {INSTRUCTION}
+
 
 
 # == Instructions ==

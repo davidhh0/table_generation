@@ -1,5 +1,4 @@
 import json
-from utils.utils import get_llm_response
 from prompts_generation import prompt_generation_list_categorical
 import random
 import os
@@ -21,9 +20,7 @@ def list_retrieval():
             'CHOICE_2': random_two_choices[1],
             'CHOICE_3': random_two_choices[2],
         }
-    import matplotlib.pyplot as plt
     from wikiparser import WikiTableParser
-    import seaborn as sns
     import git
     import pandas as pd
     import diskcache
@@ -33,7 +30,7 @@ def list_retrieval():
     with open('../config.yaml', 'r') as f:
         conf = yaml.load(f, Loader=yaml.FullLoader)
     key_model =  conf['title_and_key_model']
-    model = conf['llm_model']
+    model = os.environ.get("EVAL_MODEL") or conf['llm_model']
     rephrase = conf['rephrase']
     working_dir = git.Repo('.', search_parent_directories=True).working_tree_dir
     parser_ins = WikiTableParser()
@@ -149,9 +146,9 @@ def list_retrieval():
     # ====== Single values ======
     categorical_count = 0
     categorical_score = {
-        "categorical_equals": {"closed_book": 0, "multiple_choices": 0, "open_book": 0},
-        "categorical_not_equals": {"closed_book": 0, "multiple_choices": 0, "open_book": 0},
-        "categorical_in": {"closed_book": 0, "multiple_choices": 0, "open_book": 0},
+        "categorical_equals": {"closed_book": 0, "multiple_choices": 0, "open_book": 0, "open_book_multiple_choices": 0},
+        "categorical_not_equals": {"closed_book": 0, "multiple_choices": 0, "open_book": 0, "open_book_multiple_choices": 0},
+        "categorical_in": {"closed_book": 0, "multiple_choices": 0, "open_book": 0, "open_book_multiple_choices": 0},
     }
     for record in single_value_scores.items():
         url = record[0]
@@ -194,7 +191,6 @@ def list_retrieval():
 
 
 if __name__ == '__main__':
-    import time
     idx = 0
     list_retrieval()
 
